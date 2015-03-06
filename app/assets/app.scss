@@ -1,0 +1,112 @@
+body {
+  position:  relative;
+}
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+div {
+  margin: 0px;
+}
+
+.page {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.controls {
+  position: fixed;
+  top: 10px;
+  left: 5px;
+  width: 200px;
+
+  font: 10px sans-serif;
+}
+
+.counter {
+  width: 200px;
+  background-color: #fdf5ce;
+}
+
+.radial {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 200px;
+  right: 0;
+}
+
+.histogram {
+  height: 150px;
+
+  .bar {
+    fill: steelblue;
+    shape-rendering: crispEdges;
+  }
+
+  .bar text {
+    fill: #fff;
+  }
+
+  .axis text {
+    font: 8px sans-serif;
+  }
+
+  .axis path, .axis line {
+    fill: none;
+    stroke: #333;
+    shape-rendering: crispEdges;
+  }
+
+  .brush .extent {
+    fill:  #ddd;
+    fill-opacity: 0.2;
+    stroke: #888;
+    stroke-width: 1px;
+    /*fill-opacity: .25;*/
+    shape-rendering: crispEdges;
+  }
+}
+
+.slider {
+  font: 8px sans-serif;
+  stroke: #333;
+
+  .axis line, path {
+    fill: none;
+    stroke: #333;
+    /*stroke-width: 2px;*/
+    shape-rendering: crispEdges;
+  }
+
+  .brush .extent {
+    fill:  #ddd;
+    stroke: #888;
+    stroke-width: 1px;
+    /*fill-opacity: .25;*/
+    shape-rendering: crispEdges;
+  }
+
+  .resize {
+    fill: #888;
+  }
+}
+
+
+.radial {
+
+  .group {
+
+  }
+
+  .connector {
+
+  }
+
+  .connection {
+    stroke: #436fc9;
+    stroke-width: 1.5px;
+  }
+}

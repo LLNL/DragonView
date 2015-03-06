@@ -1,0 +1,77 @@
+body {
+  position: relative; }
+
+.nav, .pagination, .carousel, .panel-title a {
+  cursor: pointer; }
+
+div {
+  margin: 0px; }
+
+.page {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px; }
+
+.controls {
+  position: fixed;
+  top: 10px;
+  left: 5px;
+  width: 200px;
+  font: 10px sans-serif; }
+
+.counter {
+  width: 200px;
+  background-color: #fdf5ce; }
+
+.radial {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 200px;
+  right: 0; }
+
+.histogram {
+  height: 150px; }
+  .histogram .bar {
+    fill: steelblue;
+    shape-rendering: crispEdges; }
+  .histogram .bar text {
+    fill: #fff; }
+  .histogram .axis text {
+    font: 8px sans-serif; }
+  .histogram .axis path, .histogram .axis line {
+    fill: none;
+    stroke: #333;
+    shape-rendering: crispEdges; }
+  .histogram .brush .extent {
+    fill: #ddd;
+    fill-opacity: 0.2;
+    stroke: #888;
+    stroke-width: 1px;
+    /*fill-opacity: .25;*/
+    shape-rendering: crispEdges; }
+
+.slider {
+  font: 8px sans-serif;
+  stroke: #333; }
+  .slider .axis line, .slider path {
+    fill: none;
+    stroke: #333;
+    /*stroke-width: 2px;*/
+    shape-rendering: crispEdges; }
+  .slider .brush .extent {
+    fill: #ddd;
+    stroke: #888;
+    stroke-width: 1px;
+    /*fill-opacity: .25;*/
+    shape-rendering: crispEdges; }
+  .slider .resize {
+    fill: #888; }
+
+.radial .connection {
+  stroke: #436fc9;
+  stroke-width: 1.5px; }
+
+/*# sourceMappingURL=app.css.map */
