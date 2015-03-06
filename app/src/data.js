@@ -7,12 +7,13 @@ define(function(require) {
   var queue = require('d3_queue');
   var Radio = require('radio');
 
-  var N_GROUPS = 16, N_ROWS = 6, N_COLS = 16;
+  var N_GROUPS = 16, N_ROWS = 6, N_COLS = 16, N_PORTS = 40;
 
+  function portId(g, r, c, p) { return ((g*N_ROWS + r)*N_COLS + c)*N_PORTS + p;}
   function Run() {
     this.groups = [];
     this.routers = [];
-    this.blues = [];
+    this.blues = new Map();
     this.counters = [];
   }
 
@@ -57,36 +58,37 @@ define(function(require) {
         d.dr = +d.dr;
         d.dc = +d.dc;
         d.dp = +d.dp;
-        d.value = 0;
-        run.blues.push(d);
+        d.values = [0, 0];
+        run.blues.set()
       });
     }
 
     function processNetCounters(data, run) {
+      var i, n, counters, values, g, r, c, p, j, nc;
+
       var rows = d3.csv.parseRows(data);
-      var i, n, counters, g, r, c, p, j, nc;
-
-      run.countersName = rows[0];
-      run.countersValues = rows;
-      run.countersValues.shift();
-
       for (i=0; i<4; i++) {
-        run.countersName.shift();
+        rows[0].shift();
+      }
+      run.counters = {header: rows[0], data:[]};
+
+      counters = [];
+      n=rows.length;
+      for (i=1; i<n; i++) {
+        values = rows[i];
+        g = +values.shift();
+        r = +values.shift();
+        c = +values.shift();
+        p = +values.shift();
+        nc = values.length;
+        for (j=0; j<nc; j++) {
+          values[j] = +values[j];
+        }
+        var counter = {id: {g: g, r: r, c:c, p:p}, values:values};
+        counters.push(counter);
       }
 
-      n=rows.length;
-      for (i=0; i<n; i++) {
-        counters = rows[i];
-        g = +counters.shift();
-        r = +counters.shift();
-        c = +counters.shift();
-        p = +counters.shift();
-        nc = counters.length;
-        for (j=0; j<nc; j++) {
-          counters[j] = +counters[j];
-        }
-        run.groups[g].routers[r][c].port[p] = counters;
-      }
+      run.counters.data = counters;
     }
 
     var service = function() {};
