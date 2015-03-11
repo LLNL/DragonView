@@ -98,11 +98,13 @@ div {
 .radial {
 
   .group {
-
+    fill: #f0f0f0;
+//    stroke: #ff0000;
   }
 
   .connector {
-
+    fill: #a0a0a0;
+    stroke: #ff0000;
   }
 
   .connection {

@@ -26,39 +26,39 @@ define(function(require) {
       .outerRadius(opt.outerRadius)
       .cornerRadius(2);
 
-    var connector_arc = d3.svg.arc()
-      .innerRadius(opt.connectorsRadius)
-      .outerRadius(opt.connectorsRadius+opt.connectorsHeight);
-
-    function init() {
-      data.groups.forEach(function(g) {
-        g.color = groupColor;
-      });
-
-      groups = data.groups.filter(function(g) {return g;});
-
-      connectors = [];
-      groups.forEach(function(g) {
-        if (g.open) {
-          var n= g.connectors.length;
-          for (var i=0; i<n; i++) {
-            connectors.push(g.connectors[i]);
-          }
-        }
-      });
-
-      connections = new Map();
-      var key, entry;
-      data.blues.forEach(function(b) {
-        key = sprintf("%d.%d:%d.%d", b.sg, b.sr, b.dg, b.dr);
-        entry = connections.get(key);
-        if (!entry) {
-          entry = {id: key, src: data.groups[b.sg].connectors[b.sc], dest:data.groups[b.dg].connectors[b.dc], blues: []};
-          connections.set(key, entry);
-        }
-        entry.blues.push(b);
-      });
-    }
+    //var connector_arc = d3.svg.arc()
+    //  .innerRadius(opt.connectorsRadius)
+    //  .outerRadius(opt.connectorsRadius+opt.connectorsHeight);
+    //
+    //function init() {
+    //  data.groups.forEach(function(g) {
+    //    g.color = groupColor;
+    //  });
+    //
+    //  groups = data.groups.filter(function(g) {return g;});
+    //
+    //  connectors = [];
+    //  groups.forEach(function(g) {
+    //    if (g.open) {
+    //      var n= g.connectors.length;
+    //      for (var i=0; i<n; i++) {
+    //        connectors.push(g.connectors[i]);
+    //      }
+    //    }
+    //  });
+    //
+    //  connections = new Map();
+    //  var key, entry;
+    //  data.blues.forEach(function(b) {
+    //    key = sprintf("%d.%d:%d.%d", b.sg, b.sr, b.dg, b.dr);
+    //    entry = connections.get(key);
+    //    if (!entry) {
+    //      entry = {id: key, src: data.groups[b.sg].connectors[b.sc], dest:data.groups[b.dg].connectors[b.dc], blues: []};
+    //      connections.set(key, entry);
+    //    }
+    //    entry.blues.push(b);
+    //  });
+    //}
 
     function bandwidth(g, r, c, p) {
       var counters = data.groups[g].routers[r][c].port[p];
@@ -92,17 +92,18 @@ define(function(require) {
     }
 
     function render() {
+      if (!data) return;
 
       // Groups
       d3groups = svg.select('.groups').selectAll('.group')
-        .data(groups, function (d) { return d.id; });
+        .data(data.groups, function (d) { return d.id; });
 
       d3groups.enter()
         .call(Group);
 
-      // Connectors
+      //Connectors
       d3connectors = svg.select('.connectors').selectAll('.connector')
-        .data(connectors, function(d) { return d.id; });
+        .data(data.blueRoutes.nodes, function(d) { return d.id; });
 
       d3connectors.enter()
         .call(Connector);
@@ -126,9 +127,15 @@ define(function(require) {
       var c = this.append('g')
         .attr('class', 'connector');
 
-      c.append('path')
-        .attr('fill', function(d) {return connectorColor;})
-        .attr('d', connector_arc);
+      c.append('circle')
+        .each(function(d) { console.log('con:', d);})
+        .attr('r', 2)
+        .attr('cx', function(d) { return d.r * Math.cos(d.angle); })
+        .attr('cy', function(d) { return d.r * Math.sin(d.angle);});
+
+      //c.append('path')
+      //  .attr('fill', function(d) {return connectorColor;})
+      //  .attr('d', connector_arc);
     }
 
     function Connection(selection) {
@@ -172,8 +179,9 @@ define(function(require) {
     api.data = function(_) {
       if (!arguments.length) return data;
       data = _;
-      init();
-      layout(data.groups);
+      //init();
+      layout(data);
+      render();
       return api;
     };
 
@@ -186,7 +194,7 @@ define(function(require) {
     api.filter = function(_) {
       if (!arguments.length) return range;
       range = _;
-      filter();
+      //filter();
       return api;
     };
 

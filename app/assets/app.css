@@ -70,6 +70,11 @@ div {
   .slider .resize {
     fill: #888; }
 
+.radial .group {
+  fill: #f0f0f0; }
+.radial .connector {
+  fill: #a0a0a0;
+  stroke: #ff0000; }
 .radial .connection {
   stroke: #436fc9;
   stroke-width: 1.5px; }

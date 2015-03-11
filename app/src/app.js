@@ -8,6 +8,7 @@ define(function(require) {
   var DataService = require('data');
   var RadialView = require('radial_view');
   var CountersView = require('counters_view');
+  var test = require('data1');
 
   return function() {
     var radialView, countersView;
@@ -16,7 +17,6 @@ define(function(require) {
     var app = function() {};
 
     app.start = function() {
-
       radialView = RadialView();
       countersView = CountersView();
 
