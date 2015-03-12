@@ -76,7 +76,7 @@ div {
   fill: #a0a0a0;
   stroke: #ff0000; }
 .radial .connection {
-  stroke: #436fc9;
-  stroke-width: 1.5px; }
-
-/*# sourceMappingURL=app.css.map */
+  stroke: steelblue;
+  stroke-opacity: .4;
+  fill: none;
+  pointer-events: none; }

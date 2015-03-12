@@ -26,24 +26,21 @@ define(function(require) {
 
     function layoutGroups(groups) {
       var ng, total,
-        angleBetweenGroups, dAngle,
-        angle, connector;
+        angleBetweenGroups, da, angle;
 
       total = 0;
-      ng = 0;
       groups.forEach(function(g) {
-        ng++;
         g.len = 16;
         total += g.len;
       });
 
       angleBetweenGroups = parms.spaceBetweenGroups/parms.innerRadius;
-      dAngle = (2*Math.PI - ng*angleBetweenGroups)/total;
+      da = (2*Math.PI - groups.length * angleBetweenGroups)/total;
 
       angle = angleBetweenGroups/2;
       groups.forEach(function(group) {
         group.startAngle = angle;
-        group.endAngle = angle + group.len*dAngle;
+        group.endAngle = angle + group.len * da;
 
         angle = group.endAngle + angleBetweenGroups;
       });
@@ -62,6 +59,8 @@ define(function(require) {
     }
     function layoutBlueRouting(run) {
       var r = [parms.groupsRadius, parms.colRadius, parms.connectorsRadius];
+      run.blueRoutes.r = 0;
+      run.blueRoutes.angle = 0;
       run.blueRoutes.children.forEach(function(node) {
         var group = node.item;
         assign(node, group.startAngle, group.endAngle-group.startAngle, r, 0);
@@ -103,6 +102,8 @@ define(function(require) {
       parms.outerRadius = r - parms.outerOffset;
       parms.innerRadius = parms.outerRadius - parms.groupHeight;
       parms.connectorsRadius = parms.innerRadius-parms.connectorsOffset;
+      parms.colRadius = parms.connectorsRadius * 0.75;
+      parms.groupsRadius = parms.connectorsRadius * 0.5;
 
       return layout;
     };

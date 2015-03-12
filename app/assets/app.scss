@@ -108,7 +108,11 @@ div {
   }
 
   .connection {
-    stroke: #436fc9;
-    stroke-width: 1.5px;
+//    stroke: #436fc9;
+//    stroke-width: 1.5px;
+    stroke: steelblue;
+    stroke-opacity: .4;
+    fill: none;
+    pointer-events: none;
   }
 }

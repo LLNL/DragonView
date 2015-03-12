@@ -22,8 +22,10 @@ define(function(require) {
   var slider = Slider();
 
   Radio.channel('data').on('change', function(run) {
-    var values = _.map(run.countersValues, function(d) { return d[counterIndex]; });
+    //var values = _.map(run.blues, function(d) { return d[counterIndex]; });
 
+    var values = [];
+    run.blues.forEach(function(d) { if (d.counters) values.push(d.counters[counterIndex]);})
     histogram.data(values);
     slider.domain([d3.min(values), d3.max(values)]);
   });

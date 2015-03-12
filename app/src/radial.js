@@ -24,66 +24,50 @@ define(function(require) {
     var group_arc = d3.svg.arc()
       .innerRadius(opt.innerRadius)
       .outerRadius(opt.outerRadius)
-      .cornerRadius(2);
+      .cornerRadius(0);
 
-    //var connector_arc = d3.svg.arc()
-    //  .innerRadius(opt.connectorsRadius)
-    //  .outerRadius(opt.connectorsRadius+opt.connectorsHeight);
-    //
-    //function init() {
-    //  data.groups.forEach(function(g) {
-    //    g.color = groupColor;
-    //  });
-    //
-    //  groups = data.groups.filter(function(g) {return g;});
-    //
-    //  connectors = [];
-    //  groups.forEach(function(g) {
-    //    if (g.open) {
-    //      var n= g.connectors.length;
-    //      for (var i=0; i<n; i++) {
-    //        connectors.push(g.connectors[i]);
-    //      }
-    //    }
-    //  });
-    //
-    //  connections = new Map();
-    //  var key, entry;
-    //  data.blues.forEach(function(b) {
-    //    key = sprintf("%d.%d:%d.%d", b.sg, b.sr, b.dg, b.dr);
-    //    entry = connections.get(key);
-    //    if (!entry) {
-    //      entry = {id: key, src: data.groups[b.sg].connectors[b.sc], dest:data.groups[b.dg].connectors[b.dc], blues: []};
-    //      connections.set(key, entry);
-    //    }
-    //    entry.blues.push(b);
-    //  });
-    //}
+    var bundle = d3.layout.bundle();
+    var line = d3.svg.line.radial()
+      .interpolate("bundle")
+      .tension(.2)
+      .radius(function(d) { return d.r; })
+      .angle(function(d) { return d.angle-Math.PI/2; });
 
-    function bandwidth(g, r, c, p) {
-      var counters = data.groups[g].routers[r][c].port[p];
-      if (counters) {
-        var value = counters[counterId];
-        return (range[0] <= value && value <= range[1]) ? value : 0;
+
+    function find(key) {
+      var ng = data.blueRoutes.children.length;
+      for (var i=0; i<ng; i++) {
+        if (data.blueRoutes.children[i].id == key.g) {
+          var g = data.blueRoutes.children[i];
+          var c = g.children[key.c];
+          var r = c.children[key.r];
+          return r;
+        }
       }
-      return 0;
+      return undefined;
     }
 
     function filter() {
       //var t0 = performance.now();
-      var active = [];
-      var counters, value;
-      for (var c of connections.values()) {
-        var v = c.blues.reduce(function(value, b) {
-          return value + bandwidth(b.sg, b.sr, b.sc, b.sp) + bandwidth(b.dg, b.dr, b.dc, b.dp);
-        }, 0);
-        if (v > 0) active.push(c);
-      }
+      var links = [];
+      var value;
 
+      data.blues.forEach(function(l) {
+        if (l.counters) {
+          var value = l.counters[counterId];
+          if (range[0] <= value && value <= range[1]) {
+            l.source = find(l.src);
+            l.target = find(l.dest);
+            links.push(l);
+          }
+        }
+      });
+
+      console.log('links: ',links.length);
       //var t1 = performance.now();
       //console.log('filter: ',active.length, (t1-t0));
       d3connections = svg.select('.connections').selectAll('.connection')
-        .data(active, function(d) { return d.id; });
+        .data(bundle(links));
 
       d3connections.enter()
         .call(Connection);
@@ -102,11 +86,11 @@ define(function(require) {
         .call(Group);
 
       //Connectors
-      d3connectors = svg.select('.connectors').selectAll('.connector')
-        .data(data.blueRoutes.nodes, function(d) { return d.id; });
-
-      d3connectors.enter()
-        .call(Connector);
+      //d3connectors = svg.select('.connectors').selectAll('.connector')
+      //  .data(data.blueRoutes.nodes, function(d) { return d.id; });
+      //
+      //d3connectors.enter()
+      //  .call(Connector);
     }
 
     /*
@@ -128,10 +112,9 @@ define(function(require) {
         .attr('class', 'connector');
 
       c.append('circle')
-        .each(function(d) { console.log('con:', d);})
         .attr('r', 2)
-        .attr('cx', function(d) { return d.r * Math.cos(d.angle); })
-        .attr('cy', function(d) { return d.r * Math.sin(d.angle);});
+        .attr('cx', function(d) { return d.r * Math.cos(d.angle-Math.PI/2); })
+        .attr('cy', function(d) { return d.r * Math.sin(d.angle-Math.PI/2);});
 
       //c.append('path')
       //  .attr('fill', function(d) {return connectorColor;})
@@ -139,12 +122,20 @@ define(function(require) {
     }
 
     function Connection(selection) {
-      this.append('line')
-        .attr('class', 'connection')
-        .attr('x1', function(d)  { return d.src.x;})
-        .attr('y1', function(d)  { return d.src.y;})
-        .attr('x2', function(d)  { return d.dest.x;})
-        .attr('y2', function(d)  { return d.dest.y;});
+      //this.append('line')
+      //  .attr('class', 'connection')
+      //  .attr('x1', function(d)  { return d.src.x;})
+      //  .attr('y1', function(d)  { return d.src.y;})
+      //  .attr('x2', function(d)  { return d.dest.x;})
+      //  .attr('y2', function(d)  { return d.dest.y;});
+
+      this.append("path")
+          .each(function(d) {
+            d.source = d[0], d.target = d[d.length - 1];
+            //console.log('line:',d);
+        })
+          .attr("class", "connection")
+          .attr("d", line);
     }
 
     /*
@@ -194,7 +185,7 @@ define(function(require) {
     api.filter = function(_) {
       if (!arguments.length) return range;
       range = _;
-      //filter();
+      filter();
       return api;
     };
 

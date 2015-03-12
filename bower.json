@@ -28,8 +28,5 @@
     "queue-async": "~1.0.7",
     "backbone.radio": "~0.9.0",
     "backbone": "~1.1.2"
-  },
-  "resolutions": {
-    "lodash": "~3.4.0"
   }
 }
