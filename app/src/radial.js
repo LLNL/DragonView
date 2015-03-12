@@ -48,13 +48,13 @@ define(function(require) {
     }
 
     function filter() {
+      console.log('filter on:', counterId);
       //var t0 = performance.now();
-      var links = [];
-      var value;
+      var links = [], value;
 
       data.blues.forEach(function(l) {
         if (l.counters) {
-          var value = l.counters[counterId];
+          value = l.counters[counterId];
           if (range[0] <= value && value <= range[1]) {
             l.source = find(l.src);
             l.target = find(l.dest);
@@ -122,14 +122,7 @@ define(function(require) {
     }
 
     function Connection(selection) {
-      //this.append('line')
-      //  .attr('class', 'connection')
-      //  .attr('x1', function(d)  { return d.src.x;})
-      //  .attr('y1', function(d)  { return d.src.y;})
-      //  .attr('x2', function(d)  { return d.dest.x;})
-      //  .attr('y2', function(d)  { return d.dest.y;});
-
-      this.append("path")
+       this.append("path")
           .each(function(d) {
             d.source = d[0], d.target = d[d.length - 1];
             //console.log('line:',d);
@@ -170,7 +163,6 @@ define(function(require) {
     api.data = function(_) {
       if (!arguments.length) return data;
       data = _;
-      //init();
       layout(data);
       render();
       return api;
@@ -194,6 +186,12 @@ define(function(require) {
       return this;
     };
 
+    api.counter = function(_) {
+      if (!arguments.length) return counterId;
+      counterId = _;
+      if (data) filter();
+      return api;
+    };
 
     return api;
   };

@@ -40,7 +40,7 @@ define(function(require) {
 
     function brushed() {
       var e = brush.extent();
-      console.log('brush:',e[0], e[1]);
+      //console.log('brush:',e[0], e[1]);
       dispatch.brushed(e[0], e[1]);
     }
 

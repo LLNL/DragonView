@@ -21,6 +21,10 @@ define(function(require) {
       radial.filter(range);
     });
 
+    Radio.channel('counter').on('change', function(index) {
+      radial.counter(index);
+    });
+
     radial = Radial().el('#radial').counter(14);
     //this.$el.detectResizing({onResize: this.onResize});
   };
