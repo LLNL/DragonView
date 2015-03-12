@@ -16,7 +16,6 @@ define(function(require) {
         opt = layout.parms(),
         svgContainer, svg;
 
-    var anchor_vs = 4;
     var range, counterId;
     var data, groups, connectors, connections;
     var d3groups, d3connectors, d3connections;
@@ -48,8 +47,6 @@ define(function(require) {
     }
 
     function filter() {
-      console.log('filter on:', counterId);
-      //var t0 = performance.now();
       var links = [], value;
 
       data.blues.forEach(function(l) {
@@ -115,28 +112,21 @@ define(function(require) {
         .attr('r', 2)
         .attr('cx', function(d) { return d.r * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.r * Math.sin(d.angle-Math.PI/2);});
-
-      //c.append('path')
-      //  .attr('fill', function(d) {return connectorColor;})
-      //  .attr('d', connector_arc);
     }
 
     function Connection(selection) {
        this.append("path")
-          .each(function(d) {
-            d.source = d[0], d.target = d[d.length - 1];
-            //console.log('line:',d);
-        })
+          .each(function(d) { d.source = d[0], d.target = d[d.length - 1];})
           .attr("class", "connection")
           .attr("d", line);
     }
 
     /*
-     * API
+     * radial
      */
-    var api = {};
+    var radial = {};
 
-    api.el = function(el) {
+    radial.el = function(el) {
       svgContainer = d3.select(el)
         .classed("radial", true)
         .append("svg")
@@ -153,46 +143,46 @@ define(function(require) {
       return this;
     };
 
-    api.resize = function(w, h) {
+    radial.resize = function(w, h) {
       svgContainer.attr("width", w).attr("height", h);
       layout.size(w, h);
       render();
       return this;
     };
 
-    api.data = function(_) {
+    radial.data = function(_) {
       if (!arguments.length) return data;
       data = _;
       layout(data);
       render();
-      return api;
+      return radial;
     };
 
-    api.counter = function(_) {
+    radial.counter = function(_) {
       if (!arguments.length) return counterId;
       counterId = _;
-      return api;
+      return radial;
     };
 
-    api.filter = function(_) {
+    radial.filter = function(_) {
       if (!arguments.length) return range;
       range = _;
       filter();
-      return api;
+      return radial;
     };
 
-    api.update = function() {
+    radial.update = function() {
       render();
       return this;
     };
 
-    api.counter = function(_) {
+    radial.counter = function(_) {
       if (!arguments.length) return counterId;
       counterId = _;
       if (data) filter();
-      return api;
+      return radial;
     };
 
-    return api;
+    return radial;
   };
 });
