@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Radial Dragonfly</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="lib/jquery-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet">
-  <link href="lib/fontawesome/css/font-awesome.min.css" rel="stylesheet">
-  <link href="assets/app.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>Radial Dragonfly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="lib/jquery-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet">
+    <link href="lib/fontawesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="assets/app.css" rel="stylesheet">
 
 </head>
 
 <body class="page">
 
-  <div id="radial" class="radial"></div>
-  <div id="controls" class="controls">
-      <select id="counter"></select>
-      <svg id="info"></svg>
-  </div>
+<div id="controls" class="controls">
+    <select id="counter"></select>
+    <svg id="info"></svg>
+    <span>Views:</span><br>
+    <input type="radio" name="view" value="radial">Radial<br>
+    <input type="radio" name="view" value="matrix">Matrix<br>
+</div>
 
-  <script src="lib/sprintf/dist/sprintf.min.js"></script>
-  <script data-main="src/init" src="lib/requirejs/require.js"></script>
+<div id="views" class="views"></div>
+
+
+<script src="lib/sprintf/dist/sprintf.min.js"></script>
+<script data-main="src/init" src="lib/requirejs/require.js"></script>
 
 </body>
 </html>

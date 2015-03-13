@@ -6,19 +6,18 @@ define(function(require) {
   'use strict';
 
   var DataService = require('data');
-  var RadialView = require('radial_view');
+  var ControlsView = require('controls_view');
   var CountersView = require('counters_view');
-  var test = require('data1');
 
   return function() {
-    var radialView, countersView;
+    var radialView, countersView, controlsView;
     var dataService = DataService();
 
     var app = function() {};
 
     app.start = function() {
-      radialView = RadialView();
       countersView = CountersView();
+      controlsView = ControlsView();
 
       dataService.start();
       return app;

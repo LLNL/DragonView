@@ -10,7 +10,7 @@ require.config({
     tpl: '../template',
     text: '../lib/requirejs-text/text',
     jquery: '../lib/jquery/dist/jquery.min',
-    ui: '../lib/jquery-ui/ui',
+    jqueryui: '../lib/jquery-ui/jquery-ui.min',
     underscore: '../lib/lodash/lodash.min',
     //underscore: '../lib/underscore/underscore',
     backbone: '../lib/backbone/backbone',

@@ -1,35 +1,35 @@
 /**
- * Created by yarden on 3/5/15.
+ * Created by yarden on 3/12/15.
  */
 define(function(require) {
-  var Radial = require('radial');
+  var AdjMatrix = require('adj_matrix');
   var Radio = require('radio');
   var $ = require('jquery');
   var _ = require('underscore');
   //var Resize = require('resize');
 
   return function() {
-    var radial;
+    var component;
     var active = true, _data, _range, _counter;
 
     //_.bindAll(this, 'onResize');
 
     Radio.channel('data').on('change', function (data) {
-      if (active) radial.data(data).update();
+      if (active) component.data(data).update();
       else _data = data;
     });
 
     Radio.channel('counter').on('range', function (range) {
-      if (active) radial.filter(range);
+      if (active) component.filter(range);
       else _range = range;
     });
 
     Radio.channel('counter').on('change', function (index) {
-      if (active) radial.counter(index);
+      if (active) component.counter(index);
       else _counter = index;
     });
 
-    radial = Radial().el('#radial')
+    component = AdjMatrix().el('#matrix')
       .counter(14);
 
     //this.$el.detectResizing({onResize: this.onResize});
@@ -41,9 +41,9 @@ define(function(require) {
 
       if (active != _) {
         active = _;
-        if (_data) radial.data(_data).update();
-        if (_range) radial.range(_range);
-        if (_counter) radial.counter(_counter);
+        if (_data) component.data(_data).update();
+        if (_range) component.range(_range);
+        if (_counter) component.counter(_counter);
         _data = _range = _counter = undefined;
       }
 
