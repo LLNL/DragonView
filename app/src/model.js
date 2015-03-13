@@ -10,6 +10,7 @@ define(function(require) {
     N_COLS: N_COLS,
     N_PORTS:N_PORTS,
 
-    portid: function(g, r, c, p) { return ((g*N_ROWS + r)*N_COLS + c)+N_PORTS + p; }
+    port_id: function(g, r, c, p) { return ((g*N_ROWS + r)*N_COLS + c)*N_PORTS + p; },
+    router_id: function(g, r, c) { return (g*N_ROWS + r)*N_COLS + c;}
   };
 });

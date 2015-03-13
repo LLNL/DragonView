@@ -8,9 +8,7 @@ define(function(require) {
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
-        INNER_RADIUS = 400, GROUP_HEIGHT = 100,
-        groupColor = '#f0f0f0',
-        connectorColor = '#9BCDEF';
+        INNER_RADIUS = 400, GROUP_HEIGHT = 100;
 
     var layout = Layout().size([WIDTH, HEIGHT]),
         opt = layout.parms(),
@@ -39,8 +37,7 @@ define(function(require) {
         if (data.blueRoutes.children[i].id == key.g) {
           var g = data.blueRoutes.children[i];
           var c = g.children[key.c];
-          var r = c.children[key.r];
-          return r;
+          return c.children[key.r];
         }
       }
       return undefined;

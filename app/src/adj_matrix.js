@@ -9,13 +9,32 @@ define(function(require) {
     var WIDTH = 1000, HEIGHT = 1000;
     var svgContainer, svg;
     var data, range, counterId;
+    var routers;
+    var left, top;
 
-    function cluster() {
+    function initRouters() {
+      var router;
+      routers = new Map();
+
       data.counters.forEach(function(counter) {
-
-      })
+        router = routers.get(counter.id);
+        if (!router) {
+          router = {id:counter.id, counters: []};
+          routers.set(counter.id, router);
+        }
+        router.counters.push(counter);
+      });
     }
+
     function init() {
+      var r;
+
+      initRouters();
+      left = [];
+      top = [];
+      for (r of routers.values()) {
+
+      }
 
     }
 

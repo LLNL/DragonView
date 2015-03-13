@@ -34,9 +34,11 @@ define(function(require) {
 
     options.enter()
       .append('option')
-      .attr('selected', function (d, i) { return i == defaultCounter;})
       .attr('value', function (d, i) { return i; })
       .text(function (d) { return d; });
+
+    counters.property("value", defaultCounter);
+    selectCounter(defaultCounter);
 
     options.exit().remove();
   });

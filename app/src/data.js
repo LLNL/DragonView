@@ -14,8 +14,8 @@ define(function(require) {
   function Run() {
     this.groups = [];
     this.routers = {};
-    this.blues = new Map();
     this.counters = [];
+    this.blues = new Map();
     this.links = new Map();
   }
 
@@ -49,18 +49,18 @@ define(function(require) {
     function processConnectivity(data, run) {
       data.forEach(function (d) {
         var link = {
-          id: model.portid(+d.sg, +d.sr, +d.sc, +d.sp),
+          id: model.port_id(+d.sg, +d.sr, +d.sc, +d.sp),
+          color: d.color,
           src: {g: +d.sg, r: +d.sr, c: +d.sc, p: +d.sp},
           dest:{g: +d.dg, r: +d.dr, c: +d.dc, p: +d.dp}
         };
-        if (d.color == 'b')
-          run.blues.set(link.id, link);
+        if (d.color == 'b') run.blues.set(link.id, link);
         run.links.set(link.id, link);
       });
     }
 
     function processNetCounters(data, run) {
-      var i, n, counters, values, g, r, c, p, j, nc;
+      var i, n, counters, values, g, r, c, p, j, nc, link;
 
       var rows = d3.csv.parseRows(data);
       for (i=0; i<4; i++) {
@@ -79,11 +79,18 @@ define(function(require) {
         for (j=0; j<nc; j++) {
           values[j] = +values[j];
         }
-        var id = model.portid(g, r, c, p);
-        var link = run.blues.get(id);
-        if (link) link.counters = values;
+        var id = model.port_id(g, r, c, p);
+        //var link = run.blues.get(id);
+        //if (link) link.counters = values;
 
-        run.counters.push({ key: {g:g, r:r, c:c, p: p}, values:values});
+        link = run.links.get(id);
+        if (link)
+          link.counters = values;
+        else {
+          if (values.some(function(v) { return v > 0; }))  console.log('missing link:', g,r,c, p);
+        }
+
+        //run.counters.push({ id:model.router_id(g, r, c), key: {g:g, r:r, c:c, p: p}, values:values});
       }
     }
 
@@ -92,7 +99,7 @@ define(function(require) {
 
     service.start = function() {
       queue()
-        .defer(d3.csv, 'data/blues.csv')
+        .defer(d3.csv, 'data/topology.csv')
         .defer(d3.text, 'data/vis_net.csv')
         .await(function(error, connectivity, netCounters) {
           if (error) {
