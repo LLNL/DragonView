@@ -16,6 +16,7 @@ define(function(require) {
     this.routers = {};
     this.blues = new Map();
     this.counters = [];
+    this.links = new Map();
   }
 
   Run.prototype.routerId= function(r, c) {
@@ -48,39 +49,42 @@ define(function(require) {
     function processConnectivity(data, run) {
       data.forEach(function (d) {
         var link = {
-          id: model.blueId(+d.sg, +d.sr, +d.sc, +d.sp),
+          id: model.portid(+d.sg, +d.sr, +d.sc, +d.sp),
           src: {g: +d.sg, r: +d.sr, c: +d.sc, p: +d.sp},
           dest:{g: +d.dg, r: +d.dr, c: +d.dc, p: +d.dp}
         };
-        run.blues.set(link.id, link);
+        if (d.color == 'b')
+          run.blues.set(link.id, link);
+        run.links.set(link.id, link);
       });
     }
 
     function processNetCounters(data, run) {
-      var i, n, counters, g, r, c, p, j, nc;
+      var i, n, counters, values, g, r, c, p, j, nc;
 
       var rows = d3.csv.parseRows(data);
       for (i=0; i<4; i++) {
         rows[0].shift();
       }
       run.countersNames = rows[0];
-
+      run.counters = [];
       n=rows.length;
       for (i=1; i<n; i++) {
-        counters = rows[i];
-        g = +counters.shift();
-        r = +counters.shift();
-        c = +counters.shift();
-        p = +counters.shift();
-        nc = counters.length;
+        values = rows[i];
+        g = +values.shift();
+        r = +values.shift();
+        c = +values.shift();
+        p = +values.shift();
+        nc = values.length;
         for (j=0; j<nc; j++) {
-          counters[j] = +counters[j];
+          values[j] = +values[j];
         }
-        var link = run.blues.get(model.blueId(g, r, c, p));
-        if (link) link.counters = counters;
-      }
+        var id = model.portid(g, r, c, p);
+        var link = run.blues.get(id);
+        if (link) link.counters = values;
 
-      run.counters.data = counters;
+        run.counters.push({ key: {g:g, r:r, c:c, p: p}, values:values});
+      }
     }
 
     var service = function() {};

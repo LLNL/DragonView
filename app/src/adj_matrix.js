@@ -10,6 +10,15 @@ define(function(require) {
     var svgContainer, svg;
     var data, range, counterId;
 
+    function cluster() {
+      data.counters.forEach(function(counter) {
+
+      })
+    }
+    function init() {
+
+    }
+
     function render() {
 
     }
