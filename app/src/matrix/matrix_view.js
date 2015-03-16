@@ -2,7 +2,7 @@
  * Created by yarden on 3/12/15.
  */
 define(function(require) {
-  var AdjMatrix = require('adj_matrix');
+  var AdjMatrix = require('matrix/adj_matrix');
   var Radio = require('radio');
   var $ = require('jquery');
   var _ = require('underscore');
@@ -10,7 +10,7 @@ define(function(require) {
 
   return function() {
     var component;
-    var active = true, _data, _range, _counter;
+    var active = false, _data, _range, _counter;
 
     //_.bindAll(this, 'onResize');
 
@@ -34,7 +34,7 @@ define(function(require) {
 
     //this.$el.detectResizing({onResize: this.onResize});
 
-    var view = function () {}
+    var view = function () {};
 
     view.active = function (_) {
       if (!arguments.length) return active;
@@ -42,8 +42,9 @@ define(function(require) {
       if (active != _) {
         active = _;
         if (_data) component.data(_data).update();
-        if (_range) component.range(_range);
         if (_counter) component.counter(_counter);
+        if (_range) component.filter(_range);
+
         _data = _range = _counter = undefined;
       }
 

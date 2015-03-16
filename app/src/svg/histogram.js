@@ -151,6 +151,7 @@ define(function(require) {
       //console.log('dx:',dx, ' x(dx):', x(dx));
       y.domain([0, d3.max(data,  function(d) { return d.y;})]);
 
+      brush.event(svg.select('.brush'));
       svg.select('.brush').call(brush);
       draw();
       return histogram;
@@ -161,6 +162,8 @@ define(function(require) {
       this.data(_series, [from, to]);
       svg.select('.brush').call(brush);
       duration = save;
+
+      return histogram;
     };
 
     histogram.on = function(type, listener) {

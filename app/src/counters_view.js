@@ -16,7 +16,8 @@ define(function(require) {
       svg, header,
       title="Counter",
       defaultCounter = 14,
-      run;
+      run,
+      format = d3.format('.2e');
 
   var histogram = Histogram();
   var slider = Slider();
@@ -46,7 +47,7 @@ define(function(require) {
   function selectCounter(index) {
     console.log('select counter:', index);
     var values = [];
-    run.blues.forEach(function (d) {
+    run.links.forEach(function (d) {
       if (d.counters) values.push(d.counters[index]);
     });
     histogram.data(values);
@@ -56,11 +57,12 @@ define(function(require) {
 
 
   function onZoom(from, to) {
-    console.log('onZoom:',from, to);
+    console.log('onZoom:',format(from), format(to));
     histogram.xdomain(from,  to);
   }
 
   function onHighlight(from, to) {
+    console.log('highlight:', format(from),  format(to));
     Radio.channel('counter').trigger('range', [from, to]);
   }
 

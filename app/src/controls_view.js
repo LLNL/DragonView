@@ -4,7 +4,7 @@
 define(function(require) {
   var d3 = require('d3');
   var RadialView = require('radial_view');
-  var MatrixView = require('matrix_view');
+  var MatrixView = require('matrix/matrix_view');
 
   var views = [
     {id:'radial', factory: RadialView, view:undefined},
@@ -40,8 +40,8 @@ define(function(require) {
         .append('div')
         .attr('id', function(d) { return d.id;})
         .classed('view', true)
-        .style('display', 'none');
-        //.each(function(d) {d.view = d.factory()});
+        .style('display', 'none')
+        .each(function(d) {d.view = d.factory()});
 
     d3.selectAll('input[name="view"]')
       .on('change', select)

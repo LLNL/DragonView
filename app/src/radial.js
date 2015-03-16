@@ -164,7 +164,7 @@ define(function(require) {
     radial.filter = function(_) {
       if (!arguments.length) return range;
       range = _;
-      filter();
+      if (data) filter();
       return radial;
     };
 
