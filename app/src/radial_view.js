@@ -43,7 +43,7 @@ define(function(require) {
         active = _;
         if (_data) radial.data(_data).update();
         if (_counter) radial.counter(_counter);
-        if (_range) radial.range(_range);
+        if (_range) radial.filter(_range);
 
         _data = _range = _counter = undefined;
       }
