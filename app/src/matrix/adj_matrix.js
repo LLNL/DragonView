@@ -406,7 +406,7 @@ define(function(require) {
     adj.filter = function(_) {
       if (!arguments.length) return range;
       range = _;
-      filter();
+      filter1();
       return this;
     };
 

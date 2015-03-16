@@ -8,8 +8,6 @@ define(function(require) {
   var queue = require('d3_queue');
   var Radio = require('radio');
 
-  //var N_GROUPS = 16, N_ROWS = 6, N_COLS = 16, N_PORTS = 40;
-
   //function portId(g, r, c, p) { return ((g*N_ROWS + r)*N_COLS + c)*N_PORTS + p;}
   function Run() {
     this.groups = [];
