@@ -11,10 +11,15 @@ define(function(require) {
     N_PORTS:N_PORTS,
 
     port_id: function(g, r, c, p) { return ((g*N_ROWS + r)*N_COLS + c)*N_PORTS + p; },
+
     router_id: function(g, r, c) {
       if (arguments.length == 1)
         return (g.g*N_ROWS + g.r)*N_COLS + g.c;
       return (g*N_ROWS + r)*N_COLS + c;
+    },
+
+    link_id: function(sr, sr, sc, dg, dr, dc) {
+      return sg+':'+sr+':'+sc+'-'+dg+':'+dr+':'+dc;
     }
   };
 });
