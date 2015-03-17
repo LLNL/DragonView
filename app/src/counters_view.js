@@ -9,7 +9,8 @@ define(function(require) {
     Radio = require('radio'),
     d3 = require('d3'),
     Histogram = require('svg/histogram'),
-    Slider = require('svg/slider')
+    Slider = require('svg/slider'),
+    require('data');
   ;
 
   var width = 200, height,

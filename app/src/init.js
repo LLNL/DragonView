@@ -7,7 +7,6 @@ require.config({
   //urlArgs: "v=" +  (new Date()).getTime(),
 
   paths: {
-    tpl: '../template',
     text: '../lib/requirejs-text/text',
     jquery: '../lib/jquery/dist/jquery.min',
     jqueryui: '../lib/jquery-ui/jquery-ui.min',
