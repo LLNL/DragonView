@@ -4,7 +4,7 @@
 define(function(require) {
 
   var d3 = require('d3');
-  var Layout = require('layout');
+  var Layout = require('radial/layout');
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,

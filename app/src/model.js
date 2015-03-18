@@ -19,8 +19,12 @@ define(function(require) {
       return (g*N_ROWS + r)*N_COLS + c;
     },
 
-    link_id: function(sr, sr, sc, dg, dr, dc) {
+    link_id: function(sg, sr, sc, dg, dr, dc) {
       return sg+':'+sr+':'+sc+'-'+dg+':'+dr+':'+dc;
+    },
+
+    node_id: function(node) {
+      return node.g+':'+node.r+':'+node.c+':'+node.n;
     }
   };
 });

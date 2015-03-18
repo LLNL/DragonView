@@ -9,7 +9,7 @@ define(function(require) {
 
   return function() {
     var
-        margin = {top: 20, right:10, bottom: 10, left: 20},
+        margin = {top: 20, right:10, bottom: 10, left: 30},
         width = 200-margin.left-margin.right,
         height = 100 - margin.top - margin.bottom,
         dx = 5, duration = 500,
@@ -27,7 +27,8 @@ define(function(require) {
     var xAxis = d3.svg.axis()
       .scale(x)
       .orient("bottom")
-      .ticks(5);
+      .ticks(5)
+      .tickFormat(d3.format('.02e'));
 
     var yAxis = d3.svg.axis()
       .scale(y)
@@ -138,6 +139,11 @@ define(function(require) {
       _series = series;
       domain = domain || [d3.min(_series), d3.max(_series)];
       x.domain(domain);
+
+      if (domain[0] > 1000)
+        xAxis.tickFormat(d3.format('.02e'));
+      else
+        xAxis.tickFormat(d3.format('g'));
 
       data = d3.layout.histogram()
         .range(x.domain())

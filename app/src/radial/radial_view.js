@@ -2,7 +2,7 @@
  * Created by yarden on 3/5/15.
  */
 define(function(require) {
-  var Radial = require('radial');
+  var Radial = require('radial/radial');
   var Radio = require('radio');
   var $ = require('jquery');
   var _ = require('underscore');

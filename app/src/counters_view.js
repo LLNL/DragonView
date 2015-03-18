@@ -10,13 +10,12 @@ define(function(require) {
     d3 = require('d3'),
     Histogram = require('svg/histogram'),
     Slider = require('svg/slider'),
-    require('data');
+    d = require('data');
   ;
 
   var width = 200, height,
       svg, header,
-      title="Counter",
-      defaultCounter = 14,
+      defaultCounter = 0,
       run,
       format = d3.format('.2e');
 
@@ -46,7 +45,6 @@ define(function(require) {
   });
 
   function selectCounter(index) {
-    console.log('select counter:', index);
     var values = [];
     run.links.forEach(function (d) {
       if (d.counters) values.push(d.counters[index]);

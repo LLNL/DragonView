@@ -3,7 +3,7 @@ define(function(require) {
 
   return function() {
     var width = 100, height = 25,
-      handle;
+      handle, d3axis;
 
     var dispatch = d3.dispatch('start', 'move', 'end');
     var x = d3.scale.linear()
@@ -14,7 +14,7 @@ define(function(require) {
     var axis = d3.svg.axis()
       .scale(x)
       .orient('bottom')
-      .ticks(2);
+      .ticks(4);
     //            .tickFormat(function (d) { return d ; })
     //            .tickSize(8, 8)
     //            .tickPadding(12)
@@ -40,7 +40,7 @@ define(function(require) {
           .attr('width', width)
           .attr('height', height);
 
-        frame.append('g')
+        d3axis = frame.append('g')
           .attr('class', 'x axis')
           .attr('transform', 'translate(0.5,' + 10.5 + ')')
           .call(axis);
@@ -96,6 +96,13 @@ define(function(require) {
     slider.domain = function(value) {
       if (!arguments.length) return x.domain();
       x.domain(value);
+      if (value[0] > 1000)
+        axis.tickFormat(d3.format('.1e'));
+      else
+        axis.tickFormat(d3.format('g'));
+
+      //g.select('.x')
+      d3axis.call(axis);
       return slider;
     };
 

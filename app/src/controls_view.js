@@ -3,7 +3,7 @@
  */
 define(function(require) {
   var d3 = require('d3');
-  var RadialView = require('radial_view');
+  var RadialView = require('radial/radial_view');
   var MatrixView = require('matrix/matrix_view');
 
   var views = [
