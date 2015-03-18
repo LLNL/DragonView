@@ -150,10 +150,14 @@ define(function(require) {
         .bins(x.ticks(20))
       (_series);
 
-      //data.forEach(function(d) { console.log(d.x, d.y);});
+
+      data.forEach(function(d) { console.log('hist:', d.x, d.y);});
       dx = data.length > 0 ? data[0].dx : 5;
       var min = x.domain()[0];
       dx = x(min+dx)-1;
+      if (data.length > 1) {
+        dx = x(data[1].x) - x(data[0].x);
+      }
       //console.log('dx:',dx, ' x(dx):', x(dx));
       y.domain([0, d3.max(data,  function(d) { return d.y;})]);
 

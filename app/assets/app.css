@@ -32,6 +32,9 @@ div {
   left: 200px;
   right: 0; }
 
+.view {
+  overflow: scroll; }
+
 .histogram {
   height: 150px; }
   .histogram .bar {

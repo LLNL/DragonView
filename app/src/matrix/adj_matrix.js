@@ -48,9 +48,11 @@ define(function(require) {
       data.links.forEach(function(link) {
         if (!link.counters) return;
         value = link.counters[counterId];
+        if (value < min) min = value;
+        if (value > max) max = value;
         if (value >= range[0] && value <= range[1]) {
-          if (value < min) min = value;
-          if (value > max) max = value;
+          //if (value < min) min = value;
+          //if (value > max) max = value;
           n++;
 
           src = srcCluster.add(link.src, value);
@@ -67,6 +69,7 @@ define(function(require) {
       });
 
       scale.domain([min,  max]);
+      console.log('range: ', min, max);
       console.log('links: ',n);
 
       computeValue(srcCluster.root());
@@ -406,7 +409,7 @@ define(function(require) {
     adj.filter = function(_) {
       if (!arguments.length) return range;
       range = _;
-      filter1();
+      filter();
       return this;
     };
 
