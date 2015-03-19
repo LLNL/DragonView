@@ -3,14 +3,19 @@
  */
 define(function(require) {
 
-  return function() {
-    var nodes = new Map(), root = {id: '', open: true};
+  return function(id) {
+    var nodes = new Map(), root = {id: id, open: true};
     var levels = [16, 6, 16];
-
-    build(root,  0);
+    var colors = d3.scale.category20();
 
     function key(id) {
-      return ':'+id.g+':'+id.r+':'+id.c;
+      return root.id+':'+id.g+':'+id.r+':'+id.c;
+    }
+
+    function init() {
+      build(root, 0);
+      for (var i=0; i<root.children.length; i++)
+        root.children[i].color = colors(i);
     }
 
     function build(parent, level) {
@@ -76,6 +81,7 @@ define(function(require) {
       }
     };
 
+    init();
     return cluster;
   }
 });

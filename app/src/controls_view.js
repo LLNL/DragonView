@@ -11,10 +11,10 @@ define(function(require) {
     {id:'matrix', factory: MatrixView, view:undefined}
   ];
 
-  var current  = views[0].id;
+  var current  = views[0];
 
-  function select(id) {
-    var selected = id || this.value;
+  function select(item) {
+    var selected = item.id || this.value;
     current = selected;
     d3.selectAll('.view')
       .style('display', function(d) { return d.id == selected ? 'block' : 'none'; });
@@ -43,9 +43,26 @@ define(function(require) {
         .style('display', 'none')
         .each(function(d) {d.view = d.factory()});
 
-    d3.selectAll('input[name="view"]')
-      .on('change', select)
-      .property('checked', function(d) { return this.value == current;});
+    var i = d3.select('#viewSelectors').selectAll('input')
+              .data(views)
+            .enter()
+            .append('g');
+
+    i.append('input')
+        .attr('type', 'radio')
+        .attr('name', 'view')
+        .attr('value', function(d) {
+        return d.id;})
+        .on('change', select)
+        .property('checked', function(d) { return this.value == current;});
+
+    i.append('label')
+     .text(function(d) { return d.id;})
+     .append('br');
+
+    //d3.selectAll('input[name="view"]')
+    //  .on('change', select)
+    //  .property('checked', function(d) { return this.value == current;});
 
     select(current);
 

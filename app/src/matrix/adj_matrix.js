@@ -10,12 +10,12 @@ define(function(require) {
   return function() {
     var WIDTH = 1000, HEIGHT = 1000;
     var svgContainer, svg;
-    var srcCluster = cluster();
-    var destCluster = cluster();
+    var srcCluster = cluster('s');
+    var destCluster = cluster('d');
 
     var x = 30, dx = 5,y = 50, dy = 1;
 
-    var d3srcs, d3dests, d3cells;
+    var d3srcs, d3dests, d3cells, d3lines;
     var data, range, counterId;
     var routers;
     var srcNodes, destNodes, cells;
@@ -75,8 +75,6 @@ define(function(require) {
       computeValue(srcCluster.root());
       computeValue(destCluster.root());
 
-
-
       x = 10; dx = 10;
       y = 70; dy = 2;
       layoutSrc(srcCluster.root());
@@ -91,31 +89,15 @@ define(function(require) {
           nodes.push(node);
       }
 
-      var d3nodes = d3srcs.selectAll('rect')
-        .data(nodes,  function(d) {return d.id;});
-
-      d3nodes.enter()
-        .append('rect')
-        .attr('fill', 'lightgray');
-
-      d3nodes
-        .attr('x', function(d) { return d.x;} )
-        .attr('y', function(d) { return d.y;} )
-        .attr('width', function(d) { return d.width;})
-        .attr('height', function(d) { return d.height;})
-        .attr('opacity', function(d) { return scale(d.value); });
-
-      d3nodes.exit()
-        .remove();
-
-      // dest
-      nodes = [];
       for (node of destCluster.nodes().values()) {
         if (node.value > 0)
           nodes.push(node);
       }
 
-      d3nodes = d3dests.selectAll('rect')
+      //collect(srcCluster.root(), nodes);
+      //collect(destCluster.root(), nodes);
+
+      var d3nodes = d3dests.selectAll('rect')
         .data(nodes,  function(d) {return d.id;});
 
       d3nodes.enter()
@@ -127,10 +109,41 @@ define(function(require) {
         .attr('y', function(d) { return d.y;} )
         .attr('width', function(d) { return d.width;})
         .attr('height', function(d) { return d.height;})
-        .attr('opacity', function(d) { return scale(d.value); });
+        .attr('fill', function(d) { return d.color || 'lightgray';})
+        .attr('opacity', function(d) { return 1; scale(d.value); });
 
       d3nodes.exit()
         .remove();
+
+      // bg lines
+      var lines = [];
+      var x1 = destCluster.root().x-1,
+          x2 = x1 + destCluster.root().width+2,
+          y1 = srcCluster.root().y-1,
+          y2 = y1 + srcCluster.root().height+2;
+
+      srcCluster.root().children.forEach(function(d) {
+        if (d.value > 0)
+          lines.push({x1:x1, y1:d.y-1, x2:x2, y2: d.y-1 });
+      });
+
+      destCluster.root().children.forEach(function(d) {
+        if (d.value > 0)
+          lines.push({x1:d.x-1, y1:y1, x2:d.x-1, y2: y2 });
+      });
+
+      var l = d3lines.selectAll('line')
+                .data(lines);
+
+      l.enter()
+        .append('line');
+
+      l.attr('x1', function(d) { return d.x1;})
+        .attr('x2', function(d) { return d.x2;})
+        .attr('y1', function(d) { return d.y1;})
+        .attr('y2', function(d) { return d.y2;});
+
+      l.exit().remove();
 
       // links
       nodes = [];
@@ -157,12 +170,21 @@ define(function(require) {
       d3nodes.exit().remove();
     }
 
+    function collect(node, list) {
+      list.push(node);
+      if (node.open && node.value > 0 && node.children) {
+        var n = node.children.length;
+        for (var i=0; i<n; i++)
+          collect(node.children[i], list);
+      }
+    }
+
     function layoutSrc(node) {
       node.x = x;
       node.y = y;
 
       x += dx;
-      var i, n = node.open && node.children.length || 0;
+      var i, n = node.open && node.value > 0 && node.children.length|| 0;
 
       if (n > 0) {
         for(i = 0; i < n; i++) {
@@ -186,7 +208,7 @@ define(function(require) {
       node.y = y;
 
       y += dy;
-      var i, n = node.open && node.children.length || 0;
+      var i, n = node.open && node.value > 0 && node.children.length || 0;
       if (n > 0) {
         for(i = 0; i < n; i++) {
           if (node.children[i].value > 0) {
@@ -371,7 +393,7 @@ define(function(require) {
 
     adj.el = function(el) {
       svgContainer = d3.select(el)
-        .classed("adjMatrix", true)
+        .classed("matrix", true)
         .append("svg")
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
@@ -381,6 +403,7 @@ define(function(require) {
       d3srcs = svg.append('g').attr('class', 'src');
       d3dests = svg.append('g').attr('class', 'dest');
       d3cells = svg.append('g').attr('class', 'cells');
+      d3lines = svg.append('g').attr('class', 'lines');
 
       return this;
     };

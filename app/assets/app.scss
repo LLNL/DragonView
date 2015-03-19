@@ -117,3 +117,13 @@ div {
     pointer-events: none;
   }
 }
+
+.matrix {
+  line {
+    fill: none;
+    stroke: lightgray;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+    opacity: 0.4;
+  }
+}
