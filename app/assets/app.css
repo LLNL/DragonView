@@ -38,7 +38,6 @@ div {
 .histogram {
   height: 150px; }
   .histogram .bar {
-    fill: steelblue;
     shape-rendering: crispEdges; }
   .histogram .bar text {
     fill: #fff; }
@@ -90,5 +89,3 @@ div {
   stroke-width: 1px;
   shape-rendering: crispEdges;
   opacity: 0.4; }
-
-/*# sourceMappingURL=app.css.map */

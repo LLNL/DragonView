@@ -8,7 +8,7 @@ define(function(require) {
     _ = require('underscore'),
     Radio = require('radio'),
     d3 = require('d3'),
-    Histogram = require('svg/histogram'),
+    Histogram = require('svg/histogram_g'),
     Slider = require('svg/slider'),
     d = require('data');
   ;
@@ -19,7 +19,7 @@ define(function(require) {
       run,
       format = d3.format('.2e');
 
-  var histogram = Histogram();
+  var histogram = Histogram().counter(defaultCounter);
   var slider = Slider();
 
   Radio.channel('data').on('change', function(data) {
@@ -39,25 +39,39 @@ define(function(require) {
       .text(function (d) { return d; });
 
     counters.property("value", defaultCounter);
+
+    var values = [];
+    run.links.forEach(function (link) {
+      if (link.counters) values.push(link);
+    });
+    histogram.data(values);
     selectCounter(defaultCounter);
 
     options.exit().remove();
   });
 
   function selectCounter(index) {
-    var values = [];
-    run.links.forEach(function (d) {
-      if (d.counters) values.push(d.counters[index]);
+    histogram.counter(index);
+
+    var min = Number.MAX_VALUE, max=0, value;
+    run.links.forEach(function(link) {
+      if (link.counters) {
+        value = link.counters[index];
+        if (value > 0) {
+          if (value < min) min = value;
+          else if (value > max) max = value;
+        }
+      }
     });
-    histogram.data(values);
-    slider.domain([d3.min(values), d3.max(values)]);
+
+    slider.domain([min,  max]);
     Radio.channel('counter').trigger('change', index);
   }
 
 
   function onZoom(from, to) {
     console.log('onZoom:',format(from), format(to));
-    histogram.xdomain(from,  to);
+    histogram.xdomain([from,  to]);
   }
 
   function onHighlight(from, to) {
