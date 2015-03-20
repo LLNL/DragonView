@@ -13,7 +13,7 @@ define(function(require) {
     var srcCluster = cluster('s');
     var destCluster = cluster('d');
 
-    var x = 30, dx = 5,y = 50, dy = 1;
+    var dx = 10, dy = 2;
 
     var d3srcs, d3dests, d3cells, d3lines;
     var data, range, counterId;
@@ -29,13 +29,7 @@ define(function(require) {
       k: '#404040'
     };
 
-    var colormap1 = {
-      g: '#4daf4a',
-      b: '#377eb8',
-      k: '#e41a1c'
-    };
-
-    function filter() {
+    function update() {
       var n, cellId;
       var value;
       var src, dest, cell;
@@ -45,14 +39,13 @@ define(function(require) {
       destCluster.clear();
       cells = d3.map();
       n = 0;
+
       data.links.forEach(function(link) {
         if (!link.counters) return;
         value = link.counters[counterId];
-        if (value < min) min = value;
+        if (value < min && value > 0) min = value;
         if (value > max) max = value;
         if (value >= range[0] && value <= range[1]) {
-          //if (value < min) min = value;
-          //if (value > max) max = value;
           n++;
 
           src = srcCluster.add(link.src, value);
@@ -75,13 +68,8 @@ define(function(require) {
       computeValue(srcCluster.root());
       computeValue(destCluster.root());
 
-      x = 10; dx = 10;
-      y = 70; dy = 2;
-      layoutSrc(srcCluster.root());
-
-      x = 50; dx = 2;
-      y = 30; dy = 10;
-      layoutDest(destCluster.root());
+      layout(srcCluster.root(), 10, 70, true);
+      layout(destCluster.root(), 28, 52, false);
 
       var node, nodes = [];
       for (node of srcCluster.nodes().values()) {
@@ -101,8 +89,7 @@ define(function(require) {
         .data(nodes,  function(d) {return d.id;});
 
       d3nodes.enter()
-        .append('rect')
-        .attr('fill', 'lightgray');
+        .append('rect');
 
       d3nodes
         .attr('x', function(d) { return d.x;} )
@@ -110,7 +97,7 @@ define(function(require) {
         .attr('width', function(d) { return d.width;})
         .attr('height', function(d) { return d.height;})
         .attr('fill', function(d) { return d.color || 'lightgray';})
-        .attr('opacity', function(d) { return 1; scale(d.value); });
+        .attr('opacity', function(d) { return scale(d.value); });
 
       d3nodes.exit()
         .remove();
@@ -179,51 +166,34 @@ define(function(require) {
       }
     }
 
-    function layoutSrc(node) {
-      node.x = x;
-      node.y = y;
+    function layout(node, x, y, horizontal) {
+      var x0 = x,  y0= y;
+      var i, n = node.open && node.value > 0 && node.children.length || 0;
 
       x += dx;
-      var i, n = node.open && node.value > 0 && node.children.length|| 0;
-
       if (n > 0) {
         for(i = 0; i < n; i++) {
           if (node.children[i].value > 0) {
-            layoutSrc(node.children[i]);
-            y += dy;
+            y = dy + layout(node.children[i], x,  y,  horizontal);
           }
         }
+        y -= dy;
       } else {
-        y += 4+dy;
+        y += 4;
       }
-      y -= dy;
-      node.width = dx-1;
-      node.height = y- node.y;
       x -= dx;
 
+      if (horizontal) assign(node, x0, y0, dx - 1, y - y0);
+      else  assign(node,  y0,  x0,  y-y0,  dx-1);
+
+      return y;
     }
 
-    function layoutDest(node) {
+    function assign(node, x, y, w, h) {
       node.x = x;
       node.y = y;
-
-      y += dy;
-      var i, n = node.open && node.value > 0 && node.children.length || 0;
-      if (n > 0) {
-        for(i = 0; i < n; i++) {
-          if (node.children[i].value > 0) {
-            layoutDest(node.children[i]);
-            x += dx;
-          }
-        }
-      } else {
-        x += 4 + dx;
-      }
-      x -= dx;
-      node.width = x-node.x;
-      node.height = dy -1;
-
-      y -= dy;
+      node.width = w;
+      node.height = h;
     }
 
     function computeValue(node) {
@@ -239,7 +209,7 @@ define(function(require) {
       return node.value;
     }
 
-    function filter1() {
+    function update1() {
       var cellId, n, i, y, x;
       var value, src, dest, srcId, destId, cell;
 
@@ -386,9 +356,6 @@ define(function(require) {
       d3nodes.exit().remove();
     }
 
-    function render() {
-    }
-
     var adj = function() {};
 
     adj.el = function(el) {
@@ -411,15 +378,13 @@ define(function(require) {
     adj.resize = function(w, h) {
       svgContainer.attr("width", w).attr("height", h);
       //layout.size(w, h);
-      render();
+      update();
       return this;
     };
 
     adj.data = function(_) {
       if (!arguments.length) return data;
       data = _;
-      //layout(data);
-      render();
       return this;
     };
 
@@ -429,15 +394,14 @@ define(function(require) {
       return this;
     };
 
-    adj.filter = function(_) {
+    adj.range = function(_) {
       if (!arguments.length) return range;
       range = _;
-      filter();
       return this;
     };
 
     adj.update = function() {
-      render();
+      update();
       return this;
     };
 

@@ -20,12 +20,12 @@ define(function(require) {
     });
 
     Radio.channel('counter').on('range', function (range) {
-      if (active) component.filter(range);
+      if (active) component.range(range).update();
       else _range = range;
     });
 
     Radio.channel('counter').on('change', function (index) {
-      if (active) component.counter(index);
+      if (active) component.counter(index).update();
       else _counter = index;
     });
 
@@ -41,9 +41,12 @@ define(function(require) {
 
       if (active != _) {
         active = _;
-        if (_data) component.data(_data).update();
-        if (_counter) component.counter(_counter);
-        if (_range) component.filter(_range);
+        if (_data) component.data(_data);
+        if (_counter != undefined) component.counter(_counter);
+        if (_range) component.range(_range);
+
+        if (_data || _counter != undefined || _range)
+          component.update();
 
         _data = _range = _counter = undefined;
       }

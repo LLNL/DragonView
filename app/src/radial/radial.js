@@ -58,8 +58,6 @@ define(function(require) {
       });
 
       console.log('links: ',links.length);
-      //var t1 = performance.now();
-      //console.log('filter: ',active.length, (t1-t0));
       d3connections = svg.select('.connections').selectAll('.connection')
         .data(bundle(links));
 
@@ -152,33 +150,34 @@ define(function(require) {
       data = _;
       layout(data);
       render();
-      return radial;
-    };
-
-    radial.counter = function(_) {
-      if (!arguments.length) return counterId;
-      counterId = _;
-      return radial;
-    };
-
-    radial.filter = function(_) {
-      if (!arguments.length) return range;
-      range = _;
-      if (data) filter();
-      return radial;
-    };
-
-    radial.update = function() {
-      render();
       return this;
     };
 
     radial.counter = function(_) {
       if (!arguments.length) return counterId;
       counterId = _;
-      if (data) filter();
-      return radial;
+      return this;
     };
+
+    radial.range = function(_) {
+      if (!arguments.length) return range;
+      range = _;
+      return this;
+    };
+
+    radial.counter = function(_) {
+      if (!arguments.length) return counterId;
+      counterId = _;
+      return this;
+    };
+
+    radial.filter = function() {
+      if (data)
+        filter();
+      return this;
+    };
+
+
 
     return radial;
   };
