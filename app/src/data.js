@@ -15,6 +15,8 @@ define(function(require) {
     this.nodes = new Map();
     this.counters = [];
     this.blues = new Map();
+    this.greens = new Map();
+    this.blacks = new Map();
     this.links = new Map();
   }
 
@@ -33,7 +35,7 @@ define(function(require) {
           var row = [];
           group.routers.push(row);
           for (c = 0; c < model.N_COLS; c++) {
-            var router = {id: model.router_id(g, r, c), r: r, c: c, port: new Array(40)};
+            var router = {id: model.router_id(g, r, c), r: r, c: c /*, port: new Array(40)*/};
             row.push(router);
             run.routers[router.id] = router;
           }
@@ -77,6 +79,9 @@ define(function(require) {
           counters: values
         };
         if (color == 'b') run.blues.set(link.id, link);
+        else if (color == 'g') run.greens.set(link.id, link);
+        else run.blacks.set(link.id, link);
+
         run.links.set(link.id, link);
         link = run.links.set(id, link);
       }

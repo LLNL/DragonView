@@ -6,7 +6,7 @@ define(function(require) {
   var Radio = require('radio');
   var $ = require('jquery');
   var _ = require('underscore');
-  //var Resize = require('resize');
+  var Resize = require('resize');
 
   return function() {
     var radial;
@@ -30,11 +30,20 @@ define(function(require) {
     });
 
     radial = Radial().el('#radial')
-      .counter(0);
+      .counter(0)
+      .resize(600, 600);
 
-    //this.$el.detectResizing({onResize: this.onResize});
+    $('#radial').detectResizing({onResize: onResize});
 
-    var view = function () {}
+    function onResize() {
+      //var e = d3.select('#radial');
+      //console.log('radial:',e);
+      var e1 = $('#radial');
+      //console.log('$:', e1.width(), e1.height());
+      radial.resize(e1.width(), e1.height());
+    }
+
+    var view = function () {};
 
     view.active = function (_) {
       if (!arguments.length) return active;
@@ -54,9 +63,7 @@ define(function(require) {
       return this;
     };
 
-    view.onResize = function () {
-      console.log('on resize');
-    };
+
 
     return view;
   }

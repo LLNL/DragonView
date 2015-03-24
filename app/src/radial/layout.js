@@ -5,8 +5,8 @@ define(function(require) {
 
   return function() {
     var parms = {
-        width: 1000,
-        height: 1000,
+        width: 600,
+        height: 600,
         outerRadius: 500,
         innerRadius: 400,
         connectorsRadius: 300,
@@ -23,6 +23,30 @@ define(function(require) {
         connectorSpacing: 0
       };
 
+
+    function layoutRouters(group) {
+      var nrows = group.routers.length;
+      var ncols = group.routers[0].length;
+      var r=-1, c=-1;
+      var dr = (parms.outerRadius - parms.innerRadius)/(nrows+1);
+      var da = (group.endAngle - group.startAngle)/(ncols+1);
+      var router, row;
+      var radius = parms.innerRadius, angle;
+
+      while(++r < nrows) {
+        row = group.routers[r];
+        radius += dr;
+        angle = group.startAngle+da;
+        c = -1;
+        while (++c < ncols) {
+          router = row[c];
+          router.radius = radius;
+          router.angle = angle;
+          //console.log('router ',router.id, router);
+          angle += da;
+        }
+      }
+    }
 
     function layoutGroups(groups) {
       var ng, total,
@@ -41,6 +65,8 @@ define(function(require) {
       groups.forEach(function(group) {
         group.startAngle = angle;
         group.endAngle = angle + group.len * da;
+
+        layoutRouters(group);
 
         angle = group.endAngle + angleBetweenGroups;
       });
@@ -76,7 +102,7 @@ define(function(require) {
         for (var c=0; c<ncols; c++) {
           var col = {id: group.id+':'+c, parent: node, children: []};
           for (var r=0; r<nrows; r++) {
-            var router = {id: group.id+':'+c+':'+r, parent: col};
+            var router = {id: group.id+':'+r+':'+c, parent: col};
             col.children.push(router);
             run.blueRoutes.nodes.push(router);
           }

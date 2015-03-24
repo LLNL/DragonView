@@ -5,6 +5,7 @@ define(function(require) {
 
   var d3 = require('d3');
   var Layout = require('radial/layout');
+  var model = require('model');
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
@@ -28,7 +29,7 @@ define(function(require) {
       .interpolate("bundle")
       .tension(.2)
       .radius(function(d) { return d.r; })
-      .angle(function(d) { return d.angle-Math.PI/2; });
+      .angle(function(d) { return d.angle; });
 
 
     function find(key) {
@@ -43,32 +44,82 @@ define(function(require) {
       return undefined;
     }
 
+
     function filter() {
+      var routers = new Map();
+      filterBlues(routers);
+      filterGreens(routers);
+
+      // nodes
+      var nodes = [];
+      for (var node of routers.values()) {
+        nodes.push(node);
+      }
+
+      var d3routers = svg.select('.routers').selectAll('.router')
+        .data(nodes, function(d) { return d.id;});
+
+      d3routers.enter()
+        .call(Router);
+
+      d3routers.exit()
+        .remove();
+    }
+
+    function filterBlues(routers) {
       var links = [], value;
 
       data.blues.forEach(function(l) {
-        if (l.counters) {
+        //if (l.counters) {
           value = l.counters[counterId];
           if (range[0] <= value && value <= range[1]) {
             l.source = find(l.src);
             l.target = find(l.dest);
             links.push(l);
+
+            var sid = model.router_id(l.src);
+            routers.set(sid, data.routers[sid]);
+            var did = model.router_id(l.dest);
+            routers.set(did, data.routers[did]);
           }
-        }
+        //}
       });
 
-      console.log('links: ',links.length);
+      //console.log('links: ',links.length);
       d3connections = svg.select('.connections').selectAll('.connection')
         .data(bundle(links));
 
       d3connections.enter()
         .call(Connection);
 
+      d3connections
+        .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
+        .attr("d", line);
+
       d3connections.exit().remove();
+    }
+
+    function filterGreens(routers) {
+      var links = [], value;
+      data.greens.forEach(function(l) {
+        value = l.counters[counterId];
+        if (range[0] <= value && value <= range[1]) {
+          links.push(l);
+          var sid = model.router_id(l.src);
+          routers.set(sid, data.routers[sid]);
+          var did = model.router_id(l.dest);
+          routers.set(did, data.routers[did]);
+        }
+      });
     }
 
     function render() {
       if (!data) return;
+
+      d3.svg.arc()
+        .innerRadius(opt.innerRadius)
+        .outerRadius(opt.outerRadius)
+        .cornerRadius(0);
 
       // Groups
       d3groups = svg.select('.groups').selectAll('.group')
@@ -99,6 +150,16 @@ define(function(require) {
       return selection;
     }
 
+    function Router(selection) {
+      var g = this.append('g')
+        .attr('class', 'router')
+        .append('circle')
+        .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
+        .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);})
+        .attr('r', 2)
+        .attr('fill', '#888888');
+
+    }
     function Connector(selection) {
       var c = this.append('g')
         .attr('class', 'connector');
@@ -111,7 +172,7 @@ define(function(require) {
 
     function Connection(selection) {
        this.append("path")
-          .each(function(d) { d.source = d[0], d.target = d[d.length - 1];})
+          .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
           .attr("class", "connection")
           .attr("d", line);
     }
@@ -132,6 +193,7 @@ define(function(require) {
         .attr('transform', 'translate('+WIDTH/2+','+HEIGHT/2+')');
 
       svg.append('g').attr('class', 'groups');
+      svg.append('g').attr('class', 'routers');
       svg.append('g').attr('class', 'connectors');
       svg.append('g').attr('class', 'connections');
 
@@ -140,7 +202,7 @@ define(function(require) {
 
     radial.resize = function(w, h) {
       svgContainer.attr("width", w).attr("height", h);
-      layout.size(w, h);
+      layout.size([w, h]);
       render();
       return this;
     };
