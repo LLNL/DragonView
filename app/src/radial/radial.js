@@ -69,20 +69,16 @@ define(function(require) {
     function filterBlues(routers) {
       var links = [], value;
 
-      data.blues.forEach(function(l) {
-        //if (l.counters) {
-          value = l.counters[counterId];
-          if (range[0] <= value && value <= range[1]) {
-            l.source = find(l.src);
-            l.target = find(l.dest);
-            links.push(l);
+      data.blues.forEach(function(link) {
+        value = link.counters[counterId];
+        if (range[0] <= value && value <= range[1]) {
+          link.source = find(link.srcId);
+          link.target = find(link.destId);
+          links.push(link);
 
-            var sid = model.router_id(l.src);
-            routers.set(sid, data.routers[sid]);
-            var did = model.router_id(l.dest);
-            routers.set(did, data.routers[did]);
-          }
-        //}
+          routers.set(link.src.id, link.src);
+          routers.set(link.dest.id, link.dest);
+        }
       });
 
       //console.log('links: ',links.length);
@@ -101,14 +97,12 @@ define(function(require) {
 
     function filterGreens(routers) {
       var links = [], value;
-      data.greens.forEach(function(l) {
-        value = l.counters[counterId];
+      data.greens.forEach(function(link) {
+        value = link.counters[counterId];
         if (range[0] <= value && value <= range[1]) {
-          links.push(l);
-          var sid = model.router_id(l.src);
-          routers.set(sid, data.routers[sid]);
-          var did = model.router_id(l.dest);
-          routers.set(did, data.routers[did]);
+          links.push(link);
+          routers.set(link.src.id, link.src);
+          routers.set(link.dest.id, link.dest);
         }
       });
     }

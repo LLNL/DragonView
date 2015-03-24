@@ -14,13 +14,13 @@ define(function(require) {
   var current  = views[0];
 
   function select(item) {
-    var selected = item.id || this.value;
+    var selected = item || this.value;
     current = selected;
     d3.selectAll('.view')
-      .style('display', function(d) { return d.id == selected ? 'block' : 'none'; });
+      .style('display', function(d) { return d.id == selected.id ? 'block' : 'none'; });
 
     views.forEach(function(v) {
-      var active = v.id == selected;
+      var active = v.id == selected.id;
       if (active) {
         v.view = v.view || v.factory();
         v.view.active(true);
@@ -51,10 +51,9 @@ define(function(require) {
     i.append('input')
         .attr('type', 'radio')
         .attr('name', 'view')
-        .attr('value', function(d) {
-        return d.id;})
+        .attr('value', function(d) {return d.id;})
         .on('change', select)
-        .property('checked', function(d) { return this.value == current;});
+        .property('checked', function(d) { return this.value == current.id;});
 
     i.append('label')
      .text(function(d) { return d.id;})

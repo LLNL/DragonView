@@ -4,26 +4,48 @@
 
 define(function(require) {
   var
-    $ = require('jquery'),
     _ = require('underscore'),
+    $ = require('jquery'),
     Radio = require('radio'),
     d3 = require('d3'),
     Histogram = require('svg/histogram_g'),
-    Slider = require('svg/slider'),
-    d = require('data');
-  ;
+    Slider = require('svg/slider');
+    //d = require('data');
 
   var width = 200, height,
       svg, header,
       defaultCounter = 0,
       run,
-      format = d3.format('.2e');
+      knownRuns = [' ', 'other'],
+      format = d3.format('.1e');
 
   var histogram = Histogram().counter(defaultCounter);
   var slider = Slider();
 
   Radio.channel('data').on('change', function(data) {
     run = data;
+
+    var sim = d3.select('#run')
+      .on('change', function() {
+        selectRun(this.value);
+      });
+
+    sim.selectAll('option')
+      .data(knownRuns)
+      .enter()
+        .append('option')
+        .attr('value', function (d, i) { return i; })
+        .text(function (d) { return d; });
+
+    d3.select("#file")
+      .on('change', function() {
+        console.log('load file ',' args:', arguments);
+      });
+
+    d3.select("#file")
+      .on('input', function(name) {
+        console.log('input file ',name,' args:', arguments);
+      });
 
     var counters = d3.select('#counter')
       .on('change', function () {
@@ -50,6 +72,17 @@ define(function(require) {
     options.exit().remove();
   });
 
+  function selectRun(index) {
+    if (knownRuns[index] == 'other') {
+      document.getElementById('file').click();
+      //$("#file").trigger("click");
+      //var elem = d3.select('#file');
+      //elem.on('click').call(elem.node(), elem.datum());
+    } else {
+      console.log('select run', index);
+    }
+  }
+
   function selectCounter(index) {
     histogram.counter(index);
 
@@ -70,12 +103,12 @@ define(function(require) {
 
 
   function onZoom(from, to) {
-    console.log('onZoom:',format(from), format(to));
+    //console.log('onZoom:',format(from), format(to));
     histogram.xdomain([from,  to]);
   }
 
   function onHighlight(from, to) {
-    console.log('highlight:', format(from),  format(to));
+    //console.log('highlight:', format(from),  format(to));
     Radio.channel('counter').trigger('range', [from, to]);
   }
 

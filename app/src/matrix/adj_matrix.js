@@ -48,8 +48,8 @@ define(function(require) {
         if (value >= range[0] && value <= range[1]) {
           n++;
 
-          src = srcCluster.add(link.src, value);
-          dest = destCluster.add(link.dest, value);
+          src = srcCluster.add(link.srcId, value);
+          dest = destCluster.add(link.destId, value);
 
           cellId = src.id + ':' + dest.id;
           cell = cells.get(cellId);

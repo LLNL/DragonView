@@ -3,10 +3,10 @@
  */
 define(function(require) {
   var Radial = require('radial/radial');
-  var Radio = require('radio');
-  var $ = require('jquery');
   var _ = require('underscore');
+  var $ = require('jquery');
   var Resize = require('resize');
+  var Radio = require('radio');
 
   return function() {
     var radial;

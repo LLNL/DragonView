@@ -3,7 +3,6 @@
  */
 define(function(require) {
 
-  console.log('model 1');
   var N_GROUPS = 16, N_ROWS = 6, N_COLS = 16, N_PORTS = 40;
   return {
     N_GROUPS: N_GROUPS,

@@ -3,7 +3,6 @@
  */
 define(function(require) {
 
-  console.log('data 1');
   var model = require('model');
   var d3 = require('d3');
   var queue = require('d3_queue');
@@ -74,8 +73,10 @@ define(function(require) {
         link = {
           id: id,
           color: color,
-          src: {g: sg, r: sr, c: sc},
-          dest: {g: dg, r: dr, c: dc},
+          srcId: {g: sg, r: sr, c: sc},
+          src: run.routers[model.router_id(sg, sr, sc)],
+          destId: {g: dg, r: dr, c: dc},
+          dest: run.routers[model.router_id(dg, dr, dc)],
           counters: values
         };
         if (color == 'b') run.blues.set(link.id, link);
