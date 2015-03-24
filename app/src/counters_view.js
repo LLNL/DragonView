@@ -37,15 +37,11 @@ define(function(require) {
         .attr('value', function (d, i) { return i; })
         .text(function (d) { return d; });
 
-    d3.select("#file")
+    d3.select("#hidden-file-load")
       .on('change', function() {
-        console.log('load file ',' args:', arguments);
+        console.log('load file args:', arguments);
       });
 
-    d3.select("#file")
-      .on('input', function(name) {
-        console.log('input file ',name,' args:', arguments);
-      });
 
     var counters = d3.select('#counter')
       .on('change', function () {
@@ -74,8 +70,9 @@ define(function(require) {
 
   function selectRun(index) {
     if (knownRuns[index] == 'other') {
-      document.getElementById('file').click();
-      //$("#file").trigger("click");
+      document.getElementById('hidden-file-load').dispatchEvent(new Event('click'))
+      //elem.click();
+      //$("#hidden-file-load").;
       //var elem = d3.select('#file');
       //elem.on('click').call(elem.node(), elem.datum());
     } else {
