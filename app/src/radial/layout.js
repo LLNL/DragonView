@@ -42,7 +42,6 @@ define(function(require) {
           router = row[c];
           router.radius = radius;
           router.angle = angle;
-          //console.log('router ',router.id, router);
           angle += da;
         }
       }

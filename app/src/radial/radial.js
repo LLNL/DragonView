@@ -116,7 +116,7 @@ define(function(require) {
     function render() {
       if (!data) return;
 
-      d3.svg.arc()
+      group_arc = d3.svg.arc()
         .innerRadius(opt.innerRadius)
         .outerRadius(opt.outerRadius)
         .cornerRadius(0);
@@ -127,6 +127,8 @@ define(function(require) {
 
       d3groups.enter()
         .call(Group);
+
+      d3groups.selectAll('path').attr('d', group_arc);
 
       //Connectors
       //d3connectors = svg.select('.connectors').selectAll('.connector')
@@ -202,7 +204,10 @@ define(function(require) {
 
     radial.resize = function(w, h) {
       svgContainer.attr("width", w).attr("height", h);
+      var r = Math.min(w,h)/2;
+      svg.attr('transform', 'translate('+r+','+r+')');
       layout.size([w, h]);
+      if (data) layout(data);
       render();
       return this;
     };
