@@ -12,12 +12,16 @@
 
 <body class="page">
 
+<div class="title">Dragonfly</div>
 <div id="controls" class="controls">
-
-    <input type="file" id="hidden-file-load" >
-    <div>Run: <select id="run"></select></div>
-    <div>Counter: <select id="counter"></select></div>
-    <svg id="info"></svg>
+    <input type="file" id="hidden-file-load" style="display:none">
+    <table>
+      <tbody>
+        <tr><td>Run:</td><td><select id="run"></select></td></tr>
+        <tr><td>Counter:</td><td><select id="counter"></select></td></tr>
+      </tbody>
+   </table>
+    <svg id="info" class="info"></svg>
     <span>Views:</span><br>
     <div id="viewSelectors"></div>
 </div>

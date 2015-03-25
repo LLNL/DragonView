@@ -16,26 +16,34 @@ define(function(require) {
       svg, header,
       defaultCounter = 0,
       run,
-      knownRuns = [' ', 'other'],
+      knownRuns = [],
       format = d3.format('.1e');
+
 
   var histogram = Histogram().counter(defaultCounter);
   var slider = Slider();
 
-  Radio.channel('data').on('change', function(data) {
-    run = data;
+  var sim = d3.select('#run')
+    .on('change', function() {
+      selectRun(this.value);
+    });
 
-    var sim = d3.select('#run')
-      .on('change', function() {
-        selectRun(this.value);
-      });
+  var counters = d3.select('#counter')
+    .on('change', function () {
+      selectCounter(this.value);
+    });
 
-    sim.selectAll('option')
-      .data(knownRuns)
-      .enter()
+  Radio.channel('data').on('runsList', updateRunList);
+  Radio.channel('data').on('run', newData);
+
+  function updateRunList(list) {
+    knownRuns = list;
+    var options = sim.selectAll('option')
+          .data(knownRuns, function(d) { return d.name;});
+    options.enter()
         .append('option')
-        .attr('value', function (d, i) { return i; })
-        .text(function (d) { return d; });
+          .attr('value', function (d, i) { return i; })
+          .text(function (d) { return d.name; });
 
     d3.select("#hidden-file-load")
       .on('change', function() {
@@ -51,44 +59,43 @@ define(function(require) {
         }
       });
 
+    if (!run && list.length > 0) dataService.load(list[0].name);
+  }
 
-    var counters = d3.select('#counter')
-      .on('change', function () {
-        selectCounter(this.value);
-      });
+  function selectRun(index) {
+    if (knownRuns[index].name == 'other') {
+      document.getElementById('hidden-file-load').dispatchEvent(new Event('click'))
+    } else {
+      dataService.load(knownRuns[index].name);
+    }
+  }
+
+  function newData(data) {
+    run = data;
 
     var options = counters.selectAll('option')
       .data(run.countersNames);
 
-    options.enter()
-      .append('option');
+    options.enter().append('option');
 
     options
       .attr('value', function (d, i) { return i; })
       .text(function (d) { return d; });
 
     options.exit().remove();
+
     counters.property("value", defaultCounter);
 
     var values = [];
     run.links.forEach(function (link) {
       values.push(link);
     });
+
     histogram.data(values);
     selectCounter(defaultCounter);
-  });
-
-  function selectRun(index) {
-    if (knownRuns[index] == 'other') {
-      document.getElementById('hidden-file-load').dispatchEvent(new Event('click'))
-    } else {
-      console.log('select run', index);
-    }
   }
 
   function selectCounter(index) {
-    histogram.counter(index);
-
     var min = Number.MAX_VALUE, max=0, value;
     run.links.forEach(function(link) {
       value = link.counters[index];
@@ -98,6 +105,7 @@ define(function(require) {
       }
     });
 
+    histogram.counter(index).range([min,  max]);
     slider.domain([min,  max]);
     Radio.channel('counter').trigger('change', index);
   }

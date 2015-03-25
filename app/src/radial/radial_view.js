@@ -14,7 +14,7 @@ define(function(require) {
 
     //_.bindAll(this, 'onResize');
 
-    Radio.channel('data').on('change', function (data) {
+    Radio.channel('data').on('run', function (data) {
       if (active) radial.data(data);
       else _data = data;
     });

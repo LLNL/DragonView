@@ -19,7 +19,7 @@ define(function(require) {
       countersView = CountersView();
       controlsView = ControlsView();
 
-      dataService.load('data/net_counters.csv');
+      dataService.start();
       return app;
     };
 

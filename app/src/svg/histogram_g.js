@@ -170,44 +170,43 @@ define(function(require) {
 
     api.data = function(series, domain) {
       _series = series;
+      return this;
+    };
 
-      if (!domain) {
-        var i = 0, n=_series.length;
-        var min = Number.MAX_VALUE, max=0, value;
-        if (n > 0) min = max = valueAccessor(_series[0]);
-        while (++i < n) {
-          value = valueAccessor(_series[i]);
-          if (value > 0) {
-            if (value < min) min = value;
-            else if (value > max) max = value;
-          }
-        }
-        domain = [min, max];
-      }
-      x.domain(domain);
+    api.range = function(range) {
+      var save=duration; duration = 0;
+
+      if (range[0] > 1000)
+        xAxis.tickFormat(d3.format('.01e'));
+      else
+        xAxis.tickFormat(d3.format('g'));
+
+      //if (!domain) {
+      //  var i = 0, n=_series.length;
+      //  var min = Number.MAX_VALUE, max=0, value;
+      //  if (n > 0) min = max = valueAccessor(_series[0]);
+      //  while (++i < n) {
+      //    value = valueAccessor(_series[i]);
+      //    if (value > 0) {
+      //      if (value < min) min = value;
+      //      else if (value > max) max = value;
+      //    }
+      //  }
+      //  domain = [min, max];
+      //}
+      x.domain(range);
 
       histogram = d3.layout.histogram()
-          .range(x.domain())
-          .value(valueAccessor)
-          .bins(20)
-        (_series);
+        .range(x.domain())
+        .value(valueAccessor)
+        .bins(20)
+      (_series);
 
       dx =  histogram.length > 1 ? x(histogram[1].x) - x(histogram[0].x)-1 : 5;
 
       y.domain([0, d3.max(histogram,  function(d) { return d.y;})]);
       draw();
 
-      return this;
-    };
-
-    api.xdomain = function(d) {
-      var save=duration; duration = 0;
-
-      if (d[0] > 1000)
-        xAxis.tickFormat(d3.format('.02e'));
-      else
-        xAxis.tickFormat(d3.format('g'));
-      api.data(_series, d);
       svg.select('.brush').call(brush);
       brush.event(svg.select('.brush'));
 

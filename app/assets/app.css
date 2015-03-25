@@ -14,12 +14,22 @@ div {
   left: 0px;
   right: 0px; }
 
+.title {
+  font: 20px arial;
+  height: 50px; }
+
 .controls {
-  position: fixed;
   top: 10px;
   left: 5px;
   width: 200px;
-  font: 10px sans-serif; }
+  font: 12px sans-serif; }
+
+.ctrl-label {
+  width: 50px; }
+
+.info {
+  margin-left: 10px;
+  margin-top: 10px; }
 
 .counter {
   width: 200px;
@@ -29,7 +39,7 @@ div {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 200px;
+  left: 250px;
   right: 0; }
 
 .view {
