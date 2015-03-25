@@ -17,8 +17,8 @@ div {
 }
 
 .title {
-  font: 20px arial; 
-  height: 50px;
+  font: 20px arial;
+//  height: 50px;
 }
 
 .controls {
@@ -28,16 +28,59 @@ div {
   width: 200px;
 
   font: 12px sans-serif;
+
+  ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  ul li {
+    padding-left: 15px;
+    padding-top: 10px;
+  }
+
+  .li-title {
+    font-size: 11pt;
+    font-style: italic;
+//    font-weight: bold;
+  }
+
+  .li-body {
+    margin-left: 10px;
+  }
+
+
+  .jobs {
+    //  background-color: #f0f0f0;
+    border-collapse: collapse;
+    border-width: 2px;
+    width: 100px;
+
+    th {
+      border-bottom: solid thin;
+    }
+
+    td, th {
+      padding: 0.25rem;
+    }
+
+    td.text-col, th.text-col {
+      text-align: left;
+    }
+
+    td.number-col, th.number-col {
+      text-align: right;
+    }
+  }
 }
 
-.ctrl-label {
-  width: 50px;
-}
 
 .info {
   margin-left: 10px;
   margin-top: 10px;
 }
+
 
 .counter {
   width: 200px;

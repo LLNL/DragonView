@@ -76,4 +76,4 @@
     return this;
   };
 
-})(jQuery, window, document);
+})($, window, document);

@@ -15,17 +15,37 @@ div {
   right: 0px; }
 
 .title {
-  font: 20px arial;
-  height: 50px; }
+  font: 20px arial; }
 
 .controls {
   top: 10px;
   left: 5px;
   width: 200px;
   font: 12px sans-serif; }
-
-.ctrl-label {
-  width: 50px; }
+  .controls ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px; }
+  .controls ul li {
+    padding-left: 15px;
+    padding-top: 10px; }
+  .controls .li-title {
+    font-size: 11pt;
+    font-style: italic; }
+  .controls .li-body {
+    margin-left: 10px; }
+  .controls .jobs {
+    border-collapse: collapse;
+    border-width: 2px;
+    width: 100px; }
+    .controls .jobs th {
+      border-bottom: solid thin; }
+    .controls .jobs td, .controls .jobs th {
+      padding: 0.25rem; }
+    .controls .jobs td.text-col, .controls .jobs th.text-col {
+      text-align: left; }
+    .controls .jobs td.number-col, .controls .jobs th.number-col {
+      text-align: right; }
 
 .info {
   margin-left: 10px;

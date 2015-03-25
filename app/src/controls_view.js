@@ -59,12 +59,7 @@ define(function(require) {
      .text(function(d) { return d.id;})
      .append('br');
 
-    //d3.selectAll('input[name="view"]')
-    //  .on('change', select)
-    //  .property('checked', function(d) { return this.value == current;});
-
     select(current);
-
   };
 
   return view;

@@ -10,6 +10,8 @@ define(function(require) {
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
         INNER_RADIUS = 400, GROUP_HEIGHT = 100;
+    var MULTI_JOBS_COLOR = '#808080';
+    var UNKNOWN_JOB_COLOR = '#ffffff';
 
     var layout = Layout().size([WIDTH, HEIGHT]),
         opt = layout.parms(),
@@ -18,6 +20,7 @@ define(function(require) {
     var range, counterId;
     var data, groups, connectors, connections;
     var d3groups, d3connectors, d3connections;
+
 
     var group_arc = d3.svg.arc()
       .innerRadius(opt.innerRadius)
@@ -51,20 +54,7 @@ define(function(require) {
       filterGreens(routers);
       filterBlacks(routers);
 
-      // nodes
-      var nodes = [];
-      for (var node of routers.values()) {
-        nodes.push(node);
-      }
-
-      var d3routers = svg.select('.routers').selectAll('.router')
-        .data(nodes, function(d) { return d.id;});
-
-      d3routers.enter()
-        .call(Router);
-
-      d3routers.exit()
-        .remove();
+      renderRouters(routers);
     }
 
     function filterBlues(routers) {
@@ -120,6 +110,35 @@ define(function(require) {
       });
     }
 
+    function renderRouters(routers) {
+      var list = [], router, jid, i, id, jobs;
+      for (router of routers.values()) {
+        list.push(router);
+        if (!router.color) {
+          jobs = [];
+          for (i = 0; i<4; i++) {
+            id = router.jobs[i];
+            if (jobs.indexOf(id) == -1) jobs.push(id);
+          }
+          if (jobs.length == 1) router.color = data.job_colors.get(jobs[0]);
+          else router.color = MULTI_JOBS_COLOR;
+
+          if (!router.color) {
+            router.color = UNKNOWN_JOB_COLOR;
+          }
+        }
+      }
+
+      var d3routers = svg.select('.routers').selectAll('.router')
+        .data(list, function(d) { return d.id;});
+
+      d3routers.enter()
+        .call(Router);
+
+      d3routers.exit()
+        .remove();
+    }
+
     function render() {
       if (!data) return;
 
@@ -166,7 +185,7 @@ define(function(require) {
         .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);})
         .attr('r', 2)
-        .attr('fill', '#888888');
+        .attr('fill', function(d) { return d.color; });
 
     }
     function Connector(selection) {

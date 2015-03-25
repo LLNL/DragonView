@@ -62,8 +62,8 @@ define(function(require) {
       });
 
       scale.domain([min,  max]);
-      console.log('range: ', min, max);
-      console.log('links: ',n);
+      //console.log('range: ', min, max);
+      //console.log('links: ',n);
 
       computeValue(srcCluster.root());
       computeValue(destCluster.root());

@@ -181,19 +181,6 @@ define(function(require) {
       else
         xAxis.tickFormat(d3.format('g'));
 
-      //if (!domain) {
-      //  var i = 0, n=_series.length;
-      //  var min = Number.MAX_VALUE, max=0, value;
-      //  if (n > 0) min = max = valueAccessor(_series[0]);
-      //  while (++i < n) {
-      //    value = valueAccessor(_series[i]);
-      //    if (value > 0) {
-      //      if (value < min) min = value;
-      //      else if (value > max) max = value;
-      //    }
-      //  }
-      //  domain = [min, max];
-      //}
       x.domain(range);
 
       histogram = d3.layout.histogram()

@@ -15,15 +15,35 @@
 <div class="title">Dragonfly</div>
 <div id="controls" class="controls">
     <input type="file" id="hidden-file-load" style="display:none">
-    <table>
-      <tbody>
-        <tr><td>Run:</td><td><select id="run"></select></td></tr>
-        <tr><td>Counter:</td><td><select id="counter"></select></td></tr>
-      </tbody>
-   </table>
-    <svg id="info" class="info"></svg>
-    <span>Views:</span><br>
-    <div id="viewSelectors"></div>
+  <ul>
+    <li>
+      <table>
+        <tbody>
+          <tr><td>Run:</td><td><select id="run"></select></td></tr>
+          <tr><td>Counter:</td><td><select id="counter"></select></td></tr>
+        </tbody>
+     </table>
+    </li>
+
+    <li>
+      <svg id="info" class="info"></svg>
+    </li>
+
+    <li>
+      <span class="li-title">Jobs</span>
+      <table id="jobs" class="jobs li-body">
+        <thead>
+          <tr><th>id</th><th>size</th><th>color</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </li>
+
+    <li>
+      <span class="li-title">Views:</span><br>
+      <div id="viewSelectors" class="li-body"></div>
+    </li>
+  </ul>
 </div>
 
 <div id="views" class="views"></div>

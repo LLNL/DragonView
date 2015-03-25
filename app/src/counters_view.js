@@ -73,6 +73,7 @@ define(function(require) {
   function newData(data) {
     run = data;
 
+    /* list of counters */
     var options = counters.selectAll('option')
       .data(run.countersNames);
 

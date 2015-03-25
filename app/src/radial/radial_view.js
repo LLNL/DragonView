@@ -12,10 +12,8 @@ define(function(require) {
     var radial;
     var active = true, _data, _range, _counter;
 
-    //_.bindAll(this, 'onResize');
-
     Radio.channel('data').on('run', function (data) {
-      if (active) radial.data(data);
+      if (active) radial.data(data).filter();
       else _data = data;
     });
 

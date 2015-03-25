@@ -10,17 +10,20 @@ define(function(require) {
 
   var runsInfo;
   var runs = d3.map();
+  var colors = d3.scale.category10();
 
   function createRun(name) {
     var run = {
       groups: [],
-      routers: {},
+      routers: new Map(),
       nodes: new Map(),
       counters: [],
       blues: new Map(),
       greens: new Map(),
       blacks: new Map(),
-      links: new Map()
+      links: new Map(),
+      jobs: d3.map(),
+      job_colors: new Map()
       };
 
     var g, r, c, node, rid = 0, cid = 0;
@@ -32,9 +35,13 @@ define(function(require) {
         var row = [];
         group.routers.push(row);
         for(c = 0; c < model.N_COLS; c++) {
-          var router = {id: model.router_id(g, r, c), r: r, c: c /*, port: new Array(40)*/};
+          var router = {
+            id: model.router_id(g, r, c),
+            g: g,  r:r,  c:c,
+            jobs:[undefined, undefined, undefined, undefined]
+          };
           row.push(router);
-          run.routers[router.id] = router;
+          run.routers.set(router.id, router);
         }
       }
     }
@@ -61,9 +68,44 @@ define(function(require) {
   }
 
   function loadJobs(data, run) {
-    data.forEach(function (node) {
-      node.id = model.node_id(node);
-      run.nodes.set(node.id, node);
+    var job;
+    data.forEach(function (item) {
+      if (!item.core || item.core == 0) {
+        item.g = +item.g;
+        item.r = +item.r;
+        item.c = +item.c;
+        item.n = +item.n;
+        item.jobid = +item.jobid;
+        item.id = model.node_id(item);
+        run.nodes.set(item.id, item);
+        run.routers.get(model.router_id(item)).jobs[item.n] = item.jobid;
+        job = run.jobs.get(item.jobid);
+        if (!job) {
+          job = {id: item.jobid, n:0};
+          run.jobs.set(item.jobid, job);
+        }
+        job.n++;
+      }
+    });
+
+    //run.routers.forEach(function(r) {
+    //  for (var i=0; i<4; i++)
+    //    if (r.jobs[i] != undefined)
+    //      return;
+    //  console.log('missing jobs: ', r);
+    //});
+
+    var jobs = run.jobs.values();
+    jobs.sort(function(a, b) {
+      return b.n - a.n;
+    });
+
+    var i=0;
+    jobs.forEach(function(job) {
+      job.color = colors(i);
+      run.job_colors.set(job.id, job.color);
+      console.log('color',job.id, job.n,  job.color);
+      if (i < 9) i++;
     });
   }
 
@@ -92,9 +134,9 @@ define(function(require) {
         id: id,
         color: color,
         srcId: {g: sg, r: sr, c: sc},
-        src: run.routers[model.router_id(sg, sr, sc)],
         destId: {g: dg, r: dr, c: dc},
-        dest: run.routers[model.router_id(dg, dr, dc)],
+        src: run.routers.get(model.router_id(sg, sr, sc)),
+        dest: run.routers.get(model.router_id(dg, dr, dc)),
         counters: values
       };
       if (!link.dest) {
