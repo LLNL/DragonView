@@ -11,7 +11,7 @@ define(function(require) {
 
   return function() {
     var radialView, countersView, controlsView;
-    var dataService = DataService();
+    var dataService = DataService;
 
     var app = function() {};
 
@@ -19,7 +19,7 @@ define(function(require) {
       countersView = CountersView();
       controlsView = ControlsView();
 
-      dataService.start();
+      dataService.load('data/net_counters.csv');
       return app;
     };
 

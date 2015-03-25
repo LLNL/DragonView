@@ -49,6 +49,7 @@ define(function(require) {
       var routers = new Map();
       filterBlues(routers);
       filterGreens(routers);
+      filterBlacks(routers);
 
       // nodes
       var nodes = [];
@@ -98,6 +99,18 @@ define(function(require) {
     function filterGreens(routers) {
       var links = [], value;
       data.greens.forEach(function(link) {
+        value = link.counters[counterId];
+        if (range[0] <= value && value <= range[1]) {
+          links.push(link);
+          routers.set(link.src.id, link.src);
+          routers.set(link.dest.id, link.dest);
+        }
+      });
+    }
+
+    function filterBlacks(routers) {
+      var links = [], value;
+      data.blacks.forEach(function(link) {
         value = link.counters[counterId];
         if (range[0] <= value && value <= range[1]) {
           links.push(link);
@@ -233,7 +246,7 @@ define(function(require) {
     };
 
     radial.filter = function() {
-      if (data)
+      if (data && range)
         filter();
       return this;
     };

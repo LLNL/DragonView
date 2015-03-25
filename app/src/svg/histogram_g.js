@@ -172,8 +172,9 @@ define(function(require) {
       _series = series;
 
       if (!domain) {
-        var i = -1, n=_series.length;
+        var i = 0, n=_series.length;
         var min = Number.MAX_VALUE, max=0, value;
+        if (n > 0) min = max = valueAccessor(_series[0]);
         while (++i < n) {
           value = valueAccessor(_series[i]);
           if (value > 0) {

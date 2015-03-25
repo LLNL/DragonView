@@ -19,13 +19,13 @@ define(function(require) {
     this.links = new Map();
   }
 
-  return function () {
+  //return function () {
 
     function init(run) {
       var g, r, c, node, rid = 0, cid = 0;
 
       for (g = 0; g < model.N_GROUPS; g++) {
-        if (g == 12) continue;
+        //if (g == 12) continue;
 
         var group = {id: g, routers: [], mode: 'full'};
         run.groups.push(group);
@@ -79,6 +79,9 @@ define(function(require) {
           dest: run.routers[model.router_id(dg, dr, dc)],
           counters: values
         };
+        if (!link.dest) {
+          console.log('link error: ', link);
+        }
         if (color == 'b') run.blues.set(link.id, link);
         else if (color == 'g') run.greens.set(link.id, link);
         else run.blacks.set(link.id, link);
@@ -91,10 +94,10 @@ define(function(require) {
     var service = function () {
     };
 
-    service.start = function () {
+    service.load = function (url) {
       queue()
         .defer(d3.csv, 'data/jobs.csv')
-        .defer(d3.text, 'data/net_counters.csv')
+        .defer(d3.text, url)
         .await(function (error, jobs, counters) {
           if (error) {
             console.log("Error loading data", error);
@@ -112,6 +115,6 @@ define(function(require) {
     };
 
     return service;
-  }
+  //}
 
 });

@@ -9,8 +9,8 @@ define(function(require) {
     Radio = require('radio'),
     d3 = require('d3'),
     Histogram = require('svg/histogram_g'),
-    Slider = require('svg/slider');
-    //d = require('data');
+    Slider = require('svg/slider'),
+    dataService = require('data');
 
   var width = 200, height,
       svg, header,
@@ -39,7 +39,16 @@ define(function(require) {
 
     d3.select("#hidden-file-load")
       .on('change', function() {
-        console.log('load file args:', arguments);
+        var file = this.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onloadend = function (evt) {
+            var dataURL = evt.target.result;
+            // The following call results in an "Access denied" error in IE.
+            dataService.load(dataURL);
+          };
+          reader.readAsDataURL(file);
+        }
       });
 
 
@@ -52,29 +61,26 @@ define(function(require) {
       .data(run.countersNames);
 
     options.enter()
-      .append('option')
+      .append('option');
+
+    options
       .attr('value', function (d, i) { return i; })
       .text(function (d) { return d; });
 
+    options.exit().remove();
     counters.property("value", defaultCounter);
 
     var values = [];
     run.links.forEach(function (link) {
-      if (link.counters) values.push(link);
+      values.push(link);
     });
     histogram.data(values);
     selectCounter(defaultCounter);
-
-    options.exit().remove();
   });
 
   function selectRun(index) {
     if (knownRuns[index] == 'other') {
       document.getElementById('hidden-file-load').dispatchEvent(new Event('click'))
-      //elem.click();
-      //$("#hidden-file-load").;
-      //var elem = d3.select('#file');
-      //elem.on('click').call(elem.node(), elem.datum());
     } else {
       console.log('select run', index);
     }
@@ -85,12 +91,10 @@ define(function(require) {
 
     var min = Number.MAX_VALUE, max=0, value;
     run.links.forEach(function(link) {
-      if (link.counters) {
-        value = link.counters[index];
-        if (value > 0) {
-          if (value < min) min = value;
-          else if (value > max) max = value;
-        }
+      value = link.counters[index];
+      if (value > 0) {
+        if (value < min) min = value;
+        if (value > max) max = value;
       }
     });
 
