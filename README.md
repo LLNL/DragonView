@@ -32,8 +32,7 @@ Header: name,counters,jobs
 One row per run including a name and paths to counters and jobs files
 
 ### Running
-Start a local server
-
+```
   $ ./run
-
+```
 Open a browser and point it to localhost:8888
