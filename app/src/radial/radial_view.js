@@ -34,10 +34,7 @@ define(function(require) {
     $('#radial').detectResizing({onResize: onResize});
 
     function onResize() {
-      //var e = d3.select('#radial');
-      //console.log('radial:',e);
       var e1 = $('#radial');
-      console.log('$:', e1.width(), e1.height());
       radial.resize(e1.width(), e1.height());
     }
 

@@ -28,7 +28,8 @@ define(function(require) {
       .cornerRadius(0);
 
     var bundle = d3.layout.bundle();
-    var line = d3.svg.line.radial()
+
+    var bluePath = d3.svg.line.radial()
       .interpolate("bundle")
       .tension(.2)
       .radius(function(d) { return d.r; })
@@ -81,7 +82,7 @@ define(function(require) {
 
       d3connections
         .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
-        .attr("d", line);
+        .attr("d", bluePath);
 
       d3connections.exit().remove();
     }
@@ -184,10 +185,19 @@ define(function(require) {
         .append('circle')
         .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);})
-        .attr('r', 2)
-        .attr('fill', function(d) { return d.color; });
-
+        .attr('r', '2')
+        .attr('fill', function(d) { return d.color; })
+        .on('mouseover', function(d) {
+          //d3.select(this).attr('r', 5);
+          highlight_router(this, d,  true);
+        })
+        .on('mouseout', function(d) {
+          //d3.select(this).attr('r', 2);
+          highlight_router(this, d,  false);
+        })
+        .each(function(d) { d.node = this;});
     }
+
     function Connector(selection) {
       var c = this.append('g')
         .attr('class', 'connector');
@@ -202,9 +212,29 @@ define(function(require) {
        this.append("path")
           .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
           .attr("class", "connection")
-          .attr("d", line);
+          .attr("d", bluePath)
+          .on('mouseover', function(d) {
+            d3.select(d.source.router.node).attr('r', 5);
+            d3.select(d.target.router.node).attr('r', 5);
+         } )
+          .on('mouseout', function(d) {
+           d3.select(d.source.router.node).attr('r', 2);
+           d3.select(d.target.router.node).attr('r', 2);
+         });
     }
 
+    function highlight_router(router, r, on) {
+      if (on) {
+        d3.select(router).attr('r', 5);
+        svg.select('.connections').selectAll('.connection')
+          .classed('highlight', function(d) { return d.source.router == r || d.target.router == r;} );
+      }
+      else {
+        d3.select(router).attr('r', 2);
+        svg.select('.connections').selectAll('.connection')
+          .classed('highlight', false);
+      }
+    }
     /*
      * radial
      */

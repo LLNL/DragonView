@@ -103,15 +103,24 @@ div {
     fill: #888; }
 
 .radial .group {
-  fill: #f0f0f0; }
+  fill: #dadada; }
 .radial .connector {
   fill: #a0a0a0;
   stroke: none; }
 .radial .connection {
   stroke: steelblue;
   stroke-opacity: .4;
-  fill: none;
-  pointer-events: none; }
+  fill: none; }
+  .radial .connection:hover {
+    stroke: red;
+    stroke-width: 4; }
+.radial .highlight {
+  stroke: red;
+  stroke-width: 4; }
+.radial circle {
+  stroke-width: 2px; }
+  .radial circle:hover {
+    stroke-width: 4px; }
 
 .matrix line {
   fill: none;

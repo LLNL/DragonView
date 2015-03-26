@@ -3,6 +3,8 @@
  */
 define(function(require) {
 
+  var model = require('model');
+
   return function() {
     var parms = {
         width: 600,
@@ -101,7 +103,7 @@ define(function(require) {
         for (var c=0; c<ncols; c++) {
           var col = {id: group.id+':'+c, parent: node, children: []};
           for (var r=0; r<nrows; r++) {
-            var router = {id: group.id+':'+r+':'+c, parent: col};
+            var router = {id: group.id+':'+r+':'+c, parent: col, router:run.routers.get(model.router_id(group.id,  r, c))};
             col.children.push(router);
             run.blueRoutes.nodes.push(router);
           }

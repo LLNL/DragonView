@@ -114,7 +114,7 @@ define(function(require) {
 
   function onZoom(from, to) {
     //console.log('onZoom:',format(from), format(to));
-    histogram.xdomain([from,  to]);
+    histogram.range([from,  to]);
   }
 
   function onHighlight(from, to) {

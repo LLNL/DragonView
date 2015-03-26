@@ -88,13 +88,6 @@ define(function(require) {
       }
     });
 
-    //run.routers.forEach(function(r) {
-    //  for (var i=0; i<4; i++)
-    //    if (r.jobs[i] != undefined)
-    //      return;
-    //  console.log('missing jobs: ', r);
-    //});
-
     var jobs = run.jobs.values();
     jobs.sort(function(a, b) {
       return b.n - a.n;
@@ -104,7 +97,6 @@ define(function(require) {
     jobs.forEach(function(job) {
       job.color = colors(i);
       run.job_colors.set(job.id, job.color);
-      console.log('color',job.id, job.n,  job.color);
       if (i < 9) i++;
     });
   }

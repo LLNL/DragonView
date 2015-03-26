@@ -158,8 +158,12 @@ div {
 
 .radial {
   .group {
-    fill: #f0f0f0;
-//    stroke: #ff0000;
+    fill: #dadada;
+    //    stroke: #ff0000;
+
+//    &:hover {
+//      fill: #f0f0f0;
+//    }
   }
 
   .connector {
@@ -171,8 +175,26 @@ div {
     stroke: steelblue;
     stroke-opacity: .4;
     fill: none;
-    pointer-events: none;
+//    pointer-events: none;
+
+    &:hover {
+      stroke: red;
+      stroke-width: 4;
+    }
   }
+
+  .highlight {
+    stroke: red;
+    stroke-width: 4;
+  }
+
+  circle {
+    stroke-width: 2px;
+    &:hover {
+      stroke-width: 4px;
+    }
+  }
+
 }
 
 .matrix {
