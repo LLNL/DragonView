@@ -147,6 +147,11 @@ define(function(require) {
 
   service.start = function () {
     d3.csv('data/runs.csv', function(list) {
+      list.sort(function(a,b) {
+        if (a.name < b.name) return -1;
+        else if (a.name > b.name) return 1;
+        return 0;
+      });
       runsInfo = d3.map(list,  function(d) { return d.name;});
       Backbone.Radio.channel('data').trigger('runsList', list);
     });
