@@ -6,11 +6,15 @@ define(function(require) {
   var model = require('model');
   var d3 = require('d3');
   var queue = require('d3_queue');
+  //var colorbrewer = require('colorbrewer');
   var Radio = require('radio');
 
   var runsInfo;
   var runs = d3.map();
-  var colors = d3.scale.category10();
+  var colors = //d3.scale.category10();
+    d3.scale.ordinal()
+  .domain([0,8])
+  .range(colorbrewer.Spectral[9]);
 
   function createRun(name) {
     var run = {
