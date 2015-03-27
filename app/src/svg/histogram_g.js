@@ -9,9 +9,9 @@ define(function(require) {
 
   return function() {
     var
-        margin = {top: 20, right:10, bottom: 10, left: 30},
-        width = 200-margin.left-margin.right,
-        height = 100 - margin.top - margin.bottom,
+        margin = {top: 20, right:10, bottom: 10, left: 40},
+        width = 250-margin.left-margin.right,
+        height = 150 - margin.top - margin.bottom,
         dx = 5, duration = 500,
         svg, histogram, _series, handle,
         counterId = undefined,

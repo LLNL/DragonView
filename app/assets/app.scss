@@ -25,7 +25,7 @@ div {
 //  position: fixed;
   top: 10px;
   left: 5px;
-  width: 200px;
+  width: 250px;
 
   font: 12px sans-serif;
 
@@ -77,8 +77,8 @@ div {
 
 
 .info {
-  margin-left: 10px;
-  margin-top: 10px;
+  margin-left: 0px;
+  margin-top: 0px;
 }
 
 
@@ -100,10 +100,9 @@ div {
 }
 
 .histogram {
-  height: 150px;
+  height: 100px;
 
   .bar {
-//    fill: steelblue;
     shape-rendering: crispEdges;
   }
 
@@ -126,7 +125,6 @@ div {
     fill-opacity: 0.2;
     stroke: #888;
     stroke-width: 1px;
-    /*fill-opacity: .25;*/
     shape-rendering: crispEdges;
   }
 }

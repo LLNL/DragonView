@@ -12,7 +12,7 @@ define(function(require) {
     Slider = require('svg/slider'),
     dataService = require('data');
 
-  var width = 200, height,
+  var width = 250, height,
       svg, header,
       defaultCounter = 0,
       run,

@@ -138,7 +138,8 @@ define(function(require) {
 
       d3routers.selectAll('circle')
         .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
-        .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);});
+        .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
+        .attr('fill', function(d) { return d.color; });
 
       d3routers.exit()
         .remove();
@@ -187,16 +188,11 @@ define(function(require) {
       var g = this.append('g')
         .attr('class', 'router')
         .append('circle')
-        //.attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
-        //.attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);})
         .attr('r', '2')
-        .attr('fill', function(d) { return d.color; })
         .on('mouseover', function(d) {
-          //d3.select(this).attr('r', 5);
           highlight_router(this, d,  true);
         })
         .on('mouseout', function(d) {
-          //d3.select(this).attr('r', 2);
           highlight_router(this, d,  false);
         })
         .each(function(d) { d.node = this;});
