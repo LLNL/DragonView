@@ -35,6 +35,7 @@ define(function(require) {
 
     function onResize() {
       var e1 = $('#radial');
+      console.log('w:',e1.width(), 'h:', e1.height());
       radial.resize(e1.width(), e1.height());
     }
 

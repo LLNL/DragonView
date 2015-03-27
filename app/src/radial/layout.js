@@ -7,8 +7,8 @@ define(function(require) {
 
   return function() {
     var parms = {
-        width: 600,
-        height: 600,
+        //width: 600,
+        //height: 600,
         outerRadius: 500,
         innerRadius: 400,
         connectorsRadius: 300,
@@ -122,10 +122,7 @@ define(function(require) {
 
     }
 
-    layout.size = function(s) {
-      var r = Math.min(s[0], s[1])/2;
-      parms.width = s[0];
-      parms.height = s[1];
+    layout.size = function(r) {
       parms.outerRadius = r - parms.outerOffset;
       parms.innerRadius = parms.outerRadius - parms.groupHeight;
       parms.connectorsRadius = parms.innerRadius-parms.connectorsOffset;

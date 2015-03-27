@@ -59,7 +59,7 @@ define(function(require) {
         }
         else {
           var run = createRun(name);
-          runs.set(name, run);
+          //runs.set(name, run);
           loadJobs(jobs, run);
           loadCounters(counters, run);
           Backbone.Radio.channel('data').trigger('run', run);

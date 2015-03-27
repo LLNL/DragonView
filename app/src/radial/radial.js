@@ -136,6 +136,10 @@ define(function(require) {
       d3routers.enter()
         .call(Router);
 
+      d3routers.selectAll('circle')
+        .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
+        .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);});
+
       d3routers.exit()
         .remove();
     }
@@ -183,8 +187,8 @@ define(function(require) {
       var g = this.append('g')
         .attr('class', 'router')
         .append('circle')
-        .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
-        .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);})
+        //.attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
+        //.attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2);})
         .attr('r', '2')
         .attr('fill', function(d) { return d.color; })
         .on('mouseover', function(d) {
@@ -259,12 +263,15 @@ define(function(require) {
     };
 
     radial.resize = function(w, h) {
-      svgContainer.attr("width", w).attr("height", h);
-      var r = Math.min(w,h)/2;
+      //svgContainer.attr("width", w).attr("height", h);
+      var r = Math.min(w,h)/2-20;
       svg.attr('transform', 'translate('+r+','+r+')');
-      layout.size([w, h]);
+      console.log('transform:', svg.attr('transform'));
+      layout.size(r);
       if (data) layout(data);
       render();
+      if (data && range)
+        filter();
       return this;
     };
 
