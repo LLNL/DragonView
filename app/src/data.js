@@ -10,7 +10,7 @@ define(function(require) {
 
   var runsInfo;
   var runs = d3.map();
-  var colors = d3.scale.category20();
+  var colors = d3.scale.category10();
     //d3.scale.ordinal()
     //  .domain([0,10])
     //  .range(colorbrewer.Spectral[6]);

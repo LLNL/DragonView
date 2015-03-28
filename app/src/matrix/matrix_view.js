@@ -36,7 +36,7 @@ define(function(require) {
     var view = function (elem) {
       el = $(elem);
       component = AdjMatrix().el(elem).counter(14);
-      el.detectResizing({onResize: onResize});
+      //el.detectResizing({onResize: onResize});
     };
 
     view.active = function (_) {

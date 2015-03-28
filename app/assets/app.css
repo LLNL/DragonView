@@ -1,5 +1,4 @@
 .tabs {
-  width: 100%;
   display: inline-block;
   /*----- Content of Tabs -----*/ }
   .tabs .tab-links:after {
@@ -136,13 +135,13 @@ div {
     fill: #888; }
 
 .radial .group {
-  fill: #dadada;
+  fill: #f0f0f0;
   stroke: none; }
   .radial .group:hover {
     stroke: #808080;
     stroke-width: 1px; }
   .radial .group.selected {
-    fill: #f0f0f0; }
+    fill: #d8d8d8; }
 .radial .connector {
   fill: #a0a0a0;
   stroke: none; }

@@ -158,7 +158,8 @@ div {
 
 .radial {
   .group {
-    fill: #dadada;
+//    fill: #dadada;
+    fill: #f0f0f0;
     stroke: none;
 
     &:hover {
@@ -167,7 +168,7 @@ div {
     }
 
     &.selected {
-      fill: #f0f0f0;
+      fill: #d8d8d8;
     }
 
   }
