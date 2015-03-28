@@ -9,8 +9,8 @@ define(function(require) {
   var Radio = require('radio');
 
   return function() {
-    var radial;
-    var active = true, _data, _range, _counter;
+    var radial, el;
+    var active = false, _data, _range, _counter;
 
     Radio.channel('data').on('run', function (data) {
       if (active) radial.data(data).filter();
@@ -27,19 +27,17 @@ define(function(require) {
       else _counter = index;
     });
 
-    radial = Radial().el('#radial')
-      .counter(0)
-      .resize(600, 600);
-
-    $('#radial').detectResizing({onResize: onResize});
-
     function onResize() {
-      var e1 = $('#radial');
-      console.log('w:',e1.width(), 'h:', e1.height());
-      radial.resize(e1.width(), e1.height());
+      console.log('w:',el.width(), 'h:', el.height());
+      radial.resize(el.width(), el.height());
     }
 
-    var view = function () {};
+    var view = function(elem) {
+      el = $(elem);
+      radial = Radial().el(elem).counter(0).resize(600, 600);
+      el.detectResizing({onResize: onResize});
+      return view;
+    };
 
     view.active = function (_) {
       if (!arguments.length) return active;

@@ -9,10 +9,8 @@ define(function(require) {
   //var Resize = require('resize');
 
   return function() {
-    var component;
+    var component, el;
     var active = false, _data, _range, _counter;
-
-    //_.bindAll(this, 'onResize');
 
     Radio.channel('data').on('run', function (data) {
       if (active) component.data(data).update();
@@ -29,12 +27,17 @@ define(function(require) {
       else _counter = index;
     });
 
-    component = AdjMatrix().el('#matrix')
-      .counter(14);
 
-    //this.$el.detectResizing({onResize: this.onResize});
+    function onResize() {
+      console.log('w:', el.width(), 'h:', el.height());
+      component.resize(el.width(), el.height());
+    }
 
-    var view = function () {};
+    var view = function (elem) {
+      el = $(elem);
+      component = AdjMatrix().el(elem).counter(14);
+      el.detectResizing({onResize: onResize});
+    };
 
     view.active = function (_) {
       if (!arguments.length) return active;
@@ -54,9 +57,7 @@ define(function(require) {
       return this;
     };
 
-    view.onResize = function () {
-      console.log('on resize');
-    };
+
 
     return view;
   }

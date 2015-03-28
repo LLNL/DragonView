@@ -13,8 +13,8 @@
 <body class="page">
 
 <div class="title">Dragonfly</div>
+
 <div id="controls" class="controls">
-    <input type="file" id="hidden-file-load" style="display:none">
   <ul>
     <li>
       <table>
@@ -38,15 +38,13 @@
         <tbody></tbody>
       </table>
     </li>
-
-    <li>
-      <span class="li-title">Views:</span><br>
-      <div id="viewSelectors" class="li-body"></div>
-    </li>
   </ul>
 </div>
 
-<div id="views" class="views"></div>
+<div class="views tabs">
+  <ul class="tab-links"></ul>
+  <div class="tab-content"></div>
+</div>
 
 
 <script src="lib/sprintf/dist/sprintf.min.js"></script>

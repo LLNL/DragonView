@@ -378,7 +378,8 @@ define(function(require) {
     adj.resize = function(w, h) {
       svgContainer.attr("width", w).attr("height", h);
       //layout.size(w, h);
-      update();
+      if (data && range)
+        update();
       return this;
     };
 

@@ -6,7 +6,7 @@ define(function(require) {
   'use strict';
 
   var DataService = require('data');
-  var ControlsView = require('controls_view');
+  var ControlsView = require('views');
   var CountersView = require('counters_view');
   var JobsView = require('jobs_view');
 

@@ -5,6 +5,7 @@ define(function(require) {
 
   var d3 = require('d3');
   var Layout = require('radial/layout');
+  var LayoutGB = require('radial/layout_gb');
   var model = require('model');
 
   return function() {
@@ -14,7 +15,11 @@ define(function(require) {
     var UNKNOWN_JOB_COLOR = '#ffffff';
 
     var layout = Layout().size([WIDTH, HEIGHT]),
+        layout_gb = LayoutGB(),
         opt = layout.parms(),
+        mode = 'blue',
+        selectedGroup = undefined,
+        blueLinks, greenLinks, blackLinks,
         svgContainer, svg;
 
     var range, counterId;
@@ -56,43 +61,33 @@ define(function(require) {
       filterBlacks(routers);
 
       renderRouters(routers);
+      renderLinks();
     }
 
     function filterBlues(routers) {
-      var links = [], value;
+      var value;
+      blueLinks = [];
+      data.blues.forEach(function (link) {
+          value = link.counters[counterId];
+          if (range[0] <= value && value <= range[1]) {
+            link.source = find(link.srcId);
+            link.target = find(link.destId);
+            blueLinks.push(link);
 
-      data.blues.forEach(function(link) {
-        value = link.counters[counterId];
-        if (range[0] <= value && value <= range[1]) {
-          link.source = find(link.srcId);
-          link.target = find(link.destId);
-          links.push(link);
-
-          routers.set(link.src.id, link.src);
-          routers.set(link.dest.id, link.dest);
+            routers.set(link.src.id, link.src);
+            routers.set(link.dest.id, link.dest);
+          }
         }
-      });
-
-      //console.log('links: ',links.length);
-      d3connections = svg.select('.connections').selectAll('.connection')
-        .data(bundle(links));
-
-      d3connections.enter()
-        .call(Connection);
-
-      d3connections
-        .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
-        .attr("d", bluePath);
-
-      d3connections.exit().remove();
+      );
     }
 
     function filterGreens(routers) {
-      var links = [], value;
+      var value;
+      greenLinks = [];
       data.greens.forEach(function(link) {
         value = link.counters[counterId];
         if (range[0] <= value && value <= range[1]) {
-          links.push(link);
+          greenLinks.push(link);
           routers.set(link.src.id, link.src);
           routers.set(link.dest.id, link.dest);
         }
@@ -100,15 +95,54 @@ define(function(require) {
     }
 
     function filterBlacks(routers) {
-      var links = [], value;
+      var value;
+      blackLinks = [];
       data.blacks.forEach(function(link) {
         value = link.counters[counterId];
         if (range[0] <= value && value <= range[1]) {
-          links.push(link);
+          blackLinks.push(link);
           routers.set(link.src.id, link.src);
           routers.set(link.dest.id, link.dest);
         }
       });
+    }
+
+    function renderLinks() {
+      if (selectedGroup == undefined) {
+        // render blues
+        var blue = bundle(blueLinks);
+        blue.forEach(function(l) { l.color = 'blue'; });
+        d3connections = svg.select('.connections').selectAll('.connection')
+          .data(blue);
+
+        d3connections.enter()
+          .call(Connection);
+
+        d3connections
+          .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
+          .attr("d", bluePath);
+
+        d3connections.exit().remove();
+      } else {
+        // render green-black
+        var green = bundle(layout_gb(greenLinks, selectedGroup.id));
+        //var black = bundle(layout_gb(blackLinks, selectedGroup.id));
+
+        green.forEach(function(l) { l.color = 'green'; });
+        //black.forEach(function(l) { l.color = 'black'; });
+
+        d3connections = svg.select('.connections').selectAll('.connection')
+          .data(green/*.concat(black)*/);
+
+        d3connections.enter()
+          .call(Connection);
+
+        d3connections
+          .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
+          .attr("d", bluePath);
+
+        d3connections.exit().remove();
+      }
     }
 
     function renderRouters(routers) {
@@ -161,13 +195,6 @@ define(function(require) {
         .call(Group);
 
       d3groups.selectAll('path').attr('d', group_arc);
-
-      //Connectors
-      //d3connectors = svg.select('.connectors').selectAll('.connector')
-      //  .data(data.blueRoutes.nodes, function(d) { return d.id; });
-      //
-      //d3connectors.enter()
-      //  .call(Connector);
     }
 
     /*
@@ -175,13 +202,34 @@ define(function(require) {
      */
     function Group(selection) {
       var g = this.append('g')
-                .attr('class', 'group');
+        .attr('class', 'group');
 
       g.append('path')
-        .attr('fill', function(d) { return d.color; })
-        .attr('d', group_arc);
+        .attr('fill', function (d) { return d.color; })
+        .attr('d', group_arc)
+        .on('click', selectGroup);
 
       return selection;
+    }
+
+    function selectGroup(d) {
+      var id;
+      if (selectedGroup == d) {
+        selectedGroup = id = undefined;
+        //svg.select('.green-black').selectAll('.something').remove();
+      } else {
+        if (selectedGroup == undefined) {
+          //svg.select('.connections').selectAll('.connection').remove();
+        }
+        selectedGroup = d;
+        id = d.id;
+      }
+
+      svg.select('.groups').selectAll('.group')
+        .data(data.groups, function (g) { return g.id; })
+        .classed('selected', function(g) { return g.id == id; });
+
+      renderLinks();
     }
 
     function Router(selection) {
@@ -212,15 +260,16 @@ define(function(require) {
        this.append("path")
           .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
           .attr("class", "connection")
-          .attr("d", bluePath)
-          .on('mouseover', function(d) {
-            d3.select(d.source.router.node).attr('r', 5);
-            d3.select(d.target.router.node).attr('r', 5);
-         } )
-          .on('mouseout', function(d) {
-           d3.select(d.source.router.node).attr('r', 2);
-           d3.select(d.target.router.node).attr('r', 2);
-         });
+          .attr('stroke', function(d) { return d.color; })
+          .attr("d", bluePath);
+         // .on('mouseover', function(d) {
+         //   d3.select(d.source.router.node).attr('r', 5);
+         //   d3.select(d.target.router.node).attr('r', 5);
+         //} )
+         // .on('mouseout', function(d) {
+         //  d3.select(d.source.router.node).attr('r', 2);
+         //  d3.select(d.target.router.node).attr('r', 2);
+         //});
     }
 
     function highlight_router(router, r, on) {
@@ -254,6 +303,7 @@ define(function(require) {
       svg.append('g').attr('class', 'routers');
       svg.append('g').attr('class', 'connectors');
       svg.append('g').attr('class', 'connections');
+      svg.append('g').attr('class', 'green-blue');
 
       return this;
     };

@@ -1,3 +1,37 @@
+.tabs {
+  width: 100%;
+  display: inline-block;
+  /*----- Content of Tabs -----*/ }
+  .tabs .tab-links:after {
+    display: block;
+    clear: both;
+    content: ''; }
+  .tabs .tab-links li {
+    margin: 0px 5px;
+    float: left;
+    list-style: none; }
+  .tabs .tab-links a {
+    padding: 4px 8px;
+    display: inline-block;
+    border-radius: 3px 3px 0px 0px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4c4c4c;
+    transition: all linear 0.15s; }
+  .tabs .tab-links a:hover {
+    background: #f0f0f0;
+    text-decoration: none; }
+  .tabs li.active a, .tabs li.active a:hover {
+    background: #e0e0e0;
+    color: #4c4c4c; }
+  .tabs .tab-content {
+    padding: 10px;
+    border-radius: 3px; }
+  .tabs .tab {
+    display: none; }
+  .tabs .tab.active {
+    display: block; }
+
 body {
   position: relative; }
 
@@ -102,20 +136,22 @@ div {
     fill: #888; }
 
 .radial .group {
-  fill: #dadada; }
+  fill: #dadada;
+  stroke: none; }
+  .radial .group:hover {
+    stroke: #808080;
+    stroke-width: 1px; }
+  .radial .group.selected {
+    fill: #f0f0f0; }
 .radial .connector {
   fill: #a0a0a0;
   stroke: none; }
 .radial .connection {
-  stroke: steelblue;
   stroke-opacity: .4;
   fill: none; }
-  .radial .connection:hover {
+  .radial .connection:hover, .radial .connection.highlight {
     stroke: red;
     stroke-width: 4; }
-.radial .highlight {
-  stroke: red;
-  stroke-width: 4; }
 .radial circle {
   stroke-width: 2px; }
   .radial circle:hover {
@@ -127,5 +163,3 @@ div {
   stroke-width: 1px;
   shape-rendering: crispEdges;
   opacity: 0.4; }
-
-/*# sourceMappingURL=app.css.map */
