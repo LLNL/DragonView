@@ -3,12 +3,14 @@
  */
 define(function(require) {
   var d3 = require('d3');
-  var RadialView = require('radial/radial_view');
-  var MatrixView = require('matrix/matrix_view');
+  var RadialFactory = require('radial/radial_view');
+  var MatrixFactory = require('matrix/matrix_view');
+  var GraphFactory = require('graph/graph_view');
 
   var views = [
-    {id:'radial', factory: RadialView, view:undefined},
-    {id:'matrix', factory: MatrixView, view:undefined}
+    {id:'radial', factory: RadialFactory, view:undefined},
+    {id:'matrix', factory: MatrixFactory, view:undefined},
+    {id:'graph',  factory: GraphFactory, view:undefined }
   ];
 
   var view = function() {

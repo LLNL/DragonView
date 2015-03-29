@@ -26,7 +26,8 @@ define(function(require) {
       blacks: new Map(),
       links: new Map(),
       jobs: d3.map(),
-      job_colors: new Map()
+      job_colors: new Map(),
+      core_to_node: d3.map()
       };
 
     var g, r, c, node, rid = 0, cid = 0;
@@ -54,33 +55,42 @@ define(function(require) {
   function loadRun(name) {
     var info = runsInfo.get(name);
     queue()
-      .defer(d3.csv, 'data/'+info.jobs)
-      .defer(d3.text, 'data/'+info.counters)
-      .await(function (error, jobs, counters) {
+      .defer(d3.csv, info.jobs)
+      .defer(d3.text, info.counters)
+      .await(function (error, placement, counters) {
         if (error) {
           console.log("Error loading data", error);
         }
         else {
           var run = createRun(name);
+          run.commFile = info.comm;
           //runs.set(name, run);
-          loadJobs(jobs, run);
+          loadPlacement(placement, run);
           loadCounters(counters, run);
           Backbone.Radio.channel('data').trigger('run', run);
         }
       });
   }
 
-  function loadJobs(data, run) {
+  function loadPlacement(data, run) {
     var job;
+    var i=-1, rank;
     data.forEach(function (item) {
+      i++;
       if (!item.core || item.core == 0) {
+        rank = Math.round(i/24);
+        if (i%24 > 0) {
+          console.log('rank issue:', i, rank);}
+        item.rank = rank;
         item.g = +item.g;
         item.r = +item.r;
         item.c = +item.c;
         item.n = +item.n;
-        item.jobid = +item.jobid;
+
         item.id = model.node_id(item);
-        run.nodes.set(item.id, item);
+        item.jobid = +item.jobid;
+        //console.log('rank:',rank,  item);
+        run.nodes.set(item.rank, item);
         run.routers.get(model.router_id(item)).jobs[item.n] = item.jobid;
         job = run.jobs.get(item.jobid);
         if (!job) {
@@ -91,6 +101,7 @@ define(function(require) {
       }
     });
 
+    console.log('placement: rank=',rank);
     var jobs = run.jobs.values();
     jobs.sort(function(a, b) {
       return b.n - a.n;
@@ -125,6 +136,9 @@ define(function(require) {
         values[j] = +values[j];
       }
       id = model.link_id(sg, sr, sc, dg, dr, dc);
+      if (id =='0:0:0-0:0:1') {
+        console.log('first link');
+      }
       link = {
         id: id,
         color: color,
@@ -134,15 +148,11 @@ define(function(require) {
         dest: run.routers.get(model.router_id(dg, dr, dc)),
         counters: values
       };
-      if (!link.dest) {
-        console.log('link error: ', link);
-      }
       if (color == 'b') run.blues.set(link.id, link);
       else if (color == 'g') run.greens.set(link.id, link);
       else run.blacks.set(link.id, link);
 
       run.links.set(link.id, link);
-      link = run.links.set(id, link);
     }
   }
 
@@ -154,6 +164,11 @@ define(function(require) {
         if (a.name < b.name) return -1;
         else if (a.name > b.name) return 1;
         return 0;
+      });
+      list.forEach(function(item) {
+        item.counters = '/data/'+item.counters;
+        item.jobs = '/data/'+item.jobs;
+        item.comm = '/data/'+item.comm;
       });
       runsInfo = d3.map(list,  function(d) { return d.name;});
       Backbone.Radio.channel('data').trigger('runsList', list);
