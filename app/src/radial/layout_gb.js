@@ -8,8 +8,8 @@ define(function(require) {
   var d3 = require('d3');
 
   return function () {
-    var root;
-    var nodes = d3.map();
+    var innerRadius = 100, outerRadius = 200;;
+    var root, nodes = d3.map();
 
     createHierarchy();
 
@@ -18,14 +18,27 @@ define(function(require) {
       root = {id:'root', parent:undefined, children:[], r:0, angle:0};
 
       for (r = 0; r<6; r++) {
-        var row = {id:r, children:[], parent:root, r:100, angle:r * Math.PI/3};
+        var row = {id:r, children:[], parent:root, r:innerRadius, angle:r * Math.PI/3};
+        root.children.push(row);
         for (c = 0; c<16; c++) {
-          var col = {id:r*16+c, parent:row, r:200, angle:row.angle+c*Math.PI/(3*16)};
+          var col = {id:r*16+c, parent:row, r:outerRadius, angle:row.angle+c*Math.PI/(3*16)};
+          row.children.push(col);
           nodes.set(col.id,  col);
         }
       }
     }
 
+    function updateHierarchy() {
+      var r, c;
+
+      for (r = 0; r<6; r++) {
+        var row = root.children[r];
+        row.r = innerRadius;
+        for (c = 0; c<16; c++) {
+          row.children[c].r = outerRadius;
+        }
+      }
+    }
 
     function layout(links, groupId) {
       var list = [];
@@ -38,6 +51,14 @@ define(function(require) {
       });
       return list;
     }
+
+    layout.size = function(size) {
+      if (!arguments.length) return [innerRadius, outerRadius];
+      innerRadius = size[0];
+      outerRadius = size[1];
+      updateHierarchy();
+      return this;
+    };
 
     return layout;
   };

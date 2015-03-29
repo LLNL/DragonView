@@ -28,7 +28,7 @@ define(function(require) {
     });
 
     function onResize() {
-      console.log('w:',el.width(), 'h:', el.height());
+      //console.log('w:',el.width(), 'h:', el.height());
       radial.resize(el.width(), el.height());
     }
 

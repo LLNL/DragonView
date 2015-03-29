@@ -1,31 +1,4 @@
 name,counters,jobs,comm
-single/many2many/compact- 64k,sim/simulations/single/many2many/compact-64k/links-compact.64k.csv,sim/simulations/single/placement/compact.64k.csv,sim/comm-graphs/many2many/comm.64k.csv
-single/many2many/compact- 32k,sim/simulations/single/many2many/compact-32k/links-compact.32k.csv,sim/simulations/single/placement/compact.32k.csv,sim/comm-graphs/many2many/comm.32k.csv
-single/many2many/compact- 16k,sim/simulations/single/many2many/compact-16k/links-compact.16k.csv,sim/simulations/single/placement/compact.16k.csv,sim/comm-graphs/many2many/comm.16k.csv
-single/many2many/compact-128k,sim/simulations/single/many2many/compact-128k/links-compact.128k.csv,sim/simulations/single/placement/compact.128k.csv,sim/comm-graphs/many2many/comm.128k.csv
-single/2dstencil/random- 64k,sim/simulations/single/2dstencil/random-64k/links-random.64k.csv,sim/simulations/single/placement/random.64k.csv,sim/comm-graphs/2dstencil/comm.64k.csv
-single/2dstencil/random- 32k,sim/simulations/single/2dstencil/random-32k/links-random.32k.csv,sim/simulations/single/placement/random.32k.csv,sim/comm-graphs/2dstencil/comm.32k.csv
-single/2dstencil/random- 16k,sim/simulations/single/2dstencil/random-16k/links-random.16k.csv,sim/simulations/single/placement/random.16k.csv,sim/comm-graphs/2dstencil/comm.16k.csv
-single/2dstencil/random-128k,sim/simulations/single/2dstencil/random-128k/links-random.128k.csv,sim/simulations/single/placement/random.128k.csv,sim/comm-graphs/2dstencil/comm.128k.csv
-single/2dstencil/compact- 64k,sim/simulations/single/2dstencil/compact-64k/links-compact.64k.csv,sim/simulations/single/placement/compact.64k.csv,sim/comm-graphs/2dstencil/comm.64k.csv
-single/2dstencil/compact- 32k,sim/simulations/single/2dstencil/compact-32k/links-compact.32k.csv,sim/simulations/single/placement/compact.32k.csv,sim/comm-graphs/2dstencil/comm.32k.csv
-single/2dstencil/compact- 16k,sim/simulations/single/2dstencil/compact-16k/links-compact.16k.csv,sim/simulations/single/placement/compact.16k.csv,sim/comm-graphs/2dstencil/comm.16k.csv
-single/2dstencil/compact-128k,sim/simulations/single/2dstencil/compact-128k/links-compact.128k.csv,sim/simulations/single/placement/compact.128k.csv,sim/comm-graphs/2dstencil/comm.128k.csv
-multi/ume-random-32k-32k-64k,sim/simulations/multi/3jobs/ume-random-32k-32k-64k/links-random.32k-32k-64k.csv,sim/simulations/multi/placement/random-32k-32k-64k.csv
-multi/ume-compact-32k-32k-64k,sim/simulations/multi/3jobs/ume-compact-32k-32k-64k/links-compact.32k-32k-64k.csv,sim/simulations/multi/placement/compact-32k-32k-64k.csv
-multi/m2m-random-32k-32k-64k,sim/simulations/multi/3jobs/m2m-random-32k-32k-64k/links-random.32k-32k-64k.csv,sim/simulations/multi/placement/random-32k-32k-64k.csv
-multi/m2m-compact-32k-32k-64k,sim/simulations/multi/3jobs/m2m-compact-32k-32k-64k/links-compact.32k-32k-64k.csv,sim/simulations/multi/placement/compact-32k-32k-64k.csv
-multi/2ds-random-32k-32k-64k,sim/simulations/multi/3jobs/2ds-random-32k-32k-64k/links-random.32k-32k-64k.csv,sim/simulations/multi/placement/random-32k-32k-64k.csv
-multi/2ds-compact-32k-32k-64k,sim/simulations/multi/3jobs/2ds-compact-32k-32k-64k/links-compact.32k-32k-64k.csv,sim/simulations/multi/placement/compact-32k-32k-64k.csv
-multi/m2m-ume-random-64k-64k,sim/simulations/multi/2jobs/m2m-ume-random-64k-64k/links-random.64k-64k.csv,sim/simulations/multi/placement/random-64k-64k.csv
-multi/m2m-ume-nonuni-64k-64k,sim/simulations/multi/2jobs/m2m-ume-nonuni-64k-64k/links-nonuni.64k-64k.csv,sim/simulations/multi/placement/nonuni-64k-64k.csv
-multi/m2m-ume-compact-64k-64k,sim/simulations/multi/2jobs/m2m-ume-compact-64k-64k/links-compact.64k-64k.csv,sim/simulations/multi/placement/compact-64k-64k.csv
-multi/2ds-ume-random-64k-64k,sim/simulations/multi/2jobs/2ds-ume-random-64k-64k/links-random.64k-64k.csv,sim/simulations/multi/placement/random-64k-64k.csv
-multi/2ds-ume-nonuni-64k-64k,sim/simulations/multi/2jobs/2ds-ume-nonuni-64k-64k/links-nonuni.64k-64k.csv,sim/simulations/multi/placement/nonuni-64k-64k.csv
-multi/2ds-ume-compact-64k-64k,sim/simulations/multi/2jobs/2ds-ume-compact-64k-64k/links-compact.64k-64k.csv,sim/simulations/multi/placement/ume-compact-64k-64k.csv
-multi/2ds-m2m-random-64k-64k,sim/simulations/multi/2jobs/2ds-m2m-random-64k-64k/links-random.64k-64k.csv,sim/simulations/multi/placement/random-64k-64k.csv
-multi/2ds-m2m-nonuni-64k-64k,sim/simulations/multi/2jobs/2ds-m2m-nonuni-64k-64k/links-nonuni.64k-64k.csv,sim/simulations/multi/placement/nonuni-64k-64k.csv
-multi/2ds-m2m-compact-64k-64k,sim/simulations/multi/2jobs/2ds-m2m-compact-64k-64k/links-compact.64k-64k.csv,sim/simulations/multi/placement/compact-64k-64k.csv
 {256-305},edison/2014-09-01-10-45-18/standard/dnd_net_counters.csv,edison/2014-09-01-10-45-18/standard/dnd_jobs.csv
 {384-310},edison/2014-09-01-10-50-59/standard/dnd_net_counters.csv,edison/2014-09-01-10-50-59/standard/dnd_jobs.csv
 {512-350},edison/2014-09-01-12-50-30/standard/dnd_net_counters.csv,edison/2014-09-01-12-50-30/standard/dnd_jobs.csv

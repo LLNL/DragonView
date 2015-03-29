@@ -12,6 +12,8 @@ define(function(require) {
     Slider = require('svg/slider'),
     dataService = require('data');
 
+  var DEFAULT_COLLECTION = 'data/runs-single.csv';
+
   var width = 250, height,
       svg, header,
       defaultCounter = 0,
@@ -35,31 +37,25 @@ define(function(require) {
 
   Radio.channel('data').on('runsList', updateRunList);
   Radio.channel('data').on('run', newData);
+  Radio.channel('app').on('ready', function() {
+    d3.select('#collection_name').text(DEFAULT_COLLECTION);
+    dataService.loadCatalog(DEFAULT_COLLECTION);
+  });
 
   function updateRunList(list) {
     knownRuns = list;
     var options = sim.selectAll('option')
           .data(knownRuns, function(d) { return d.name;});
+
     options.enter()
-        .append('option')
-          .attr('value', function (d, i) { return i; })
+        .append('option');
+
+    options.attr('value', function (d, i) { return i; })
           .text(function (d) { return d.name; });
 
-    d3.select("#hidden-file-load")
-      .on('change', function() {
-        var file = this.files[0];
-        if (file) {
-          var reader = new FileReader();
-          reader.onloadend = function (evt) {
-            var dataURL = evt.target.result;
-            // The following call results in an "Access denied" error in IE.
-            dataService.load(dataURL);
-          };
-          reader.readAsDataURL(file);
-        }
-      });
+    options.exit().remove();
 
-    if (!run && list.length > 0) dataService.load(list[0].name);
+    if (list.length > 0) dataService.load(list[0].name);
   }
 
   function selectRun(index) {
@@ -113,16 +109,38 @@ define(function(require) {
 
 
   function onZoom(from, to) {
-    //console.log('onZoom:',format(from), format(to));
     histogram.range([from,  to]);
   }
 
   function onHighlight(from, to) {
-    //console.log('highlight:', format(from),  format(to));
     Radio.channel('counter').trigger('range', [from, to]);
   }
 
+  function loadFile() {
+    if (this.files.length > 0) {
+      var file = this.files[0];
+      d3.select('#collection_name').text(file.name);
+      var reader = new FileReader();
+      reader.onloadend = function(evt) {
+        var dataUrl = evt.target.result;
+        // The following call results in an "Access denied" error in IE.
+        dataService.loadCatalog(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   var view = function() {
+
+    d3.select('#load')
+      .on('click', function(){  document.getElementById('file').click(); });
+
+    document.getElementById('file')
+      .addEventListener("change", loadFile, false);
+
+    d3.select('file').on('change', function() {
+      console.log('loaded');
+    });
 
     var g = d3.select('#info').append('g')
       .attr('class', 'info');

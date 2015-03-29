@@ -9,6 +9,7 @@ define(function(require) {
   var ControlsView = require('views');
   var CountersView = require('counters_view');
   var JobsView = require('jobs_view');
+  var Radio = require('radio');
 
   return function() {
     var radialView, countersView, controlsView, jobsView;
@@ -21,7 +22,7 @@ define(function(require) {
       controlsView = ControlsView();
       jobsView = JobsView();
 
-      dataService.start();
+      Radio.channel('app').trigger('ready');
       return app;
     };
 

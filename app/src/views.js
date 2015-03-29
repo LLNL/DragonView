@@ -23,6 +23,10 @@ define(function(require) {
           .attr('href', function(d) {return '#'+d.id;})
           .text(function(d) { return d.id;})
           .on('click', function(d) {
+              d3.select('.views').select('.tab-links').selectAll('li')
+                .data(views)
+                .classed('active', function(tab) { return tab.id == d.id; });
+
               d3.select('.views').selectAll('.tab')
                 .data(views)
                 .classed('active', function(tab) { return tab.id == d.id; })

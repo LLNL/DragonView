@@ -34,7 +34,7 @@ define(function(require) {
 
     var bundle = d3.layout.bundle();
 
-    var bluePath = d3.svg.line.radial()
+    var connectionPath = d3.svg.line.radial()
       .interpolate("bundle")
       .tension(.2)
       .radius(function(d) { return d.r; })
@@ -120,7 +120,7 @@ define(function(require) {
 
         d3connections
           .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
-          .attr("d", bluePath);
+          .attr("d", connectionPath);
 
         d3connections.exit().remove();
       } else {
@@ -139,7 +139,7 @@ define(function(require) {
 
         d3connections
           .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
-          .attr("d", bluePath);
+          .attr("d", connectionPath);
 
         d3connections.exit().remove();
       }
@@ -261,7 +261,7 @@ define(function(require) {
           .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
           .attr("class", "connection")
           .attr('stroke', function(d) { return d.color; })
-          .attr("d", bluePath);
+          .attr("d", connectionPath);
          // .on('mouseover', function(d) {
          //   d3.select(d.source.router.node).attr('r', 5);
          //   d3.select(d.target.router.node).attr('r', 5);
@@ -312,8 +312,8 @@ define(function(require) {
       //svgContainer.attr("width", w).attr("height", h);
       var r = Math.min(w,h)/2-20;
       svg.attr('transform', 'translate('+r+','+r+')');
-      console.log('transform:', svg.attr('transform'));
       layout.size(r);
+      layout_gb.size([opt.innerRadius*0.5, opt.innerRadius*0.75]);
       if (data) layout(data);
       render();
       if (data && range)

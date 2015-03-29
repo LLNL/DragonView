@@ -233,9 +233,6 @@ define(function(require) {
       if (!arguments.length) return data;
       data = _;
       load(data.commFile);
-      //render();
-      //layout(data);
-      //render();
       return this;
     };
 
