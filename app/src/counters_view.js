@@ -38,7 +38,7 @@ define(function(require) {
   Radio.channel('data').on('runsList', updateRunList);
   Radio.channel('data').on('run', newData);
   Radio.channel('app').on('ready', function() {
-    d3.select('#collection_name').text(DEFAULT_COLLECTION);
+    d3.select('#catalog').text(DEFAULT_COLLECTION);
     dataService.loadCatalog(DEFAULT_COLLECTION);
   });
 
@@ -119,7 +119,7 @@ define(function(require) {
   function loadFile() {
     if (this.files.length > 0) {
       var file = this.files[0];
-      d3.select('#collection_name').text(file.name);
+      d3.select('#catalog').text(file.name);
       var reader = new FileReader();
       reader.onloadend = function(evt) {
         var dataUrl = evt.target.result;
