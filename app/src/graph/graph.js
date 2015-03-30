@@ -141,9 +141,7 @@ define(function(require) {
         .on('end', end)
         .start();
 
-      console.log('force loop');
-      for (var i=0; i<100; i++) force.tick();
-      console.log('force start update');
+      for (var i=0; i<50; i++) force.tick();
       force.on('tick', update);
 
       d3edges = svgEdges.selectAll('.edge')

@@ -109,6 +109,9 @@ define(function(require) {
 
     function renderLinks() {
       if (selectedGroup == undefined) {
+        svg.select('.connectors').selectAll('circle').remove();
+        svg.select('.internal').selectAll('path').remove();
+
         // render blues
         var blue = bundle(blueLinks);
         blue.forEach(function(l) { l.color = 'blue'; });
@@ -142,41 +145,67 @@ define(function(require) {
           .attr("d", connectionPath);
 
         d3connections.exit().remove();
+
+        var connectors = svg.select('.connectors').selectAll('circle')
+          .data(layout_gb.nodes(), function(d) { return d.id;});
+
+        connectors
+          .enter()
+            .append('circle')
+              .attr('r', 2)
+              .attr('fill', '#888');
+
+        connectors
+          .attr('cx', function(d) { return d.r*Math.cos(d.angle);})
+          .attr('cy', function(d) { return d.r*Math.sin(d.angle);});
+
+        connectors.exit().remove();
+
+        var arcs = layout_gb.root().children.map(function(node) {
+          return {startAngle:node.children[0].angle, endAngle:node.children[15].angle};
+        });
+
+        var size = layout_gb.size();
+        var arc = d3.svg.arc()
+          .innerRadius(size[1]+4)
+          .outerRadius(size[1]+5);
+
+        var paths = svg.select('.internal').selectAll('path')
+          .data(arcs);
+
+        paths.enter()
+            .append('path')
+              .style('stroke', '#666');
+
+        paths
+          .attr('d', arc);
+
+        paths.exit().remove();
+
+
       }
     }
 
     function renderRouters(routers) {
       var list = [], router, jid, i, id, jobs;
-      //var map1 = d3.map();
       for (router of routers.values()) {
         list.push(router);
-      //  var v = map1.get(router.color) || 0;
-      //  map1.set(router.color,  v+1);
       }
-      //console.log('# routers:', list.length, 'colors:',map1);
-      //var map = d3.map();
 
       var d3routers = svg.select('.routers').selectAll('.router')
         .data(list, function(d) { return d.id;});
 
-      var e=0, c=0, r=0;
       d3routers.enter()
         .call(Router);
 
       d3routers.selectAll('circle')
-        //.each(function(d) { c++; var v = map.get(d.color) || 0; map.set(d.color, v+1); })
         .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
         .attr('fill', function(d) {return d.color; })
-        .attr('r', 4);
+        .attr('r', 3);
 
       d3routers.exit().selectAll('circle')
-        //.each(function(d) { r++;})
         .attr('r', 2);
-        //.remove();
-
-      //console.log('e:',e, ' c:',c, ' r:',r);
-      //console.log('map:',map);
     }
 
     function render() {
@@ -277,12 +306,12 @@ define(function(require) {
 
     function highlight_router(router, r, on) {
       if (on) {
-        d3.select(router).attr('r', 5);
+        //d3.select(router).attr('r', 5);
         svg.select('.connections').selectAll('.connection')
           .classed('highlight', function(d) { return d.source.router == r || d.target.router == r;} );
       }
       else {
-        d3.select(router).attr('r', 2);
+        //d3.select(router).attr('r', 2);
         svg.select('.connections').selectAll('.connection')
           .classed('highlight', false);
       }
@@ -307,6 +336,7 @@ define(function(require) {
       svg.append('g').attr('class', 'connectors');
       svg.append('g').attr('class', 'connections');
       svg.append('g').attr('class', 'green-blue');
+      svg.append('g').attr('class', 'internal');
 
       return this;
     };
@@ -316,7 +346,7 @@ define(function(require) {
       var r = Math.min(w,h)/2-20;
       svg.attr('transform', 'translate('+r+','+r+')');
       layout.size(r);
-      layout_gb.size([opt.innerRadius*0.5, opt.innerRadius*0.75]);
+      layout_gb.size([opt.innerRadius*0.1, opt.innerRadius*0.75]);
       if (data) layout(data);
       render();
       if (data && range)

@@ -52,6 +52,14 @@ define(function(require) {
       return list;
     }
 
+    layout.nodes = function() {
+      return nodes.values();
+    };
+
+    layout.root = function() {
+      return root;
+    };
+
     layout.size = function(size) {
       if (!arguments.length) return [innerRadius, outerRadius];
       innerRadius = size[0];
