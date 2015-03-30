@@ -192,8 +192,14 @@ div {
 
   circle {
     stroke-width: 2px;
+    r: 2px;
+
     &:hover {
       stroke-width: 4px;
+    }
+
+    &:active {
+      r: 4px;
     }
   }
 
@@ -227,4 +233,9 @@ div {
 
 .graph-ctrl {
   padding-left: 40px;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
 }

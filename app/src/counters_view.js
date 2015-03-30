@@ -44,16 +44,19 @@ define(function(require) {
 
   function updateRunList(list) {
     knownRuns = list;
+    sim.selectAll('option').remove();
+
     var options = sim.selectAll('option')
-          .data(knownRuns, function(d) { return d.name;});
+          .data(knownRuns); //, function(d) { return d.name;});
 
     options.enter()
-        .append('option');
+        .append('option')
+        .attr('value', function (d, i) { return i; })
+          .text(function (d) { return d.name || "──────────"; })
+          .each(function(d) { if (!d.name) d3.select(this).attr('disabled', true);});
+          //.attr('disabled', function(d) {return d.name == undefined;} );
 
-    options.attr('value', function (d, i) { return i; })
-          .text(function (d) { return d.name; });
-
-    options.exit().remove();
+    //options.exit().remove();
 
     if (list.length > 0) dataService.load(list[0].name);
   }
@@ -137,10 +140,6 @@ define(function(require) {
 
     document.getElementById('file')
       .addEventListener("change", loadFile, false);
-
-    d3.select('file').on('change', function() {
-      console.log('loaded');
-    });
 
     var g = d3.select('#info').append('g')
       .attr('class', 'info');

@@ -11,14 +11,13 @@ define(function(require) {
     function newRun(run) {
       var jobs = run.jobs.values().sort(function(a,b) { return b.n - a.n;});
 
-      var rows = d3.select('#jobs').select('tbody').selectAll('tr')
-        .data(jobs, function(d) { return d.id;});
+      d3.select('#jobs').select('tbody').selectAll('tr').remove();
 
-      rows.enter()
-        .append('tr')
-        .call(render);
-
-      rows.exit().remove();
+      d3.select('#jobs').select('tbody').selectAll('tr')
+        .data(jobs, function(d) { return d.id;})
+        .enter()
+          .append('tr')
+          .call(render);
     }
 
     function render() {

@@ -8,6 +8,9 @@ define(function(require) {
   var queue = require('d3_queue');
   var Radio = require('radio');
 
+  var MULTI_JOBS_COLOR = '#00ffff';
+  var UNKNOWN_JOB_COLOR = '#a0a0a0';
+
   var runsInfo;
   var runs = d3.map();
   var colors = d3.scale.category10();
@@ -42,7 +45,8 @@ define(function(require) {
           var router = {
             id: model.router_id(g, r, c),
             g: g,  r:r,  c:c,
-            jobs:[undefined, undefined, undefined, undefined]
+            jobs:[],
+            color: UNKNOWN_JOB_COLOR
           };
           row.push(router);
           run.routers.set(router.id, router);
@@ -73,8 +77,9 @@ define(function(require) {
   }
 
   function loadPlacement(data, run) {
-    var job;
-    var i=-1, rank;
+    var job, router, color_idx=0;
+    var i=-1, rank, n;
+    var multi = 0;
     data.forEach(function (item) {
       i++;
       if (!item.core || item.core == 0) {
@@ -86,33 +91,35 @@ define(function(require) {
         item.r = +item.r;
         item.c = +item.c;
         item.n = +item.n;
-
         item.id = model.node_id(item);
         item.jobid = +item.jobid;
-        //console.log('rank:',rank,  item);
-        run.nodes.set(item.rank, item);
-        run.routers.get(model.router_id(item)).jobs[item.n] = item.jobid;
+        if (item.jobid == undefined)
+          console.log('undefined jobid');
+
         job = run.jobs.get(item.jobid);
         if (!job) {
-          job = {id: item.jobid, n:0};
+          job = {id: item.jobid, n:0, color:colors(color_idx++)};
+          console.log(job);
           run.jobs.set(item.jobid, job);
+        }
+        run.nodes.set(item.rank, item);
+
+        router = run.routers.get(model.router_id(item));
+        if (router.jobs.indexOf(job) == -1) {
+          router.jobs.push(job);
+          if (router.jobs.length == 1) router.color = job.color;
+          else {
+            router.color = MULTI_JOBS_COLOR;
+            if (router.jobs.length == 2) multi++;
+          }
         }
         job.n++;
       }
     });
 
-    console.log('placement: rank=',rank);
-    var jobs = run.jobs.values();
-    jobs.sort(function(a, b) {
-      return b.n - a.n;
-    });
+    console.log('multi:',multi);
 
-    var i=0;
-    jobs.forEach(function(job) {
-      job.color = colors(i);
-      run.job_colors.set(job.id, job.color);
-      if (i < 9) i++;
-    });
+    console.log('placement: rank=',rank);
   }
 
   function loadCounters(data, run) {
@@ -156,11 +163,11 @@ define(function(require) {
 
   service.loadCatalog = function (file) {
     d3.csv(file, function(list) {
-      list.sort(function(a,b) {
-        if (a.name < b.name) return -1;
-        else if (a.name > b.name) return 1;
-        return 0;
-      });
+      //list.sort(function(a,b) {
+      //  if (a.name < b.name) return -1;
+      //  else if (a.name > b.name) return 1;
+      //  return 0;
+      //});
       list.forEach(function(item) {
         item.counters = '/data/'+item.counters;
         item.jobs = '/data/'+item.jobs;

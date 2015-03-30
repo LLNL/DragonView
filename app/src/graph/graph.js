@@ -14,11 +14,42 @@ define(function(require) {
     var edge_map = d3.map();
     var link_map = d3.map();
     var nodes, edges;
+    var container, svgNodes, svgEdges;
     var d3nodes, d3edges;
     var force = d3.layout.force().size([500, 500]);
     var colors = {blue: 'steelblue', green:'green', black:'#333'};
+    var comm_file;
 
     var svgContainer, svg;
+
+    var zoom = d3.behavior.zoom()
+      .scaleExtent([0.1, 10])
+      .on('zoom', zoomed);
+
+    var drag = d3.behavior.drag()
+      .origin(function(d) { return d;})
+      .on('dragstart', dragstarted)
+      .on('drag', dragged)
+      .on('dragend', dragended);
+
+    function dragstarted(d) {
+      d3.event.sourceEvent.stopPropagation();
+      force.start();
+      //d3.select(this).classed("dragging", true);
+    }
+
+    function dragged(d) {
+      d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    }
+
+    function dragended(d) {
+      d3.select(this).classed("dragging", false);
+    }
+
+    function zoomed() {
+      container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+
 
     function getNode(rank) {
       var nid = Math.floor(+rank/model.N_CORES);
@@ -59,14 +90,17 @@ define(function(require) {
 
     function load(filename) {
       force.stop();
+      if (filename == comm_file) return;
+      comm_file = filename;
+
       node_map = d3.map();
       edge_map = d3.map();
       link_map = d3.map();
       nodes = [];
       edges = [];
 
-      svg.select('.nodes').selectAll('.node').remove();
-      svg.select('.links').selectAll('.link').remove();
+      svgNodes.selectAll('.node').remove();
+      svgEdges.selectAll('.link').remove();
 
       if (!filename) {
         console.log('*** missing name of comm file');
@@ -103,11 +137,16 @@ define(function(require) {
       force
         .nodes(nodes)
         .links(edges)
-        .on('tick', update)
+        .on('tick', null)
         .on('end', end)
         .start();
 
-      d3edges = svg.select('.edges').selectAll('.edge')
+      console.log('force loop');
+      for (var i=0; i<100; i++) force.tick();
+      console.log('force start update');
+      force.on('tick', update);
+
+      d3edges = svgEdges.selectAll('.edge')
         .data(edges,  function(d) { return d.id; });
 
       d3edges.enter()
@@ -118,7 +157,7 @@ define(function(require) {
       d3edges.exit()
         .remove();
 
-      d3nodes = svg.select('.nodes').selectAll('.node')
+      d3nodes = svgNodes.selectAll('.node')
         .data(nodes,  function(d) { return d.id;});
 
       d3nodes.enter()
@@ -128,7 +167,7 @@ define(function(require) {
         .attr('cy', function(d) { return d.y;})
         .attr('r', 3)
         .attr('fill', 'lightgray')
-        .call(force.drag);
+        .call(drag);
 
       d3nodes.exit().remove();
 
@@ -195,7 +234,7 @@ define(function(require) {
       d3links.exit()
         .attr('stroke', '#ddd');
 
-      var nodes = svg.select('.nodes').selectAll('.node')
+      var nodes = svgNodes.selectAll('.node')
         .data(map.values(), function(d) { return d.id;});
 
       nodes
@@ -216,16 +255,27 @@ define(function(require) {
         .attr('width', WIDTH)
         .attr('height', HEIGHT);
 
-      svg = svgContainer.append("g");
+      svg = svgContainer.append("g").call(zoom);
 
-      svg.append('g').attr('class', 'edges');
-      svg.append('g').attr('class', 'nodes');
+      svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", WIDTH)
+        .attr("height", WIDTH);
+
+      container = svg.append('g');
+      svgEdges = container.append('g').attr('class', 'edges');
+      svgNodes = container.append('g').attr('class', 'nodes');
 
       return this;
     };
     
     view.resize = function(w,h) {
       force.size([w, h]);
+
+      svg.select('.overlay')
+        .attr('width', w)
+        .attr('height', h);
+
       return this;
     };
 

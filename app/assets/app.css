@@ -152,9 +152,12 @@ div {
     stroke: red;
     stroke-width: 4; }
 .radial circle {
-  stroke-width: 2px; }
+  stroke-width: 2px;
+  r: 2px; }
   .radial circle:hover {
     stroke-width: 4px; }
+  .radial circle:active {
+    r: 4px; }
 
 .matrix line {
   fill: none;
@@ -173,3 +176,7 @@ div {
 
 .graph-ctrl {
   padding-left: 40px; }
+
+.overlay {
+  fill: none;
+  pointer-events: all; }
