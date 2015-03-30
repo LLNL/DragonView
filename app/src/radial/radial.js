@@ -147,14 +147,14 @@ define(function(require) {
 
     function renderRouters(routers) {
       var list = [], router, jid, i, id, jobs;
-      var map1 = d3.map();
+      //var map1 = d3.map();
       for (router of routers.values()) {
         list.push(router);
-        var v = map1.get(router.color) || 0;
-        map1.set(router.color,  v+1);
+      //  var v = map1.get(router.color) || 0;
+      //  map1.set(router.color,  v+1);
       }
-      console.log('# routers:', list.length, 'colors:',map1);
-      var map = d3.map();
+      //console.log('# routers:', list.length, 'colors:',map1);
+      //var map = d3.map();
 
       var d3routers = svg.select('.routers').selectAll('.router')
         .data(list, function(d) { return d.id;});
@@ -164,19 +164,19 @@ define(function(require) {
         .call(Router);
 
       d3routers.selectAll('circle')
+        //.each(function(d) { c++; var v = map.get(d.color) || 0; map.set(d.color, v+1); })
         .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
         .attr('fill', function(d) {return d.color; })
-        .attr('r', 4)
-        .each(function(d) { c++; var v = map.get(d.color) || 0; map.set(d.color, v+1); });
+        .attr('r', 4);
 
       d3routers.exit().selectAll('circle')
-        .each(function(d) { r++;})
+        //.each(function(d) { r++;})
         .attr('r', 2);
         //.remove();
 
-      console.log('e:',e, ' c:',c, ' r:',r);
-      console.log('map:',map);
+      //console.log('e:',e, ' c:',c, ' r:',r);
+      //console.log('map:',map);
     }
 
     function render() {

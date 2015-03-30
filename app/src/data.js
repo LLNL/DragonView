@@ -99,7 +99,7 @@ define(function(require) {
         job = run.jobs.get(item.jobid);
         if (!job) {
           job = {id: item.jobid, n:0, color:colors(color_idx++)};
-          console.log(job);
+          //console.log(job);
           run.jobs.set(item.jobid, job);
         }
         run.nodes.set(item.rank, item);
@@ -116,14 +116,11 @@ define(function(require) {
         job.n++;
       }
     });
-
-    console.log('multi:',multi);
-
-    console.log('placement: rank=',rank);
   }
 
   function loadCounters(data, run) {
-    var i, n, values, sg, sr, sc, dg, dr, dc, color, j, nc, id, link;
+    var i, n, idx, base;
+    var values, sg, sr, sc, dg, dr, dc, color, j, nc, id, link;
 
     var rows = d3.csv.parseRows(data);
     run.countersNames = rows[0].slice(7);
@@ -151,11 +148,20 @@ define(function(require) {
         dest: run.routers.get(model.router_id(dg, dr, dc)),
         counters: values
       };
+
+      idx = 0;
+      base = link.id;
+      while (run.links.get(link.id))  {
+        idx++;
+        link.id = base+'#'+idx;
+      }
+      if (idx >2) console.log('link:',link);
+      run.links.set(link.id, link);
       if (color == 'b') run.blues.set(link.id, link);
       else if (color == 'g') run.greens.set(link.id, link);
       else run.blacks.set(link.id, link);
 
-      run.links.set(link.id, link);
+
     }
   }
 
