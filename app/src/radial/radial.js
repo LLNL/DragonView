@@ -18,6 +18,7 @@ define(function(require) {
     var range, counterId;
     var data, groups, connectors, connections;
     var d3groups, d3connectors, d3connections;
+    var d3greenLinksArc, d3greenLinksConn, d3blueLinks;
 
     var group_arc = d3.svg.arc()
       .innerRadius(opt.innerRadius)
@@ -31,6 +32,18 @@ define(function(require) {
       .radius(function(d) { return d.r; })
       .angle(function(d) { return d.angle; });
 
+    var curveAngle = 0.5;
+    var arc = d3.svg.arc()
+      .startAngle(function(d){
+            var angle = Math.min(d.src.angle, d.dest.angle);
+            return angle + (curveAngle*Math.PI/180);
+        })
+      .endAngle(function(d){
+        var angle = Math.max(d.src.angle, d.dest.angle);
+        return angle - (curveAngle*Math.PI/180);
+        })
+      .innerRadius(function(d){return d.src.radius+5;})
+      .outerRadius(function(d){return d.dest.radius+5;});
 
     function find(key) {
       var ng = data.blueRoutes.children.length;
@@ -97,6 +110,8 @@ define(function(require) {
 
     function filterGreens(routers) {
       var links = [], value;
+      //console.log("data : ", data);
+
       data.greens.forEach(function(link) {
         value = link.counters[counterId];
         if (range[0] <= value && value <= range[1]) {
@@ -105,6 +120,31 @@ define(function(require) {
           routers.set(link.dest.id, link.dest);
         }
       });
+      //console.log(links.length);
+
+      d3greenLinksArc = svg.select('.greenLinks').selectAll('.greenLink')
+          .data(links);
+
+      d3greenLinksArc.enter()
+          .call(GreenLinkArc);
+
+      d3greenLinksArc
+          .each(function(d){d.source = d[0];d.target = d[d.length-1];})
+          .attr("d", arc);
+
+      d3greenLinksArc.exit().remove();
+
+      d3greenLinksConn = svg.select('.greenLinksConnectors').selectAll('.greenLink')
+          .data(links);
+
+      d3greenLinksConn.enter()
+          .call(GreenLinkConn);
+
+      //d3greenLinksConn
+      //    .each(function(d){d.source = d[0];d.target = d[d.length-1];})
+      //    .attr("d", arcConn);
+
+      d3greenLinksConn.exit().remove();
     }
 
     function render() {
@@ -165,13 +205,67 @@ define(function(require) {
         .attr('cx', function(d) { return d.r * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.r * Math.sin(d.angle-Math.PI/2);});
     }
-
+    //-------------------------------------------------------
     function Connection(selection) {
        this.append("path")
-          .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
+          .each(function(d) {
+               d.source = d[0]; d.target = d[d.length - 1];
+           })
+
           .attr("class", "connection")
           .attr("d", line);
     }
+
+    function GreenLinkArc(selection){
+        this.append("path")
+            .each(function(d){
+                d.source = d[0]; d.target = d[d.length - 1];
+            })
+            .attr("class", "greenLink")
+            .attr("d", arc);
+    }
+
+    function GreenLinkConn(selection){
+
+        this.append("path")
+            .attr("class", "greenLink")
+           .attr('d', function(d){
+                var src = d.src;
+                var dest = d.dest;
+
+                var linkAngle = dest.angle - src.angle;
+                if(linkAngle < 0){
+                    var temp = src;
+                    src = dest;
+                    dest = temp;
+                }
+
+                source1X =src.radius * Math.cos(src.angle-Math.PI/2);
+                source1Y =src.radius * Math.sin(src.angle-Math.PI/2);
+                controlPt1X =(src.radius+2) * Math.cos(src.angle-Math.PI/2-(curveAngle*Math.PI/180));
+                controlPt1Y = (src.radius+2) * Math.sin(src.angle-Math.PI/2-(curveAngle*Math.PI/180));
+                target1X = (src.radius+5) * Math.cos(src.angle-Math.PI/2 + (curveAngle*Math.PI/180));
+                target1Y = (src.radius+5) * Math.sin(src.angle-Math.PI/2 + (curveAngle*Math.PI/180));
+
+                source2X = dest.radius * Math.cos(dest.angle-Math.PI/2);
+                source2Y = dest.radius * Math.sin(dest.angle-Math.PI/2);
+                controlPt2X = (dest.radius+2) * Math.cos(dest.angle-Math.PI/2+(curveAngle*Math.PI/180));
+                controlPt2Y = (dest.radius+2) * Math.sin(dest.angle-Math.PI/2+(curveAngle*Math.PI/180));
+                target2X = (dest.radius+5) * Math.cos(dest.angle-Math.PI/2-(curveAngle*Math.PI/180));
+                target2Y = (dest.radius+5) * Math.sin(dest.angle-Math.PI/2-(curveAngle*Math.PI/180));
+
+             //console.log("here..: ", d.src.radius * Math.cos(d.src.angle-Math.PI/2) , d.src.radius * Math.sin(d.src.angle-Math.PI/2));
+
+                return "M" + source1X + "," + source1Y +
+                    "Q" + controlPt1X + "," + controlPt1Y +
+                    " " + target1X + "," + target1Y +
+                    "M" + source2X + "," + source2Y +
+                    "Q" + controlPt2X + "," + controlPt2Y +
+                    " " + target2X + "," + target2Y;
+
+            });
+    }
+    //----------------------------------------------------
 
     /*
      * radial
@@ -192,6 +286,8 @@ define(function(require) {
       svg.append('g').attr('class', 'routers');
       svg.append('g').attr('class', 'connectors');
       svg.append('g').attr('class', 'connections');
+      svg.append('g').attr('class', 'greenLinks');
+      svg.append('g').attr('class', 'greenLinksConnectors');
 
       return this;
     };
