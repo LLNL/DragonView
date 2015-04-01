@@ -36,7 +36,7 @@ define(function(require) {
 
     var connectionPath = d3.svg.line.radial()
       .interpolate("bundle")
-      .tension(.2)
+      .tension(.4)
       .radius(function(d) { return d.r; })
       .angle(function(d) { return d.angle; });
 
