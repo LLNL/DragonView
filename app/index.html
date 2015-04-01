@@ -15,37 +15,52 @@
 <div class="title">Dragonfly</div>
 
 <div id="controls" class="controls">
-  <input id="file" type="file" name="input_file" style="display:none">
-  <ul>
-    <li>
-      <table>
-        <tbody>
-          <tr><td>Catalog:</td><td><label id="catalog"></label> <button id="load">...</button></td></tr>
-          <tr><td>Run:</td><td><select id="run"></select></td></tr>
-          <tr><td>Counter:</td><td><select id="counter"></select></td></tr>
-        </tbody>
-     </table>
-    </li>
+    <input id="file" type="file" name="input_file" style="display:none">
+    <ul>
+        <li>
+            <table>
+                <tbody>
+                <tr>
+                    <td>Catalog:</td>
+                    <td><label id="catalog"></label>
+                        <button id="load">...</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Run:</td>
+                    <td><select id="run"></select></td>
+                </tr>
+                <tr>
+                    <td>Counter:</td>
+                    <td><select id="counter"></select></td>
+                </tr>
+                </tbody>
+            </table>
+        </li>
 
-    <li>
-      <svg id="info" class="info"></svg>
-    </li>
+        <li>
+            <svg id="info" class="info"></svg>
+        </li>
 
-    <li>
-      <span class="li-title">Jobs</span>
-      <table id="jobs" class="jobs li-body">
-        <thead>
-          <tr><th>id</th><th>size</th><th>color</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </li>
-  </ul>
+        <li>
+            <span class="li-title">Jobs</span>
+            <table id="jobs" class="jobs li-body">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>size</th>
+                    <th>color</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </li>
+    </ul>
 </div>
 
 <div class="views tabs">
-  <ul class="tab-links"></ul>
-  <div class="tab-content"></div>
+    <ul class="tab-links"></ul>
+    <div class="tab-content"></div>
 </div>
 
 

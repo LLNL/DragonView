@@ -78,15 +78,19 @@ define(function(require) {
 
   function loadPlacement(data, run) {
     var job, router, color_idx=0;
-    var i=-1, rank, n;
+    var rank=-1, node_rank, n;
     var multi = 0;
     data.forEach(function (item) {
-      i++;
-      if (!item.core || item.core == 0) {
-        rank = Math.round(i/24);
-        if (i%24 > 0) {
-          console.log('rank issue:', i, rank);}
-        item.rank = rank;
+      rank++;
+      if (item.core == undefined || item.core == 0) {
+        if (item.core == undefined) {
+          node_rank = rank;
+        } else {
+          node_rank = Math.floor(rank/24);
+          if (rank % 24 > 0) console.log('rank issue:', rank, node_rank)
+        }
+
+        item.rank = node_rank;
         item.g = +item.g;
         item.r = +item.r;
         item.c = +item.c;

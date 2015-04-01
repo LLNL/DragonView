@@ -106,6 +106,7 @@ div {
 
   .bar {
     shape-rendering: crispEdges;
+    pointer-events: none;
   }
 
   .bar text {
@@ -159,7 +160,7 @@ div {
 .radial {
   .group {
 //    fill: #dadada;
-    fill: #f0f0f0;
+    fill: #f8f8f8;
     stroke: none;
 
     &:hover {
