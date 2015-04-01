@@ -159,7 +159,6 @@ define(function(require) {
         idx++;
         link.id = base+'#'+idx;
       }
-      if (idx >2) console.log('link:',link);
       run.links.set(link.id, link);
       if (color == 'b') run.blues.set(link.id, link);
       else if (color == 'g') run.greens.set(link.id, link);

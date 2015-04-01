@@ -14,6 +14,7 @@ define(function(require) {
     var MULTI_JOBS_COLOR = '#00ffff';
     var UNKNOWN_JOB_COLOR = '#a0a0a0';
 
+    var minimum, maximum, valid = false;
     var layout = Layout().size([WIDTH, HEIGHT]),
         layout_gb = LayoutGB(),
         opt = layout.parms(),
@@ -40,6 +41,19 @@ define(function(require) {
       .radius(function(d) { return d.r; })
       .angle(function(d) { return d.angle; });
 
+    var value_band = d3.scale.linear().rangeRound([0,8]);
+    var value_color = d3.scale.ordinal().domain([0,8]).range(colorbrewer.YlOrRd[9]);
+
+    function link_color(v) {
+      return value_color(value_band(v));
+    }
+
+    //var link_color = d3.scale.linear()
+    //  .range(['#ffffbe', '#531a00'])
+    //  //.range(["#ffffcc", "#800026"])
+    //  //.range(['#fef3e5', '#700000'])
+    //  //.range(['#ff0000', '#00ff00'])
+    //  .interpolate(d3.interpolateHcl);
 
     function find(key) {
       var ng = data.blueRoutes.children.length;
@@ -68,8 +82,8 @@ define(function(require) {
       var value;
       blueLinks = [];
       data.blues.forEach(function (link) {
-          value = link.counters[counterId];
-          if (range[0] <= value && value <= range[1]) {
+          //link.value = link.counters[counterId];
+          if (range[0] <= link.value && link.value <= range[1]) {
             link.source = find(link.srcId);
             link.target = find(link.destId);
             blueLinks.push(link);
@@ -85,8 +99,8 @@ define(function(require) {
       var value;
       greenLinks = [];
       data.greens.forEach(function(link) {
-        value = link.counters[counterId];
-        if (range[0] <= value && value <= range[1]) {
+        //value = link.counters[counterId];
+        if (range[0] <= link.value && link.value <= range[1]) {
           greenLinks.push(link);
           routers.set(link.src.id, link.src);
           routers.set(link.dest.id, link.dest);
@@ -98,8 +112,8 @@ define(function(require) {
       var value;
       blackLinks = [];
       data.blacks.forEach(function(link) {
-        value = link.counters[counterId];
-        if (range[0] <= value && value <= range[1]) {
+        //value = link.counters[counterId];
+        if (range[0] <= link.value && link.value <= range[1]) {
           blackLinks.push(link);
           routers.set(link.src.id, link.src);
           routers.set(link.dest.id, link.dest);
@@ -108,13 +122,18 @@ define(function(require) {
     }
 
     function renderLinks() {
+      var i, n;
       if (selectedGroup == undefined) {
         svg.select('.connectors').selectAll('circle').remove();
         svg.select('.internal').selectAll('path').remove();
 
         // render blues
         var blue = bundle(blueLinks);
-        blue.forEach(function(l) { l.color = 'blue'; });
+        i=-1;
+        n=blueLinks.length;
+        while (++i < n) {
+          blue[i].color = blueLinks[i].vis_color;
+        }
         d3connections = svg.select('.connections').selectAll('.connection')
           .data(blue);
 
@@ -123,16 +142,21 @@ define(function(require) {
 
         d3connections
           .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
+          .attr('stroke', function(d) { return d.color; })
           .attr("d", connectionPath);
 
         d3connections.exit().remove();
       } else {
         // render green-black
-        var green = bundle(layout_gb(greenLinks, selectedGroup.id));
+        var gLinks = layout_gb(greenLinks, selectedGroup.id);
+        var green = bundle(gLinks);
         //var black = bundle(layout_gb(blackLinks, selectedGroup.id));
 
-        green.forEach(function(l) { l.color = 'green'; });
-        //black.forEach(function(l) { l.color = 'black'; });
+        i=-1;
+        n=gLinks.length;
+        while (++i < n) {
+          green[i].color = gLinks[i].vis_color;
+        }
 
         d3connections = svg.select('.connections').selectAll('.connection')
           .data(green/*.concat(black)*/);
@@ -142,6 +166,7 @@ define(function(require) {
 
         d3connections
           .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
+          .attr('stroke', function(d) { return d.color; })
           .attr("d", connectionPath);
 
         d3connections.exit().remove();
@@ -292,7 +317,7 @@ define(function(require) {
        this.append("path")
           .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
           .attr("class", "connection")
-          .attr('stroke', function(d) { return d.color; })
+          //.attr('stroke', function(d) { return d.color; })
           .attr("d", connectionPath);
          // .on('mouseover', function(d) {
          //   d3.select(d.source.router.node).attr('r', 5);
@@ -357,6 +382,7 @@ define(function(require) {
     radial.data = function(_) {
       if (!arguments.length) return data;
       data = _;
+      valid = false;
       layout(data);
       render();
       return this;
@@ -365,6 +391,7 @@ define(function(require) {
     radial.counter = function(_) {
       if (!arguments.length) return counterId;
       counterId = _;
+      valid = false;
       return this;
     };
 
@@ -374,19 +401,31 @@ define(function(require) {
       return this;
     };
 
-    radial.counter = function(_) {
-      if (!arguments.length) return counterId;
-      counterId = _;
-      return this;
-    };
 
     radial.filter = function() {
-      if (data && range)
+      if (data && range) {
+        if (!valid) {
+          minimum = range[1];
+          maximum = range[0];
+          data.links.forEach(function(link) {
+            link.value = link.counters[counterId];
+            //if (link.value> 0) {
+              minimum = Math.min(minimum, link.value);
+              maximum = Math.max(maximum, link.value);
+            //}
+          });
+          console.log('min/max', minimum, maximum);
+          //link_color.domain([minimum, maximum]);
+          value_band.domain([minimum, maximum]);
+          data.links.forEach(function(link) {
+            link.vis_color = link_color(link.value);
+          });
+          valid = true;
+        }
         filter();
+      }
       return this;
     };
-
-
 
     return radial;
   };
