@@ -9,7 +9,7 @@ define(function(require) {
   var Radio = require('radio');
 
   return function() {
-    var radial, el;
+    var radial, el, group;
     var active = false, _data, _range, _counter;
 
     Radio.channel('data').on('run', function (data) {
@@ -35,6 +35,7 @@ define(function(require) {
     var view = function(elem) {
       el = $(elem);
       radial = Radial().el(elem).counter(0).resize(600, 600);
+
       el.detectResizing({onResize: onResize});
       return view;
     };

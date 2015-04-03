@@ -135,30 +135,40 @@ div {
   .slider .resize {
     fill: #888; }
 
-.radial .group {
-  fill: #f8f8f8;
-  stroke: none; }
-  .radial .group:hover {
-    stroke: #808080;
-    stroke-width: 1px; }
-  .radial .group.selected {
-    fill: #d8d8d8; }
-.radial .connector {
-  fill: #a0a0a0;
-  stroke: none; }
-.radial .connection {
-  stroke-opacity: .4;
-  fill: none; }
-  .radial .connection:hover, .radial .connection.highlight {
-    stroke: red;
-    stroke-width: 4; }
-.radial circle {
-  stroke-width: 2px;
-  r: 2px; }
-  .radial circle:hover {
-    stroke-width: 4px; }
-  .radial circle:active {
-    r: 4px; }
+.radial-view {
+  display: inline-block; }
+
+.radial {
+  display: inline-block; }
+  .radial .group {
+    fill: #f8f8f8;
+    stroke: none; }
+    .radial .group:hover {
+      stroke: #808080;
+      stroke-width: 1px; }
+    .radial .group.selected {
+      fill: #d8d8d8; }
+  .radial .connector {
+    fill: #a0a0a0;
+    stroke: none; }
+  .radial .connection {
+    stroke-opacity: .4;
+    fill: none; }
+    .radial .connection:hover, .radial .connection.highlight {
+      stroke: red;
+      stroke-width: 4; }
+  .radial circle {
+    stroke-width: 2px;
+    r: 2px; }
+    .radial circle:hover {
+      stroke-width: 4px; }
+    .radial circle:active {
+      r: 4px; }
+
+.canvas {
+  position: absolute;
+  right: 0px;
+  top: 0; }
 
 .matrix line {
   fill: none;
@@ -182,4 +192,12 @@ div {
   fill: none;
   pointer-events: all; }
 
-/*# sourceMappingURL=app.css.map */
+/* group view */
+.group-view .router {
+  fill: #aaa;
+  stroke-width: 1px;
+  stroke: #fff; }
+.group-view .green {
+  stroke-width: 1px;
+  stroke: green;
+  shape-rendering: crispEdges; }

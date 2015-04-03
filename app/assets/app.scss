@@ -157,7 +157,14 @@ div {
 }
 
 
+.radial-view {
+  display: inline-block;
+}
+
+
 .radial {
+  display: inline-block;
+
   .group {
 //    fill: #dadada;
     fill: #f8f8f8;
@@ -204,10 +211,16 @@ div {
     }
   }
 
-  .green-blue {
+}
 
-  }
+.canvas {
+  position: absolute;
+  right: 0px;
+  top: 0;
 
+//  fill: '#f0f0f0';
+//  display: inline-block;
+//  vertical-align: top;
 }
 
 .matrix {
@@ -239,4 +252,22 @@ div {
 .overlay {
   fill: none;
   pointer-events: all;
+}
+
+/* group view */
+.group-view {
+//  display: inline-block;
+//  vertical-align: top;
+
+  .router {
+    fill: #aaa;
+    stroke-width: 1px;
+    stroke: #fff;
+  }
+
+  .green {
+    stroke-width: 1px;
+    stroke: green;
+    shape-rendering: crispEdges;
+  }
 }

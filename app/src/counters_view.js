@@ -10,7 +10,8 @@ define(function(require) {
     d3 = require('d3'),
     Histogram = require('svg/histogram_g'),
     Slider = require('svg/slider'),
-    dataService = require('data');
+    dataService = require('data'),
+    config = require('config');
 
   var DEFAULT_COLLECTION = 'data/runs-single.csv';
 
@@ -98,11 +99,16 @@ define(function(require) {
   function selectCounter(index) {
     var min = Number.MAX_VALUE, max=0, value;
     run.links.forEach(function(link) {
-      value = link.counters[index];
-      if (value > 0) {
-        if (value < min) min = value;
-        if (value > max) max = value;
+      link.value = link.counters[index];
+      if (link.value > 0) {
+        if (link.value < min) min = link.value;
+        if (link.value > max) max = link.value;
       }
+    });
+
+    config.data_range([min, max]);
+    run.links.forEach(function(link) {
+      link.vis_color = config.color(link.value);
     });
 
     histogram.counter(index).range([min,  max]);

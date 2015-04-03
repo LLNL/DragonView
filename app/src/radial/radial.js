@@ -7,6 +7,8 @@ define(function(require) {
   var Layout = require('radial/layout');
   var LayoutGB = require('radial/layout_gb');
   var model = require('model');
+  var BGCanvas = require('radial/bg_canvas');
+  var config = require('config');
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
@@ -17,11 +19,14 @@ define(function(require) {
     var minimum, maximum, valid = false;
     var layout = Layout().size([WIDTH, HEIGHT]),
         layout_gb = LayoutGB(),
+        bg_canvas = BGCanvas(),
         opt = layout.parms(),
         mode = 'blue',
         selectedGroup = undefined,
         blueLinks, greenLinks, blackLinks,
         svgContainer, svg;
+
+    var d3groupView, d3groupView2, d3bgView;
 
     var range, counterId;
     var data, groups, connectors, connections;
@@ -40,20 +45,6 @@ define(function(require) {
       .tension(.4)
       .radius(function(d) { return d.r; })
       .angle(function(d) { return d.angle; });
-
-    var value_band = d3.scale.linear().rangeRound([0,8]);
-    var value_color = d3.scale.ordinal().domain([0,8]).range(colorbrewer.YlOrRd[9]);
-
-    function link_color(v) {
-      return value_color(value_band(v));
-    }
-
-    //var link_color = d3.scale.linear()
-    //  .range(['#ffffbe', '#531a00'])
-    //  //.range(["#ffffcc", "#800026"])
-    //  //.range(['#fef3e5', '#700000'])
-    //  //.range(['#ff0000', '#00ff00'])
-    //  .interpolate(d3.interpolateHcl);
 
     function find(key) {
       var ng = data.blueRoutes.children.length;
@@ -82,15 +73,14 @@ define(function(require) {
       var value;
       blueLinks = [];
       data.blues.forEach(function (link) {
-          //link.value = link.counters[counterId];
-          if (range[0] <= link.value && link.value <= range[1]) {
-            link.source = find(link.srcId);
-            link.target = find(link.destId);
-            blueLinks.push(link);
+        if (range[0] <= link.value && link.value <= range[1]) {
+          link.source = find(link.srcId);
+          link.target = find(link.destId);
+          blueLinks.push(link);
 
-            routers.set(link.src.id, link.src);
-            routers.set(link.dest.id, link.dest);
-          }
+          routers.set(link.src.id, link.src);
+          routers.set(link.dest.id, link.dest);
+        }
         }
       );
     }
@@ -99,7 +89,6 @@ define(function(require) {
       var value;
       greenLinks = [];
       data.greens.forEach(function(link) {
-        //value = link.counters[counterId];
         if (range[0] <= link.value && link.value <= range[1]) {
           greenLinks.push(link);
           routers.set(link.src.id, link.src);
@@ -112,7 +101,6 @@ define(function(require) {
       var value;
       blackLinks = [];
       data.blacks.forEach(function(link) {
-        //value = link.counters[counterId];
         if (range[0] <= link.value && link.value <= range[1]) {
           blackLinks.push(link);
           routers.set(link.src.id, link.src);
@@ -123,92 +111,98 @@ define(function(require) {
 
     function renderLinks() {
       var i, n;
-      if (selectedGroup == undefined) {
-        svg.select('.connectors').selectAll('circle').remove();
-        svg.select('.internal').selectAll('path').remove();
+      //if (selectedGroup == undefined) {
+      //  svg.select('.connectors').selectAll('circle').remove();
+      //  svg.select('.internal').selectAll('path').remove();
+      //
+      //  renderBlues();
+      //} else {
+      //  renderGreens();
+      //  //group_view(greenLinks, selectedGroup);
+      //  //group_view2(greenLinks, blackLinks, selectedGroup);
+      //}
+      //bg_view(greenLinks, blackLinks);
+      renderBlues();
+      bg_canvas(greenLinks, blackLinks);
+    }
 
-        // render blues
-        var blue = bundle(blueLinks);
-        i=-1;
-        n=blueLinks.length;
-        while (++i < n) {
-          blue[i].color = blueLinks[i].vis_color;
-        }
-        d3connections = svg.select('.connections').selectAll('.connection')
-          .data(blue);
-
-        d3connections.enter()
-          .call(Connection);
-
-        d3connections
-          .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
-          .attr('stroke', function(d) { return d.color; })
-          .attr("d", connectionPath);
-
-        d3connections.exit().remove();
-      } else {
-        // render green-black
-        var gLinks = layout_gb(greenLinks, selectedGroup.id);
-        var green = bundle(gLinks);
-        //var black = bundle(layout_gb(blackLinks, selectedGroup.id));
-
-        i=-1;
-        n=gLinks.length;
-        while (++i < n) {
-          green[i].color = gLinks[i].vis_color;
-        }
-
-        d3connections = svg.select('.connections').selectAll('.connection')
-          .data(green/*.concat(black)*/);
-
-        d3connections.enter()
-          .call(Connection);
-
-        d3connections
-          .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
-          .attr('stroke', function(d) { return d.color; })
-          .attr("d", connectionPath);
-
-        d3connections.exit().remove();
-
-        var connectors = svg.select('.connectors').selectAll('circle')
-          .data(layout_gb.nodes(), function(d) { return d.id;});
-
-        connectors
-          .enter()
-            .append('circle')
-              .attr('r', 2)
-              .attr('fill', '#888');
-
-        connectors
-          .attr('cx', function(d) { return d.r*Math.cos(d.angle);})
-          .attr('cy', function(d) { return d.r*Math.sin(d.angle);});
-
-        connectors.exit().remove();
-
-        var arcs = layout_gb.root().children.map(function(node) {
-          return {startAngle:node.children[0].angle, endAngle:node.children[15].angle};
-        });
-
-        var size = layout_gb.size();
-        var arc = d3.svg.arc()
-          .innerRadius(size[1]+4)
-          .outerRadius(size[1]+5);
-
-        var paths = svg.select('.internal').selectAll('path')
-          .data(arcs);
-
-        paths.enter()
-            .append('path')
-              .style('stroke', '#666');
-
-        paths
-          .attr('d', arc);
-
-        paths.exit().remove();
-
-
+    function renderBlues() {
+      var blue = bundle(blueLinks);
+      var i=-1, n=blueLinks.length;
+      while (++i < n) {
+        blue[i].color = blueLinks[i].vis_color;
       }
+
+      d3connections = svg.select('.connections').selectAll('.connection')
+        .data(blue);
+
+      d3connections.enter()
+        .call(Connection);
+
+      d3connections
+        .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
+        .attr('stroke', function(d) { return d.color; })
+        .attr("d", connectionPath);
+
+      d3connections.exit().remove();
+    }
+
+    function renderGreens() {
+      var gLinks = layout_gb(greenLinks, selectedGroup.id);
+      var green = bundle(gLinks);
+      var i=-1, n=gLinks.length;
+      while (++i < n) {
+        green[i].color = gLinks[i].vis_color;
+      }
+
+      d3connections = svg.select('.connections').selectAll('.connection')
+        .data(green/*.concat(black)*/);
+
+      d3connections.enter()
+        .call(Connection);
+
+      d3connections
+        .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
+        .attr('stroke', function(d) { return d.color; })
+        .attr("d", connectionPath);
+
+      d3connections.exit().remove();
+
+      var connectors = svg.select('.connectors').selectAll('circle')
+        .data(layout_gb.nodes(), function(d) { return d.id;});
+
+      connectors
+        .enter()
+        .append('circle')
+        .attr('r', 1)
+        .attr('fill', '#888');
+
+      connectors
+        .attr('cx', function(d) { return d.r*Math.cos(d.angle);})
+        .attr('cy', function(d) { return d.r*Math.sin(d.angle);});
+
+      connectors.exit().remove();
+
+      var arcs = layout_gb.root().children.map(function(node) {
+        return {startAngle:node.children[0].angle, endAngle:node.children[15].angle};
+      });
+
+      var size = layout_gb.size();
+      var arc = d3.svg.arc()
+        .innerRadius(size[1]+4)
+        .outerRadius(size[1]+5);
+
+      var paths = svg.select('.internal').selectAll('path')
+        .data(arcs);
+
+      paths.enter()
+        .append('path')
+        .style('stroke', '#666');
+
+      paths
+        .attr('d', arc);
+
+      paths.exit().remove();
     }
 
     function renderRouters(routers) {
@@ -230,7 +224,7 @@ define(function(require) {
         .attr('r', 3);
 
       d3routers.exit().selectAll('circle')
-        .attr('r', 2);
+        .attr('r', 1);
     }
 
     function render() {
@@ -344,17 +338,20 @@ define(function(require) {
     /*
      * radial
      */
+
     var radial = {};
 
     radial.el = function(el) {
-      svgContainer = d3.select(el)
-        .classed("radial", true)
+      var d3el = d3.select(el);
+      svgContainer = d3el
+        //.classed("radial", true)
         .append("svg")
         .attr('width', WIDTH)
-        .attr('height', HEIGHT);
+        .attr('height', HEIGHT)
+        .classed("radial", true);
 
-      svg = svgContainer.append("g")
-        .attr('transform', 'translate('+WIDTH/2+','+HEIGHT/2+')');
+      svg = svgContainer.append("g");
+        //.attr('transform', 'translate('+WIDTH/2+','+HEIGHT/2+')');
 
       svg.append('g').attr('class', 'groups');
       svg.append('g').attr('class', 'routers');
@@ -363,15 +360,46 @@ define(function(require) {
       svg.append('g').attr('class', 'green-blue');
       svg.append('g').attr('class', 'internal');
 
+      //d3groupView = svgContainer.append('g').attr('class', 'group-view');
+      //group_view.svg(d3groupView);
+      //
+      //d3groupView2 = svgContainer.append('g').attr('class', 'group-view2');
+      //group_view2.svg(d3groupView2);
+      //d3bgView = svgContainer.append('g').attr('class', 'bg-view');
+      //bg_view.svg(d3bgView);
+
+      bg_canvas.el(d3el.append('canvas').attr('id', 'canvas'));
+
       return this;
     };
 
     radial.resize = function(w, h) {
-      //svgContainer.attr("width", w).attr("height", h);
-      var r = Math.min(w,h)/2-20;
-      svg.attr('transform', 'translate('+r+','+r+')');
+      console.log('radial resize:', w, h);
+      var offset = 10;
+
+      //var size = bg_view.size();
+      var size = bg_canvas.size();
+      var r = Math.min(w - size[0], h)/2 - offset;
+      //var r = Math.min(w, h)/2 - offset;
+
+      var s = Math.min(w-size[0], h);
+      svgContainer.attr("width", s).attr("height", s);
+      svg.attr('transform', 'translate('+(r+offset)+','+(r+offset)+')');
+
       layout.size(r);
       layout_gb.size([opt.innerRadius*0.1, opt.innerRadius*0.75]);
+
+      //d3groupView
+      //  .attr('transform', 'translate('+(w-gvSize[0])+','+0+')');
+      //
+      //d3groupView2
+      //  .attr('transform', 'translate('+(w-gvSize[0])+','+gvSize[1]+')');
+
+      //d3bgView.attr('transform', 'translate('+(w-size[0])+',0)');
+
+      d3.select(bg_canvas.el())
+        .attr('x', w-size[0]).attr('y', 0);
+
       if (data) layout(data);
       render();
       if (data && range)
@@ -398,30 +426,13 @@ define(function(require) {
     radial.range = function(_) {
       if (!arguments.length) return range;
       range = _;
+      //console.log('range:',range);
       return this;
     };
 
 
     radial.filter = function() {
       if (data && range) {
-        if (!valid) {
-          minimum = range[1];
-          maximum = range[0];
-          data.links.forEach(function(link) {
-            link.value = link.counters[counterId];
-            //if (link.value> 0) {
-              minimum = Math.min(minimum, link.value);
-              maximum = Math.max(maximum, link.value);
-            //}
-          });
-          console.log('min/max', minimum, maximum);
-          //link_color.domain([minimum, maximum]);
-          value_band.domain([minimum, maximum]);
-          data.links.forEach(function(link) {
-            link.vis_color = link_color(link.value);
-          });
-          valid = true;
-        }
         filter();
       }
       return this;
