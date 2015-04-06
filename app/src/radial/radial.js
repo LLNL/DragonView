@@ -212,13 +212,10 @@ define(function(require) {
     }
 
     function renderRouters(routers, r) {
-      var router, jid, i, id, jobs;
-
       var d3routers = svg.select('.routers').selectAll('.router')
         .data(routers.values(), function(d) { return d.id;});
 
       r = r || 2;
-      console.log('routers:', routers.values().length, ' r:', r);
 
       d3routers.enter().call(Router);
 
@@ -228,8 +225,7 @@ define(function(require) {
         .attr('fill', function(d) {return d.color; })
         .attr('r', r);
 
-      d3routers.exit()
-        .attr('r', 1);
+      d3routers.exit().attr('r', 1);
     }
 
     function render() {
