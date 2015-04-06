@@ -362,7 +362,7 @@ define(function(require) {
     };
 
     radial.resize = function(w, h) {
-      console.log('radial resize:', w, h);
+      //console.log('radial resize:', w, h);
       var offset = 10;
 
       var size = bg_overview.size();

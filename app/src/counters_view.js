@@ -17,7 +17,7 @@ define(function(require) {
 
   var width = 250, height,
       svg, header,
-      defaultCounter = 0,
+      defaultCounter = 0, currentCounter = 0,
       run,
       knownRuns = [],
       format = d3.format('.1e');
@@ -71,6 +71,8 @@ define(function(require) {
   }
 
   function newData(data) {
+    var currentCounterName = run && run.countersNames[currentCounter];
+
     run = data;
 
     /* list of counters */
@@ -85,18 +87,21 @@ define(function(require) {
 
     options.exit().remove();
 
-    counters.property("value", defaultCounter);
-
-    var values = [];
-    run.links.forEach(function (link) {
-      values.push(link);
+    var links = [];
+    run.links.forEach(function(link) {
+      links.push(link);
     });
 
-    histogram.data(values);
-    selectCounter(defaultCounter);
+    histogram.data(links);
+
+    var index = currentCounterName == data.countersNames[currentCounter] ? currentCounter : defaultCounter;
+    counters.property("value", index);
+
+    selectCounter(index);
   }
 
   function selectCounter(index) {
+    currentCounter = index;
     var min = Number.MAX_VALUE, max=0, value;
     run.links.forEach(function(link) {
       link.value = link.counters[index];

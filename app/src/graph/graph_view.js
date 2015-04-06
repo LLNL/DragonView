@@ -28,7 +28,6 @@ define(function(require) {
     });
 
     function onResize() {
-      console.log('w:',el.width(), 'h:', el.height());
       component.resize(el.width(), el.height());
     }
 

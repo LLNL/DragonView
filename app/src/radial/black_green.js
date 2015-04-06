@@ -90,12 +90,13 @@ define(function(require) {
 
 
       /* header */
-      ctx.font = "12px serif";
+      ctx.font = "14px san serif";
       ctx.fillStyle = '#000';
-      ctx.fillText('G',    0, GREEN_Y_OFFSET - 5);
       ctx.fillText('Green links: '+greenLinks.length, GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Green links").width/2, GREEN_Y_OFFSET - 15);
       ctx.fillText('Black links: '+blackLinks.length, BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Black links").width/2, BLACK_Y_OFFSET - 15);
 
+      ctx.font = "12px san serif";
+      ctx.fillText('G',    0, GREEN_Y_OFFSET - 3);
       for (i=0; i<6; i++) {
         ctx.fillStyle = greenHeader[i] ? '#000' : '#a0a0a0';
         ctx.fillText(i+1, GREEN_X_OFFSET + i*GREEN_BOX_SIZE + GREEN_BOX_SIZE/2 - 8, GREEN_Y_OFFSET - 3);
