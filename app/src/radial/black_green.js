@@ -7,14 +7,14 @@ define(function(require) {
   var config = require('config');
 
   return function () {
-    var margin = {left: 20, top: 15, right: 10, bottom: 10};
+    var margin = {left: 20, top: 30, right: 10, bottom: 10};
     var w = 2, h = 2, dx = 4, dy = 4;
     var GREEN_X_OFFSET = margin.left, GREEN_Y_OFFSET = margin.top, GREEN_BOX_SIZE = 16*w + dx;
     var BLACK_X_OFFSET = GREEN_X_OFFSET + 6 * GREEN_BOX_SIZE + dx, BLACK_Y_OFFSET = GREEN_Y_OFFSET, BLACK_BOX_SIZE = 6*w + dx;
     var GROUP_HEIGHT = 16*h + dy;
     var width = bx({r:5, c:16}) + margin.right;
     var height = gy({g:15, c:16}) + margin.bottom;
-
+    var groups = new Array(16), greenBoxes= new Array(16), blackBoxes=new Array(16), greenHeader=new Array(6), blackHeader=new Array(16);
     var el, canvas;
 
     function gx(idx) {
@@ -36,35 +36,75 @@ define(function(require) {
     var layout = function (greenLinks, blackLinks) {
       var ctx = canvas.getContext('2d');
       var x, y;
-      var g, r, c;
+      var g, r, c, i, j;
       var gw = 6 * GREEN_BOX_SIZE;
       var bh = 6 * h;
-
-      var groups = [], has_data = false;
-      for (var i=0; i<16; i++) groups.push(false);
-
-      greenLinks.forEach(function(link) {
-        groups[link.srcId.g] = true;
-        has_data = true;
-      });
-      blackLinks.forEach(function(link) {
-        groups[link.srcId.g] = true;
-        has_data = true;
-      });
 
       /* clear canvas */
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, width, height);
 
-      if (!has_data)
+      if (greenLinks.length == 0 && blackLinks.length == 0)
         return;
+
+      // init
+      for (j=0; j<6; j++) greenHeader[j] = false;
+      for (j=0; j<16; j++) blackHeader[j] = false;
+      for (i=0; i<16; i++) {
+        groups[i] = false;
+        for (j=0; j<6; j++) {
+          greenBoxes[i][j] = false;
+        }
+        for (j=0; j<16; j++) {
+          blackBoxes[i][j] = false;
+        }
+      }
+
+      // check which box has data
+      greenLinks.forEach(function(link) {
+        greenBoxes[link.srcId.g][link.srcId.r] = true;
+      });
+      blackLinks.forEach(function(link) {
+        blackBoxes[link.srcId.g][link.srcId.c] = true;
+      });
+
+      var value;
+      for (j=0; j<6; j++) {
+        i=-1;
+        while (++i<16 && !greenBoxes[i][j]) {}
+        greenHeader[j] = i<16;
+      }
+      for (j=0; j<16; j++) {
+        i=-1;
+        while (++i<16 && !blackBoxes[i][j]) {}
+        blackHeader[j] = i<16;
+      }
+      for (i=0; i<16; i++) {
+        j = -1;
+        while (++j < 6 && !greenBoxes[i][j] && !blackBoxes[i][j]) {}
+        if (j == 6) {
+          while (j < 16 && !blackBoxes[i][j]) {j++;}
+        }
+        groups[i] = j < 16;
+      }
+
 
       /* header */
       ctx.font = "12px serif";
       ctx.fillStyle = '#000';
       ctx.fillText('G',    0, GREEN_Y_OFFSET - 5);
-      ctx.fillText('Green links', GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Green links").width/2, GREEN_Y_OFFSET - 5);
-      ctx.fillText('Black links', BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Black links").width/2, BLACK_Y_OFFSET - 5);
+      ctx.fillText('Green links: '+greenLinks.length, GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Green links").width/2, GREEN_Y_OFFSET - 15);
+      ctx.fillText('Black links: '+blackLinks.length, BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Black links").width/2, BLACK_Y_OFFSET - 15);
+
+      for (i=0; i<6; i++) {
+        ctx.fillStyle = greenHeader[i] ? '#000' : '#a0a0a0';
+        ctx.fillText(i+1, GREEN_X_OFFSET + i*GREEN_BOX_SIZE + GREEN_BOX_SIZE/2 - 8, GREEN_Y_OFFSET - 3);
+      }
+
+      for (i=0; i<16; i++) {
+        ctx.fillStyle = blackHeader[i] ? '#000' : '#a0a0a0';
+        ctx.fillText(i+1, BLACK_X_OFFSET + i*BLACK_BOX_SIZE + BLACK_BOX_SIZE/2 - 8, BLACK_Y_OFFSET - 3);
+      }
 
       for (g=0; g<16; g++) {
         if (groups[g]) {
@@ -74,17 +114,25 @@ define(function(require) {
 
       y = GREEN_Y_OFFSET;
       ctx.fillStyle = '#ccc'; //'#93c4df';
-      ctx.beginPath();
+
       for (g=0; g<16; g++) {
         if (groups[g]) {
-          for (r=0; r<6; r++)
-            ctx.rect(GREEN_X_OFFSET + r*GREEN_BOX_SIZE, y, 16*w, 16*h);
-          for (c=0; c<16; c++)
-            ctx.rect(BLACK_X_OFFSET + c*BLACK_BOX_SIZE, y, 6*w, 6*h);
+          for(r = 0; r < 6; r++) {
+            ctx.beginPath();
+            ctx.fillStyle = greenBoxes[g][r] ? '#ccc' : '#f0f0f0';
+            ctx.rect(GREEN_X_OFFSET + r * GREEN_BOX_SIZE, y, 16 * w, 16 * h);
+            ctx.fill();
+          }
+          for(c = 0; c < 16; c++) {
+            ctx.beginPath();
+            ctx.fillStyle = blackBoxes[g][c] ? '#ccc' : '#f0f0f0';
+            ctx.rect(BLACK_X_OFFSET + c * BLACK_BOX_SIZE, y, 6 * w, 6 * h);
+            ctx.fill();
+          }
         }
         y += GROUP_HEIGHT;
       }
-      ctx.fill();
+
 
       /* green links */
       greenLinks.forEach(function(link) {
@@ -118,6 +166,11 @@ define(function(require) {
         .attr('height', height)
         [0][0];
 
+      var i, j;
+      for (i=0; i<16; i++) {
+        greenBoxes[i] = new Array(6);
+        blackBoxes[i] = new Array(16);
+      }
       return this;
     };
 
