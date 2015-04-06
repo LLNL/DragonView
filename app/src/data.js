@@ -24,9 +24,9 @@ define(function(require) {
       routers: d3.map(),
       nodes: new Map(),
       counters: [],
-      blues: new Map(),
-      greens: new Map(),
-      blacks: new Map(),
+      blues: [],
+      greens: [],
+      blacks: [],
       links: new Map(),
       jobs: d3.map(),
       job_colors: new Map(),
@@ -156,9 +156,9 @@ define(function(require) {
           counters: values
         };
         run.links.set(link.id, link);
-        if (color == 'b') run.blues.set(link.id, link);
-        else if (color == 'g') run.greens.set(link.id, link);
-        else run.blacks.set(link.id, link);
+        if (color == 'b') run.blues.push(link);
+        else if (color == 'g') run.greens.push(link);
+        else run.blacks.push(link);
       } else {
         for (j=0; j<nc; j++) {
           link.counters[j] += values[j];

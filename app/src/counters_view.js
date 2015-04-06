@@ -122,8 +122,17 @@ define(function(require) {
     histogram.range(size);
   }
 
+  function count(list, range) {
+    var c = 0, i=-1, n = list.length;
+    while (++i < n) {
+      if (range[0] <= list[i].value  && list[i].value <= range[1]) c++;
+    }
+    return c;
+  }
   function onHighlight(size) {
     Radio.channel('counter').trigger('range', size);
+    var b = count(run.blues, size), g = count(run.greens, size), k = count(run.blacks, size);
+    d3.select('#selection').text('blue:'+b+' green:'+g+' black:'+k);
   }
 
   function loadFile() {
