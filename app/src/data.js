@@ -21,7 +21,7 @@ define(function(require) {
   function createRun(name) {
     var run = {
       groups: [],
-      routers: new Map(),
+      routers: d3.map(),
       nodes: new Map(),
       counters: [],
       blues: new Map(),

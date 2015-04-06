@@ -60,7 +60,7 @@ define(function(require) {
 
 
     function filter() {
-      var routers = new Map();
+      var routers = d3.map();
       filterBlues(routers);
       filterGreens(routers);
       filterBlacks(routers);
@@ -211,14 +211,14 @@ define(function(require) {
       paths.exit().remove();
     }
 
-    function renderRouters(routers) {
-      var list = [], router, jid, i, id, jobs;
-      for (router of routers.values()) {
-        list.push(router);
-      }
+    function renderRouters(routers, r) {
+      var router, jid, i, id, jobs;
 
       var d3routers = svg.select('.routers').selectAll('.router')
-        .data(list, function(d) { return d.id;});
+        .data(routers.values(), function(d) { return d.id;});
+
+      r = r || 2;
+      console.log('routers:', routers.values().length, ' r:', r);
 
       d3routers.enter().call(Router);
 
@@ -226,9 +226,9 @@ define(function(require) {
         .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
         .attr('fill', function(d) {return d.color; })
-        .attr('r', 2);
+        .attr('r', r);
 
-      d3routers.exit().selectAll('router')
+      d3routers.exit()
         .attr('r', 1);
     }
 
@@ -248,7 +248,7 @@ define(function(require) {
       d3groups.selectAll('path').attr('d', group_arc);
 
       svg.select('.routers').selectAll('.router').remove();
-      renderRouters(data.routers);
+      renderRouters(data.routers, 1);
     }
 
     /*
