@@ -13,8 +13,6 @@
     padding: 4px 8px;
     display: inline-block;
     border-radius: 3px 3px 0px 0px;
-    font-size: 14px;
-    font-weight: 600;
     color: #4c4c4c;
     transition: all linear 0.15s; }
   .tabs .tab-links a:hover {
@@ -24,7 +22,7 @@
     background: #e0e0e0;
     color: #4c4c4c; }
   .tabs .tab-content {
-    padding: 10px;
+    padding: 0px;
     border-radius: 3px; }
   .tabs .tab {
     display: none; }
@@ -32,7 +30,8 @@
     display: block; }
 
 body {
-  position: relative; }
+  position: relative;
+  font: 12pt sans serif; }
 
 .nav, .pagination, .carousel, .panel-title a {
   cursor: pointer; }
@@ -48,7 +47,7 @@ div {
   right: 0px; }
 
 .title {
-  font: 20px arial; }
+  font: 16pt sans-serif; }
 
 .controls {
   top: 10px;
@@ -139,7 +138,8 @@ div {
   display: inline-block; }
 
 .radial {
-  display: inline-block; }
+  display: inline-block;
+  vertical-align: top; }
   .radial .group {
     fill: #f8f8f8;
     stroke: none; }
@@ -164,11 +164,6 @@ div {
       stroke-width: 4px; }
     .radial circle:active {
       r: 4px; }
-
-.canvas {
-  position: absolute;
-  right: 0px;
-  top: 0; }
 
 .matrix line {
   fill: none;

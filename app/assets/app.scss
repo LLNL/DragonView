@@ -2,6 +2,7 @@
 
 body {
   position:  relative;
+  font: 12pt sans serif;
 }
 
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
@@ -19,8 +20,7 @@ div {
 }
 
 .title {
-  font: 20px arial;
-//  height: 50px;
+  font: 16pt sans-serif;
 }
 
 .controls {
@@ -164,6 +164,7 @@ div {
 
 .radial {
   display: inline-block;
+  vertical-align: top;
 
   .group {
 //    fill: #dadada;
@@ -214,9 +215,9 @@ div {
 }
 
 .canvas {
-  position: absolute;
-  right: 0px;
-  top: 0;
+//  position: absolute;
+//  right: 0px;
+//  top: 0;
 
 //  fill: '#f0f0f0';
 //  display: inline-block;

@@ -7,7 +7,7 @@ define(function(require) {
   var Layout = require('radial/layout');
   var LayoutGB = require('radial/layout_gb');
   var model = require('model');
-  var BGCanvas = require('radial/bg_canvas');
+  var BlackGreen = require('radial/black_green');
   var config = require('config');
 
   return function() {
@@ -19,7 +19,7 @@ define(function(require) {
     var minimum, maximum, valid = false;
     var layout = Layout().size([WIDTH, HEIGHT]),
         layout_gb = LayoutGB(),
-        bg_canvas = BGCanvas(),
+        bg_overview = BlackGreen(),
         opt = layout.parms(),
         mode = 'blue',
         selectedGroup = undefined,
@@ -72,41 +72,49 @@ define(function(require) {
     function filterBlues(routers) {
       var value;
       blueLinks = [];
-      data.blues.forEach(function (link) {
-        if (range[0] <= link.value && link.value <= range[1]) {
-          link.source = find(link.srcId);
-          link.target = find(link.destId);
-          blueLinks.push(link);
+      if (range[0] < range[1]) {
+        data.blues.forEach(function (link) {
+            if (range[0] <= link.value && link.value <= range[1]) {
+              link.source = find(link.srcId);
+              link.target = find(link.destId);
+              blueLinks.push(link);
 
-          routers.set(link.src.id, link.src);
-          routers.set(link.dest.id, link.dest);
-        }
-        }
-      );
+              routers.set(link.src.id, link.src);
+              routers.set(link.dest.id, link.dest);
+            }
+          }
+        );
+      }
     }
 
     function filterGreens(routers) {
       var value;
       greenLinks = [];
-      data.greens.forEach(function(link) {
-        if (range[0] <= link.value && link.value <= range[1]) {
-          greenLinks.push(link);
-          routers.set(link.src.id, link.src);
-          routers.set(link.dest.id, link.dest);
+      if (range[0] < range[1]) {
+        data.greens.forEach(function (link) {
+          if (range[0] <= link.value && link.value <= range[1]) {
+            greenLinks.push(link);
+            routers.set(link.src.id, link.src);
+            routers.set(link.dest.id, link.dest);
+          }
         }
-      });
+        );
+      }
     }
 
     function filterBlacks(routers) {
       var value;
       blackLinks = [];
-      data.blacks.forEach(function(link) {
-        if (range[0] <= link.value && link.value <= range[1]) {
-          blackLinks.push(link);
-          routers.set(link.src.id, link.src);
-          routers.set(link.dest.id, link.dest);
+      if (range[0] < range[1]) {
+        data.blacks.forEach(function (link) {
+          if (range[0] <= link.value && link.value <= range[1]) {
+            blackLinks.push(link);
+            routers.set(link.src.id, link.src);
+            routers.set(link.dest.id, link.dest);
+          }
         }
-      });
+        );
+      }
     }
 
     function renderLinks() {
@@ -118,12 +126,10 @@ define(function(require) {
       //  renderBlues();
       //} else {
       //  renderGreens();
-      //  //group_view(greenLinks, selectedGroup);
-      //  //group_view2(greenLinks, blackLinks, selectedGroup);
       //}
       //bg_view(greenLinks, blackLinks);
       renderBlues();
-      bg_canvas(greenLinks, blackLinks);
+      bg_overview(greenLinks, blackLinks);
     }
 
     function renderBlues() {
@@ -156,7 +162,7 @@ define(function(require) {
       }
 
       d3connections = svg.select('.connections').selectAll('.connection')
-        .data(green/*.concat(black)*/);
+        .data(green);
 
       d3connections.enter()
         .call(Connection);
@@ -214,22 +220,19 @@ define(function(require) {
       var d3routers = svg.select('.routers').selectAll('.router')
         .data(list, function(d) { return d.id;});
 
-      d3routers.enter()
-        .call(Router);
+      d3routers.enter().call(Router);
 
-      d3routers.selectAll('circle')
+      d3routers
         .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
         .attr('fill', function(d) {return d.color; })
-        .attr('r', 3);
+        .attr('r', 2);
 
-      d3routers.exit().selectAll('circle')
+      d3routers.exit().selectAll('router')
         .attr('r', 1);
     }
 
     function render() {
-      if (!data) return;
-
       group_arc = d3.svg.arc()
         .innerRadius(opt.innerRadius)
         .outerRadius(opt.outerRadius)
@@ -283,11 +286,9 @@ define(function(require) {
       renderLinks();
     }
 
-    function Router(selection) {
-      var g = this.append('g')
+    function Router() {
+      var g = this.append('circle')
         .attr('class', 'router')
-        .append('circle')
-        .attr('r', '2')
         .on('mouseover', function(d) {
           highlight_router(this, d,  true);
         })
@@ -344,7 +345,6 @@ define(function(require) {
     radial.el = function(el) {
       var d3el = d3.select(el);
       svgContainer = d3el
-        //.classed("radial", true)
         .append("svg")
         .attr('width', WIDTH)
         .attr('height', HEIGHT)
@@ -360,15 +360,7 @@ define(function(require) {
       svg.append('g').attr('class', 'green-blue');
       svg.append('g').attr('class', 'internal');
 
-      //d3groupView = svgContainer.append('g').attr('class', 'group-view');
-      //group_view.svg(d3groupView);
-      //
-      //d3groupView2 = svgContainer.append('g').attr('class', 'group-view2');
-      //group_view2.svg(d3groupView2);
-      //d3bgView = svgContainer.append('g').attr('class', 'bg-view');
-      //bg_view.svg(d3bgView);
-
-      bg_canvas.el(d3el.append('canvas').attr('id', 'canvas'));
+      bg_overview.el(d3el); //.append('div'));
 
       return this;
     };
@@ -377,33 +369,26 @@ define(function(require) {
       console.log('radial resize:', w, h);
       var offset = 10;
 
-      //var size = bg_view.size();
-      var size = bg_canvas.size();
-      var r = Math.min(w - size[0], h)/2 - offset;
-      //var r = Math.min(w, h)/2 - offset;
+      var size = bg_overview.size();
 
-      var s = Math.min(w-size[0], h);
+      var s = w-size[0]; //Math.min(w-size[0], h);
       svgContainer.attr("width", s).attr("height", s);
+
+      var r = s/2 - offset;
       svg.attr('transform', 'translate('+(r+offset)+','+(r+offset)+')');
 
       layout.size(r);
       layout_gb.size([opt.innerRadius*0.1, opt.innerRadius*0.75]);
 
-      //d3groupView
-      //  .attr('transform', 'translate('+(w-gvSize[0])+','+0+')');
-      //
-      //d3groupView2
-      //  .attr('transform', 'translate('+(w-gvSize[0])+','+gvSize[1]+')');
+      //d3.select(bg_canvas.el())
+      //  .attr('x', w-size[0]).attr('y', 0);
 
-      //d3bgView.attr('transform', 'translate('+(w-size[0])+',0)');
-
-      d3.select(bg_canvas.el())
-        .attr('x', w-size[0]).attr('y', 0);
-
-      if (data) layout(data);
-      render();
-      if (data && range)
-        filter();
+      if (data) {
+        layout(data);
+        render();
+        if (range)
+          filter();
+      }
       return this;
     };
 

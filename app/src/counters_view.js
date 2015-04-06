@@ -111,18 +111,19 @@ define(function(require) {
       link.vis_color = config.color(link.value);
     });
 
-    histogram.counter(index).range([min,  max]);
     slider.domain([min,  max]);
+    histogram.counter(index);
     Radio.channel('counter').trigger('change', index);
+    histogram.range(slider.extent());
   }
 
 
-  function onZoom(from, to) {
-    histogram.range([from,  to]);
+  function onZoom(size) {
+    histogram.range(size);
   }
 
-  function onHighlight(from, to) {
-    Radio.channel('counter').trigger('range', [from, to]);
+  function onHighlight(size) {
+    Radio.channel('counter').trigger('range', size);
   }
 
   function loadFile() {
@@ -144,8 +145,7 @@ define(function(require) {
     d3.select('#load')
       .on('click', function(){  document.getElementById('file').click(); });
 
-    document.getElementById('file')
-      .addEventListener("change", loadFile, false);
+    document.getElementById('file').addEventListener("change", loadFile, false);
 
     var g = d3.select('#info').append('g')
       .attr('class', 'info');

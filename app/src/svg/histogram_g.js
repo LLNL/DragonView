@@ -47,8 +47,8 @@ define(function(require) {
 
     function brushed() {
       var e = brush.extent();
-      //console.log('brush:',e[0], e[1]);
-      dispatch.brushed(e[0], e[1]);
+      console.log('brush:',e[0], e[1]);
+      dispatch.brushed(e);
     }
 
     var colorAccessor = function(link) {
@@ -126,6 +126,7 @@ define(function(require) {
         .attr('class', 'y axis')
         .call(yAxis);
 
+      brush.clear();
       return this;
     }
 
@@ -181,6 +182,8 @@ define(function(require) {
       else
         xAxis.tickFormat(d3.format('g'));
 
+      var extent = brush.extent();
+
       x.domain(range);
 
       histogram = d3.layout.histogram()
@@ -194,8 +197,12 @@ define(function(require) {
       y.domain([0, d3.max(histogram,  function(d) { return d.y;})]);
       draw();
 
-      svg.select('.brush').call(brush);
-      brush.event(svg.select('.brush'));
+      if (!brush.empty()) {
+        extent = [Math.min(Math.max(extent[0], range[0]), range[1]), Math.max(Math.min(extent[1], range[1]), range[0])];
+        brush.extent(extent);
+        svg.select('.brush').call(brush);
+        brush.event(svg.select('.brush'));
+      }
 
       duration = save;
 

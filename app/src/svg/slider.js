@@ -3,7 +3,8 @@ define(function(require) {
 
   return function() {
     var width = 100, height = 25,
-      handle, d3axis;
+      handle, d3axis,
+      manual = false;
 
     var dispatch = d3.dispatch('start', 'move', 'end');
     var x = d3.scale.linear()
@@ -23,11 +24,13 @@ define(function(require) {
           .x(x)
           //.extent([0, 1])
           .on("brush", brushmove)
+          .clear();
       ;
 
     function brushmove() {
+      manual = true;
       var e = brush.extent();
-      dispatch.move(e[0], e[1]);
+      dispatch.move(e);
     }
 
 
@@ -49,6 +52,8 @@ define(function(require) {
           .attr("class", "brush")
           .attr('transform', 'translate(0.5,' + 5 + ')')
           .call(brush);
+
+        brush.clear();
 
         //    handle.selectAll('.resize').append('path')
         //        .attr('d', grasp);
@@ -95,6 +100,7 @@ define(function(require) {
 
     slider.domain = function(value) {
       if (!arguments.length) return x.domain();
+      var extent = brush.extent();
       x.domain(value);
       if (value[0] > 1000)
         axis.tickFormat(d3.format('.1e'));
@@ -103,13 +109,21 @@ define(function(require) {
 
       //g.select('.x')
       d3axis.call(axis);
+      if (manual) {
+        if (extent[0] < value[0]) extent[0] = value[0];
+        if (extent[1] > value[1]) extent[1] = value[1];
+        brush.extent(extent);
+      } else {
+        brush.extent(x.domain());
+      }
+
+      if (handle) handle.call(brush);
       return slider;
     };
 
     slider.extent = function(value) {
       if (!arguments.length) return brush.extent();
       brush.extent(value);
-      if (handle) handle.call(brush);
       return slider;
     };
 

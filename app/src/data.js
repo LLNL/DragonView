@@ -143,28 +143,34 @@ define(function(require) {
       for (j = 0; j < nc; j++) {
         values[j] = +values[j];
       }
-      link = {
-        id: model.link_id(sg, sr, sc, dg, dr, dc),
-        color: color,
-        srcId: {g: sg, r: sr, c: sc},
-        destId: {g: dg, r: dr, c: dc},
-        src: run.routers.get(model.router_id(sg, sr, sc)),
-        dest: run.routers.get(model.router_id(dg, dr, dc)),
-        counters: values
-      };
-
-      idx = 0;
-      base = link.id;
-      while (run.links.get(link.id))  {
-        idx++;
-        link.id = base+'#'+idx;
+      id = model.link_id(sg, sr, sc, dg, dr, dc);
+      link = run.links.get(id);
+      if (!link) {
+        link = {
+          id:       id,
+          color:    color,
+          srcId:    {g: sg, r: sr, c: sc},
+          destId:   {g: dg, r: dr, c: dc},
+          src:      run.routers.get(model.router_id(sg, sr, sc)),
+          dest:     run.routers.get(model.router_id(dg, dr, dc)),
+          counters: values
+        };
+        run.links.set(link.id, link);
+        if (color == 'b') run.blues.set(link.id, link);
+        else if (color == 'g') run.greens.set(link.id, link);
+        else run.blacks.set(link.id, link);
+      } else {
+        for (j=0; j<nc; j++) {
+          link.counters[j] += values[j];
+        }
       }
-      run.links.set(link.id, link);
-      if (color == 'b') run.blues.set(link.id, link);
-      else if (color == 'g') run.greens.set(link.id, link);
-      else run.blacks.set(link.id, link);
-
-
+      //idx = 0;
+      //base = link.id;
+      //while (run.links.get(link.id))  {
+      //  idx++;
+      //  link.id = base+'#'+idx;
+      //  link.dup = idx;
+      //}
     }
   }
 
