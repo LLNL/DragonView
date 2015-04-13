@@ -105,8 +105,9 @@ define(function(require) {
       .append('input')
       .attr('type', 'checkbox')
       .attr('value', function(d, i) { return i+1;})
-      .attr('checked', true)
       .on('change', function() { subtract(+this.value, this.checked) });
+
+    sub.selectAll('input').property('checked', true);
 
     sub.exit().remove();
 
