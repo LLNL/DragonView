@@ -13,18 +13,18 @@ define(function(require) {
     var active = false, _data, _range, _counter;
 
     Radio.channel('data').on('run', function (data) {
+      _data = data;
       if (active) radial.data(data).filter();
-      else _data = data;
     });
 
     Radio.channel('counter').on('range', function (range) {
+      _range = range;
       if (active) radial.range(range).filter();
-      else _range = range;
     });
 
     Radio.channel('counter').on('change', function (index) {
+      _counter = index;
       if (active) radial.counter(index).filter();
-      else _counter = index;
     });
 
     function onResize() {
@@ -45,20 +45,20 @@ define(function(require) {
 
       if (active != _) {
         active = _;
-        if (_data) radial.data(_data);
-        if (_counter != undefined) radial.counter(_counter);
-        if (_range) radial.range(_range);
+        if (active) {
+          if (_data) radial.data(_data);
+          if (_counter != undefined) radial.counter(_counter);
+          if (_range) radial.range(_range);
 
-        if (_counter != undefined || _range)
-          radial.filter();
+          if (_counter != undefined || _range)
+            radial.filter();
 
-        _data = _range = _counter = undefined;
+          _data = _range = _counter = undefined;
+        }
       }
 
       return this;
     };
-
-
 
     return view;
   }

@@ -92,31 +92,59 @@ define(function(require) {
       links.push(link);
     });
 
+    var names = data.countersNames.concat();
+    names.shift();
+
+    var sub = d3.select('#sub').selectAll('label')
+      .data(names, function(d) { return d; });
+
+    sub.enter()
+      .append('label')
+      .style('display', 'inline-block')
+      .text(function(d) { return d;})
+      .append('input')
+      .attr('type', 'checkbox')
+      .attr('value', function(d, i) { return i+1;})
+      .attr('checked', true)
+      .on('change', function() { subtract(+this.value, this.checked) });
+
+    sub.exit().remove();
+
     histogram.data(links);
 
     var index = currentCounterName == data.countersNames[currentCounter] ? currentCounter : defaultCounter;
     counters.property("value", index);
 
-    selectCounter(index);
-  }
-
-  function selectCounter(index) {
-    currentCounter = index;
     var min = Number.MAX_VALUE, max=0, value;
     run.links.forEach(function(link) {
-      link.value = link.counters[index];
+      link.value = link.counters[0];
       if (link.value > 0) {
         if (link.value < min) min = link.value;
         if (link.value > max) max = link.value;
       }
     });
-
     config.data_range([min, max]);
+    slider.domain([min,  max]);
+    selectCounter(index);
+  }
+
+  function subtract(index, on) {
+    var sign = on ? 1 : -1;
     run.links.forEach(function(link) {
+      link.counters[0] += link.counters[index]*sign;
+    });
+    selectCounter(0);
+  }
+
+  function selectCounter(index) {
+    index = +index;
+    currentCounter = index;
+
+    run.links.forEach(function(link) {
+      link.value = link.counters[index];
       link.vis_color = config.color(link.value);
     });
 
-    slider.domain([min,  max]);
     histogram.counter(index);
     Radio.channel('counter').trigger('change', index);
     histogram.range(slider.extent());
