@@ -212,8 +212,9 @@ define(function(require) {
     }
 
     function renderRouters(routers, r) {
+      var list = routers.values();
       var d3routers = svg.select('.routers').selectAll('.router')
-        .data(routers.values(), function(d) { return d.id;});
+        .data(list, function(d) { return d.id;});
 
       r = r || 2;
 
@@ -226,9 +227,61 @@ define(function(require) {
         .attr('r', r);
 
       d3routers.exit().attr('r', 1);
+
+
+      var nj = data.jobs.size();
+      var fraction = d3.range(data.groups.length).map(function() {
+        return d3.range(nj+1).map(function() {return 0; });
+      });
+
+      var cid;
+      list.forEach(function(router) {
+        if (router.jobs.length > 0) {
+          cid = router.jobs.length == 1 ? router.jobs[0].id : nj;
+          fraction[router.g][cid]++;
+        }
+      });
+
+      var colors = colorbrewer.Set1[8].slice(0, nj).concat('#00ffff');
+      var bands = [];
+      var group, start, end, total;
+      var n = data.groups.length;
+      var i, j;
+      for (i=0; i<n; i++) {
+        group = fraction[i];
+        total = 0;
+        start = data.groups[i].startAngle;
+        end = data.groups[i].endAngle;
+        for (j=0; j<nj+1; j++) {
+          if (group[j] > 0) {
+            bands.push( {color:colors[j],
+              startAngle: start+(end-start)*(total)/96,
+              endAngle: start+(end-start)*(total+group[j])/96} );
+            total += group[j];
+          }
+        }
+      }
+
+      var band_arc = d3.svg.arc()
+        .innerRadius(opt.outerRadius+2)
+        .outerRadius(opt.outerRadius+7);
+
+      var d3bands = d3.select('.groups').selectAll('.band')
+        .data(bands);
+
+      d3bands.enter()
+        .append('path')
+        .attr('class', 'band');
+
+      d3bands.attr('fill', function(d) { return d.color;} )
+        .attr('d', band_arc);
+
+      d3bands.exit().remove();
     }
 
     function render() {
+
+
       group_arc = d3.svg.arc()
         .innerRadius(opt.innerRadius)
         .outerRadius(opt.outerRadius)
@@ -242,6 +295,9 @@ define(function(require) {
         .call(Group);
 
       d3groups.selectAll('path').attr('d', group_arc);
+      d3groups.selectAll('text')
+        .attr('x', function(d) { return (opt.outerRadius+20)*Math.sin((d.startAngle + d.endAngle)/2) - this.getComputedTextLength()/2; })
+        .attr('y', function(d) { return -(opt.outerRadius+20)*Math.cos((d.startAngle + d.endAngle)/2) +6;});
 
       svg.select('.routers').selectAll('.router').remove();
       renderRouters(data.routers, 1);
@@ -261,9 +317,7 @@ define(function(require) {
 
       g.append('text')
         .text(function(d, i) { return i; })
-        .each(function(d,i) { console.log(i, this.getComputedTextLength()); })
-        .attr('x', function(d) { return (opt.outerRadius+15)*Math.sin((d.startAngle + d.endAngle)/2) - this.getComputedTextLength()/2; })
-        .attr('y', function(d) { return -(opt.outerRadius+15)*Math.cos((d.startAngle + d.endAngle)/2) +6;})
+
 
       return selection;
     }

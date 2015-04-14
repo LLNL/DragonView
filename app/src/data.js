@@ -13,10 +13,7 @@ define(function(require) {
 
   var runsInfo;
   var runs = d3.map();
-  var colors = d3.scale.category10();
-    //d3.scale.ordinal()
-    //  .domain([0,10])
-    //  .range(colorbrewer.Spectral[6]);
+  var colors = colorbrewer.Set1[8]; //d3.scale.category10();
 
   function createRun(name) {
     var run = {
@@ -102,7 +99,7 @@ define(function(require) {
 
         job = run.jobs.get(item.jobid);
         if (!job) {
-          job = {id: item.jobid, n:0, color:colors(color_idx++)};
+          job = {id: item.jobid, n:0, color:colors[color_idx++]};
           //console.log(job);
           run.jobs.set(item.jobid, job);
         }
