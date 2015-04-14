@@ -99,17 +99,17 @@ define(function(require) {
       ctx.fillText('G',    0, GREEN_Y_OFFSET - 3);
       for (i=0; i<6; i++) {
         ctx.fillStyle = greenHeader[i] ? '#000' : '#a0a0a0';
-        ctx.fillText(i+1, GREEN_X_OFFSET + i*GREEN_BOX_SIZE + GREEN_BOX_SIZE/2 - 8, GREEN_Y_OFFSET - 3);
+        ctx.fillText(i, GREEN_X_OFFSET + i*GREEN_BOX_SIZE + GREEN_BOX_SIZE/2 - 8, GREEN_Y_OFFSET - 3);
       }
 
       for (i=0; i<16; i++) {
         ctx.fillStyle = blackHeader[i] ? '#000' : '#a0a0a0';
-        ctx.fillText(i+1, BLACK_X_OFFSET + i*BLACK_BOX_SIZE + BLACK_BOX_SIZE/2 - 8, BLACK_Y_OFFSET - 3);
+        ctx.fillText(i, BLACK_X_OFFSET + i*BLACK_BOX_SIZE + BLACK_BOX_SIZE/2 - 8, BLACK_Y_OFFSET - 3);
       }
 
       for (g=0; g<16; g++) {
         if (groups[g]) {
-          ctx.fillText(g+1, 0, GREEN_Y_OFFSET + g * GROUP_HEIGHT + 9*h);
+          ctx.fillText(g, 0, GREEN_Y_OFFSET + g * GROUP_HEIGHT + 9*h);
         }
       }
 
