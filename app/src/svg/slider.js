@@ -100,7 +100,6 @@ define(function(require) {
 
     slider.domain = function(value) {
       if (!arguments.length) return x.domain();
-      var extent = brush.extent();
       x.domain(value);
       if (value[0] > 1000)
         axis.tickFormat(d3.format('.1e'));
@@ -109,13 +108,15 @@ define(function(require) {
 
       //g.select('.x')
       d3axis.call(axis);
-      if (manual) {
-        if (extent[0] < value[0]) extent[0] = value[0];
-        if (extent[1] > value[1]) extent[1] = value[1];
-        brush.extent(extent);
-      } else {
-        brush.extent(x.domain());
-      }
+      //var extent = brush.extent();
+      //if (manual) {
+      //  if (extent[0] < value[0]) extent[0] = value[0];
+      //  if (extent[1] > value[1]) extent[1] = value[1];
+      //  brush.extent(extent);
+      //} else {
+      //  brush.extent(x.domain());
+      //}
+      brush.extent(x.domain());
 
       if (handle) handle.call(brush);
       return slider;

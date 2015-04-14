@@ -20,7 +20,7 @@ define(function(require) {
       defaultCounter = 0, currentCounter = 0,
       run,
       knownRuns = [],
-      format = d3.format('.1e');
+      format = d3.format('.5f');
 
 
   var histogram = Histogram().counter(defaultCounter);
@@ -116,19 +116,29 @@ define(function(require) {
     var index = currentCounterName == data.countersNames[currentCounter] ? currentCounter : defaultCounter;
     counters.property("value", index);
 
-    var min = Number.MAX_VALUE, max=0, value;
+    var min = Number.MAX_VALUE, max=0, n, i, v;
     run.links.forEach(function(link) {
       link.value = link.counters[0];
-      if (link.value > 0) {
-        if (link.value < min) min = link.value;
-        if (link.value > max) max = link.value;
+      n = link.counters.length;
+      i = -1;
+      while (++i<n) {
+        v = link.counters[i];
+        if (v < min && v > 0) min = v;
+        if (v > max) max = v;
       }
     });
+    console.log('range:', min, max);
+    if (min > max)  min = max;
+
+    d3.select('#data-range').text(' '+format(min)+', '+format(max)); // format(min) + ' max:'+format(max));
     config.data_range([min, max]);
     slider.domain([min,  max]);
     selectCounter(index);
   }
 
+  function min0(current, list) {
+    var n = list.len
+  }
   function subtract(index, on) {
     var sign = on ? 1 : -1;
     run.links.forEach(function(link) {
@@ -138,8 +148,11 @@ define(function(require) {
   }
 
   function selectCounter(index) {
+    console.log('select index:', index);
     index = +index;
     currentCounter = index;
+    d3.select('#sub').selectAll('input').property('disabled', index!=0);
+
 
     run.links.forEach(function(link) {
       link.value = link.counters[index];
@@ -167,6 +180,7 @@ define(function(require) {
     Radio.channel('counter').trigger('range', size);
     var b = count(run.blues, size), g = count(run.greens, size), k = count(run.blacks, size);
     d3.select('#selection').text('blue:'+b+' green:'+g+' black:'+k);
+    d3.select('#filter-range').text(' '+format(size[0])+', '+format(size[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
   }
 
   function loadFile() {
