@@ -148,7 +148,6 @@ define(function(require) {
   }
 
   function selectCounter(index) {
-    console.log('select index:', index);
     index = +index;
     currentCounter = index;
     d3.select('#sub').selectAll('input').property('disabled', index!=0);
