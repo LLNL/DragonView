@@ -158,7 +158,7 @@ define(function(require) {
         else run.blacks.push(link);
       } else {
         for (j=0; j<nc; j++) {
-          link.counters[j] += values[j];
+          link.counters[j] = Math.max(values[j], link.counters[j]);
         }
       }
       //idx = 0;
