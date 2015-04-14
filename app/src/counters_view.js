@@ -13,7 +13,7 @@ define(function(require) {
     dataService = require('data'),
     config = require('config');
 
-  var DEFAULT_COLLECTION = 'data/runs-single.csv';
+  var DEFAULT_COLLECTION = 'data/runs-4jobs.csv';
 
   var width = 250, height,
       svg, header,
