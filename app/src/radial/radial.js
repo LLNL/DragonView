@@ -259,6 +259,12 @@ define(function(require) {
         .attr('d', group_arc)
         .on('click', selectGroup);
 
+      g.append('text')
+        .text(function(d, i) { return i; })
+        .each(function(d,i) { console.log(i, this.getComputedTextLength()); })
+        .attr('x', function(d) { return (opt.outerRadius+15)*Math.sin((d.startAngle + d.endAngle)/2) - this.getComputedTextLength()/2; })
+        .attr('y', function(d) { return -(opt.outerRadius+15)*Math.cos((d.startAngle + d.endAngle)/2) +6;})
+
       return selection;
     }
 

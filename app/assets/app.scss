@@ -171,6 +171,12 @@ div {
     fill: #f8f8f8;
     stroke: none;
 
+    text {
+      stroke: none;
+      fill: #888;
+      font: 11pt sans-serif;
+    }
+
     &:hover {
       stroke: #808080;
       stroke-width: 1px;

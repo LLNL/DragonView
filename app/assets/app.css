@@ -143,6 +143,10 @@ div {
   .radial .group {
     fill: #f8f8f8;
     stroke: none; }
+    .radial .group text {
+      stroke: none;
+      fill: #888;
+      font: 11pt sans-serif; }
     .radial .group:hover {
       stroke: #808080;
       stroke-width: 1px; }
