@@ -127,18 +127,14 @@ define(function(require) {
         if (v > max) max = v;
       }
     });
-    console.log('range:', min, max);
     if (min > max)  min = max;
 
-    d3.select('#data-range').text(' '+format(min)+', '+format(max)); // format(min) + ' max:'+format(max));
+    d3.select('#data-range').text(' '+format(min)+', '+format(max));
     config.data_range([min, max]);
     slider.domain([min,  max]);
     selectCounter(index);
   }
 
-  function min0(current, list) {
-    var n = list.len
-  }
   function subtract(index, on) {
     var sign = on ? 1 : -1;
     run.links.forEach(function(link) {

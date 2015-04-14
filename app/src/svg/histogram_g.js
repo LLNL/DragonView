@@ -198,8 +198,8 @@ define(function(require) {
       draw();
 
       if (!brush.empty()) {
-        extent = [Math.min(Math.max(extent[0], range[0]), range[1]), Math.max(Math.min(extent[1], range[1]), range[0])];
-        brush.extent(extent);
+        //extent = [Math.min(Math.max(extent[0], range[0]), range[1]), Math.max(Math.min(extent[1], range[1]), range[0])];
+        //brush.extent(extent);
         svg.select('.brush').call(brush);
         brush.event(svg.select('.brush'));
       }
