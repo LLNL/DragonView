@@ -24,9 +24,9 @@ define(function(require) {
           .style('height', '10px')
           .style('background-color', function(d) { return d })
           .on('mouseup', function(d, i) {
-            //console.log('click:',i,d, context);
             context.color = d;
-          update();
+            currentRun.updateJobColor(context.idx, d);
+            update();
             d3.select('.color-menu').style('display', 'none')
           });
 

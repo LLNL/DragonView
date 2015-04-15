@@ -9,33 +9,30 @@ define(function(require) {
   var Radio = require('radio');
   var config = require('config');
 
-  var MULTI_JOBS_COLOR = '#00ffff';
-  var UNKNOWN_JOB_COLOR = '#a0a0a0';
 
   var runsInfo;
   var runs = d3.map();
-  var colors = colorbrewer.Set1[8]; //d3.scale.category10();
 
-  function createRun(name) {
-    var run = {
-      groups: [],
-      routers: d3.map(),
-      nodes: new Map(),
-      counters: [],
-      blues: [],
-      greens: [],
-      blacks: [],
-      links: new Map(),
-      jobs: d3.map(),
-      job_colors: new Map(),
-      core_to_node: d3.map()
-      };
+
+  function Run(name) {
+    this.groups = [];
+    this.routers = d3.map();
+    this.routers = d3.map();
+    this.nodes = new Map();
+    this.counters = [];
+    this.blues = [];
+    this.greens = [];
+    this.blacks = [];
+    this.links = new Map();
+    this.jobs = d3.map();
+    this.jobsColor = [];
+    this.core_to_node = d3.map();
 
     var g, r, c, node, rid = 0, cid = 0;
 
     for(g = 0; g < model.N_GROUPS; g++) {
       var group = {id: g, routers: [], mode: 'full'};
-      run.groups.push(group);
+      this.groups.push(group);
       for(r = 0; r < model.N_ROWS; r++) {
         var row = [];
         group.routers.push(row);
@@ -44,15 +41,23 @@ define(function(require) {
             id: model.router_id(g, r, c),
             g: g,  r:r,  c:c,
             jobs:[],
-            color: UNKNOWN_JOB_COLOR
+            color: config.UNKNOWN_JOB_COLOR
           };
           row.push(router);
-          run.routers.set(router.id, router);
+          this.routers.set(router.id, router);
         }
       }
     }
-    return run;
   }
+
+  Run.prototype.updateJobColor = function(idx, color) {
+    var prev = this.jobsColor[idx];
+    this.jobsColor[idx] = color;
+    this.routers.values().forEach(function (router) {
+      if (router.color == prev)
+        router.color = color;
+    });
+  };
 
   function loadRun(name) {
     var info = runsInfo.get(name);
@@ -64,7 +69,7 @@ define(function(require) {
           console.log("Error loading data", error);
         }
         else {
-          var run = createRun(name);
+          var run = new Run(name);
           run.commFile = info.comm;
           //runs.set(name, run);
           loadPlacement(placement, run);
@@ -75,7 +80,7 @@ define(function(require) {
   }
 
   function loadPlacement(data, run) {
-    var job, router, color_idx=0;
+    var job, router, idx=0;
     var rank=-1, node_rank, n;
     var multi = 0;
     data.forEach(function (item) {
@@ -100,9 +105,10 @@ define(function(require) {
 
         job = run.jobs.get(item.jobid);
         if (!job) {
-          job = {id: item.jobid, n:0, color:colors[color_idx++]};
-          //console.log(job);
+          job = {id: item.jobid, idx: idx, n:0, color:config.jobColor(idx)};
+          run.jobsColor.push(job.color);
           run.jobs.set(item.jobid, job);
+          idx++;
         }
         run.nodes.set(item.rank, item);
 
@@ -111,7 +117,7 @@ define(function(require) {
           router.jobs.push(job);
           if (router.jobs.length == 1) router.color = job.color;
           else {
-            router.color = MULTI_JOBS_COLOR;
+            router.color = config.MULTI_JOBS_COLOR;
             if (router.jobs.length == 2) multi++;
           }
         }
@@ -162,13 +168,6 @@ define(function(require) {
           link.counters[j] = Math.max(values[j], link.counters[j]);
         }
       }
-      //idx = 0;
-      //base = link.id;
-      //while (run.links.get(link.id))  {
-      //  idx++;
-      //  link.id = base+'#'+idx;
-      //  link.dup = idx;
-      //}
     }
   }
 

@@ -229,6 +229,7 @@ define(function(require) {
       d3routers.exit().attr('r', 1);
 
 
+      /* render bands */
       var nj = data.jobs.size();
       var fraction = d3.range(data.groups.length).map(function() {
         return d3.range(nj+1).map(function() {return 0; });
@@ -237,12 +238,12 @@ define(function(require) {
       var cid;
       list.forEach(function(router) {
         if (router.jobs.length > 0) {
-          cid = router.jobs.length == 1 ? router.jobs[0].id : nj;
+          cid = router.jobs.length == 1 ? router.jobs[0].idx : nj;
           fraction[router.g][cid]++;
         }
       });
 
-      var colors = colorbrewer.Set1[8].slice(0, nj).concat('#00ffff');
+      var colors = data.jobsColor.concat('#00ffff');
       var bands = [];
       var group, start, end, total;
       var n = data.groups.length;

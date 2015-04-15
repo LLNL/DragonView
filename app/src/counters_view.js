@@ -230,7 +230,9 @@ define(function(require) {
   function onHighlight(size) {
     Radio.channel('counter').trigger('range', size);
     var b = count(run.blues, size), g = count(run.greens, size), k = count(run.blacks, size);
-    d3.select('#selection').text('blue:'+b+' green:'+g+' black:'+k);
+    d3.select('#num-blues').text(b);
+    d3.select('#num-greens').text(g);
+    d3.select('#num-blacks').text(k);
     d3.select('#filter-range').text(' '+format(size[0])+', '+format(size[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
   }
 
