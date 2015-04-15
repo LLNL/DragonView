@@ -153,8 +153,9 @@ div {
   display: inline-block;
   vertical-align: top; }
   .radial .group {
-    fill: #f8f8f8;
-    stroke: none; }
+    fill: #fff;
+    /*#f8f8f8;*/
+    stroke: #ccc; }
     .radial .group text {
       stroke: none;
       fill: #888;
@@ -171,7 +172,7 @@ div {
     stroke-opacity: .4;
     fill: none; }
     .radial .connection:hover, .radial .connection.highlight {
-      stroke: red;
+      stroke: steelblue;
       stroke-width: 4; }
   .radial circle {
     stroke-width: 2px;
@@ -212,3 +213,5 @@ div {
   stroke-width: 1px;
   stroke: green;
   shape-rendering: crispEdges; }
+
+/*# sourceMappingURL=app.css.map */

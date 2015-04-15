@@ -183,9 +183,8 @@ div {
   vertical-align: top;
 
   .group {
-//    fill: #dadada;
-    fill: #f8f8f8;
-    stroke: none;
+    fill: #fff; /*#f8f8f8;*/
+    stroke: #ccc;
 
     text {
       stroke: none;
@@ -216,7 +215,7 @@ div {
 //    pointer-events: none;
 
     &:hover, &.highlight {
-      stroke: red;
+      stroke: steelblue;
       stroke-width: 4;
     }
   }
