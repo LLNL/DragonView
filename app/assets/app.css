@@ -91,6 +91,9 @@ div {
     .controls .jobs td.number-col, .controls .jobs th.number-col {
       text-align: right; }
 
+.sub-label {
+  width: 40px; }
+
 .info {
   margin-left: 0px;
   margin-top: 0px; }

@@ -118,6 +118,7 @@ define(function(require) {
 
     sub.enter()
       .append('label')
+      .attr('class', 'sub-label')
       .style('display', 'inline-block')
       .text(function (d) { return d;})
       .append('input')
