@@ -33,3 +33,8 @@ name,counters,jobs
 32k-job2-4dstencil,links/linkdata/4jobs-2/job2/4dstencil/links-4jobs.16k2-32k-64k-2.csv,links/placements/4jobs-2/4jobs.16k2-32k-64k-2.csv
 32k-job2-many2many,links/linkdata/4jobs-2/job2/many2many/links-4jobs.16k2-32k-64k-2.csv,links/placements/4jobs-2/4jobs.16k2-32k-64k-2.csv
 32k-job2-umesh,links/linkdata/4jobs-2/job2/umesh/links-4jobs.16k2-32k-64k-2.csv,links/placements/4jobs-2/4jobs.16k2-32k-64k-2.csv
+
+64k-job3-2dstencil,links/linkdata/4jobs-2/job3/2dstencil/links-4jobs.16k2-32k-64k-3.csv,links/placements/4jobs-2/4jobs.16k2-32k-64k-3.csv
+64k-job3-4dstencil,links/linkdata/4jobs-2/job3/4dstencil/links-4jobs.16k2-32k-64k-3.csv,links/placements/4jobs-2/4jobs.16k2-32k-64k-3.csv
+64k-job3-many2many,links/linkdata/4jobs-2/job3/many2many/links-4jobs.16k2-32k-64k-3.csv,links/placements/4jobs-2/4jobs.16k2-32k-64k-3.csv
+64k-job3-umesh,links/linkdata/4jobs-2/job3/umesh/links-4jobs.16k2-32k-64k-3.csv,links/placements/4jobs-2/4jobs.16k2-32k-64k-3.csv
