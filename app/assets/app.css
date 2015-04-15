@@ -66,6 +66,8 @@ div {
     font-style: italic; }
   .controls .li-body {
     margin-left: 10px; }
+  .controls .range-value {
+    width: 90px; }
   .controls .jobs {
     border-collapse: collapse;
     border-width: 2px;

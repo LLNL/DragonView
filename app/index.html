@@ -43,7 +43,11 @@
         </li>
 
         <li>
-            <label style="width:45px;display: inline-block">Range:</label><label id="data-range"></label><br>
+            <label style="width:45px;display: inline-block">Range:</label><br>
+              <input type="number" min="0" id="data-from" class="range-value">
+              <input type="number" min="0" id="data-to" class="range-value">
+              <button id="data-reset">reset</button><br>
+               <br>
             <label style="width:45px;display: inline-block">Filter:</label><label id="filter-range"></label><br><br>
             <span id="selection"></span>
             <svg id="info" class="info"></svg>

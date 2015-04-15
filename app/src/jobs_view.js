@@ -8,6 +8,9 @@ define(function(require) {
   return function() {
     Radio.channel('data').on('run', newRun);
 
+    var colorMenu = [
+      {title:}
+    ]
     function newRun(run) {
       var jobs = run.jobs.values().sort(function(a,b) { return b.n - a.n;});
 
@@ -31,7 +34,11 @@ define(function(require) {
         .append('div')
         .style('width', '20px')
         .style('height', '10px')
-        .style('background-color', function(d) { return d.color; });
+        .style('background-color', function(d) { return d.color; })
+        .on('mousedown', function() {
+          console.log('press');
+          if ()
+        })
     }
   };
 });

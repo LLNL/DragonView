@@ -20,6 +20,8 @@ define(function(require) {
       defaultCounter = 0, currentCounter = 0,
       run,
       knownRuns = [],
+      dataRange = [0,0],
+      isSimulation = true,
       format = d3.format('.5f');
 
 
@@ -36,6 +38,21 @@ define(function(require) {
       selectCounter(this.value);
     });
 
+  d3.select('#data-from').on('change', function() {
+    updateRange([+this.value, +d3.select('#data-to').property('value')]);
+    d3.select('#data-reset').property('disabled', false);
+  });
+  d3.select('#data-to').on('change', function() {
+    updateRange([+d3.select('#data-from').property('value'),+this.value]);
+    d3.select('#data-reset').property('disabled', false);
+  });
+
+  d3.select('#data-reset').on('click', function() {
+    d3.select('#data-from').property('value', dataRange[0]);
+    d3.select('#data-to').property('value', dataRange[1]);
+    updateRange(dataRange);
+  });
+
   Radio.channel('data').on('runsList', updateRunList);
   Radio.channel('data').on('run', newData);
   Radio.channel('app').on('ready', function() {
@@ -48,16 +65,13 @@ define(function(require) {
     sim.selectAll('option').remove();
 
     var options = sim.selectAll('option')
-          .data(knownRuns); //, function(d) { return d.name;});
+          .data(knownRuns);
 
     options.enter()
         .append('option')
         .attr('value', function (d, i) { return i; })
           .text(function (d) { return d.name || "──────────"; })
           .each(function(d) { if (!d.name) d3.select(this).attr('disabled', true);});
-          //.attr('disabled', function(d) {return d.name == undefined;} );
-
-    //options.exit().remove();
 
     if (list.length > 0) dataService.load(list[0].name);
   }
@@ -74,7 +88,8 @@ define(function(require) {
     var currentCounterName = run && run.countersNames[currentCounter];
 
     run = data;
-
+    isSimulation = run.countersNames[0] == 'bytes';
+    console.log('isSimulation:',isSimulation);
     /* list of counters */
     var options = counters.selectAll('option')
       .data(run.countersNames);
@@ -88,24 +103,27 @@ define(function(require) {
     options.exit().remove();
 
     var links = [];
-    run.links.forEach(function(link) {
+    run.links.forEach(function (link) {
       links.push(link);
     });
 
-    var names = data.countersNames.concat();
-    names.shift();
+    var names = [];
+    if (isSimulation) {
+      names = data.countersNames.concat();
+      names.shift();
+    }
 
     var sub = d3.select('#sub').selectAll('label')
-      .data(names, function(d) { return d; });
+      .data(names, function (d) { return d; });
 
     sub.enter()
       .append('label')
       .style('display', 'inline-block')
-      .text(function(d) { return d;})
+      .text(function (d) { return d;})
       .append('input')
       .attr('type', 'checkbox')
-      .attr('value', function(d, i) { return i+1;})
-      .on('change', function() { subtract(+this.value, this.checked) });
+      .attr('value', function (d, i) { return i + 1;})
+      .on('change', function () { subtract(+this.value, this.checked) });
 
     sub.selectAll('input').property('checked', true);
 
@@ -116,23 +134,45 @@ define(function(require) {
     var index = currentCounterName == data.countersNames[currentCounter] ? currentCounter : defaultCounter;
     counters.property("value", index);
 
-    var min = Number.MAX_VALUE, max=0, n, i, v;
-    run.links.forEach(function(link) {
-      link.value = link.counters[0];
-      n = link.counters.length;
-      i = -1;
-      while (++i<n) {
-        v = link.counters[i];
-        if (v < min && v > 0) min = v;
-        if (v > max) max = v;
+    if (isSimulation) {
+      var min = Number.MAX_VALUE, max = 0, n, i, v;
+      run.links.forEach(function (link) {
+        n = link.counters.length;
+        i = -1;
+        while (++i < n) {
+          v = link.counters[i];
+          if (v < min && v > 0) min = v;
+          if (v > max) max = v;
+        }
+      });
+      if (min > max)  min = max;
+      dataRange = [min, max];
+      d3.select('#data-from').property('value', dataRange[0]);
+      d3.select('#data-to').property('value', dataRange[1]);
+      d3.select('#data-reset').property('disabled', true);
+      setRange(dataRange);
+    }
+    selectCounter(index);
+  }
+
+  function counterRange(idx) {
+    var min = Number.MAX_VALUE, max = 0, n, i, v;
+    run.links.forEach(function (link) {
+      link.value = link.counters[idx];
+      if (link.value > 0) {
+        if (link.value < min && link.value > 0) min = link.value;
+        if (link.value > max) max = link.value;
       }
     });
-    if (min > max)  min = max;
+    return [min, max];
+  }
 
-    d3.select('#data-range').text(' '+format(min)+', '+format(max));
-    config.data_range([min, max]);
-    slider.domain([min,  max]);
-    selectCounter(index);
+  function setRange(range) {
+    config.data_range(range);
+    slider.domain(range);
+    histogram.range(range);
+    if (range[0] < 100000) format = d3.format('7.5f');
+    else format = d3.format('.5e');
   }
 
   function subtract(index, on) {
@@ -143,11 +183,27 @@ define(function(require) {
     selectCounter(0);
   }
 
+  function updateRange(range) {
+    setRange(range);
+    run.links.forEach(function(link) {
+      link.value = link.counters[currentCounter];
+      link.vis_color = config.color(link.value);
+    });
+    histogram.range(slider.extent());
+  }
+
   function selectCounter(index) {
     index = +index;
     currentCounter = index;
     d3.select('#sub').selectAll('input').property('disabled', index!=0);
 
+    if (!isSimulation) {
+      dataRange = counterRange(index);
+      d3.select('#data-from').property('value', dataRange[0]);
+      d3.select('#data-to').property('value', dataRange[1]);
+      d3.select('#data-reset').property('disabled', true);
+      setRange(dataRange);
+    }
 
     run.links.forEach(function(link) {
       link.value = link.counters[index];
