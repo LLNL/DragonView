@@ -7,6 +7,7 @@ define(function(require) {
   var d3 = require('d3');
   var queue = require('d3_queue');
   var Radio = require('radio');
+  var config = require('config');
 
   var MULTI_JOBS_COLOR = '#00ffff';
   var UNKNOWN_JOB_COLOR = '#a0a0a0';

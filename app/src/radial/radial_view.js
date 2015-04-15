@@ -17,6 +17,11 @@ define(function(require) {
       if (active) radial.data(data).filter();
     });
 
+    Radio.channel('data').on('update', function(data) {
+      _data = data;
+      if (active) radial.data(data).filter();
+    });
+
     Radio.channel('counter').on('range', function (range) {
       _range = range;
       if (active) radial.range(range).filter();

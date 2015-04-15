@@ -49,6 +49,16 @@ div {
 .title {
   font: 16pt sans-serif; }
 
+.color-menu {
+  border: 1px solid black;
+  background-color: #ccc; }
+
+.color-entry {
+  margin: 2px;
+  border: 1px solid #ccc; }
+  .color-entry:hover {
+    border: 1px solid black; }
+
 .controls {
   top: 10px;
   left: 5px;
