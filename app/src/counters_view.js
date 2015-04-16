@@ -152,6 +152,7 @@ define(function(require) {
       d3.select('#data-to').property('value', dataRange[1]);
       d3.select('#data-reset').property('disabled', true);
       setRange(dataRange);
+      sum();
     }
     selectCounter(index);
   }
@@ -180,8 +181,10 @@ define(function(require) {
     var sign = on ? 1 : -1;
     run.links.forEach(function(link) {
       link.counters[0] += link.counters[index]*sign;
+      link.total[0] += link.total[index]*sign;
     });
     selectCounter(0);
+    sum();
   }
 
   function updateRange(range) {
@@ -216,6 +219,19 @@ define(function(require) {
     histogram.range(slider.extent());
   }
 
+  function sum() {
+    var b = 0, g = 0, k = 0;
+    run.links.forEach(function(link) {
+      if (link.color == 'b') b += link.total[0];
+      else if (link.color == 'g') g += link.total[0];
+      else k += link.total[0];
+    });
+    var format = d3.format('.2e');
+    d3.select('#vol-blues').text(format(b));
+    d3.select('#vol-greens').text(format(g));
+    d3.select('#vol-blacks').text(format(k));
+    console.log('vol:',b, g, k);
+  }
 
   function onZoom(size) {
     histogram.range(size);

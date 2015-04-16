@@ -157,7 +157,8 @@ define(function(require) {
           destId:   {g: dg, r: dr, c: dc},
           src:      run.routers.get(model.router_id(sg, sr, sc)),
           dest:     run.routers.get(model.router_id(dg, dr, dc)),
-          counters: values
+          counters: values,
+          total: values.concat()
         };
         run.links.set(link.id, link);
         if (color == 'b') run.blues.push(link);
@@ -166,6 +167,7 @@ define(function(require) {
       } else {
         for (j=0; j<nc; j++) {
           link.counters[j] = Math.max(values[j], link.counters[j]);
+          link.total[j] += values[j];
         }
       }
     }
