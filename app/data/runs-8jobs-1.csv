@@ -1,11 +1,11 @@
 name,counters,jobs
-8jobs/sim1,links/linkdata/8jobs-1/sim1/links-4jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
-8jobs/sim2,links/linkdata/8jobs-1/sim2/links-4jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
-8jobs/sim3,links/linkdata/8jobs-1/sim3/links-4jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
-8jobs/sim4,links/linkdata/8jobs-1/sim4/links-4jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
+8jobs/sim1,links/linkdata/multi/8jobs-1/sim1/links-8jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
+8jobs/sim2,links/linkdata/multi/8jobs-1/sim2/links-8jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
+8jobs/sim3,links/linkdata/multi/8jobs-1/sim3/links-8jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
+8jobs/sim4,links/linkdata/multi/8jobs-1/sim4/links-8jobs.16k8.csv,links/placements/8jobs-1/8jobs.16k8.csv
 
-8jobs/job0-spread,links/linkdata/8jobs-1/job0/links-4jobs.16k8-0.csv,links/placements/8jobs-1/8jobs.16k8-0.csv
-8jobs/job1-2dstencil,links/linkdata/8jobs-1/job1/links-4jobs.16k8-1.csv,links/placements/8jobs-1/8jobs.16k8-1.csv
-8jobs/job3-4dstencil,links/linkdata/8jobs-1/job3/links-4jobs.16k8-3.csv,links/placements/8jobs-1/8jobs.16k8-3.csv
-8jobs/job5-many2many,links/linkdata/8jobs-1/job5/links-4jobs.16k8-5.csv,links/placements/8jobs-1/8jobs.16k8-5.csv
-8jobs/job7-umesh,links/linkdata/8jobs-1/job7/links-4jobs.16k8-7.csv,links/placements/8jobs-1/8jobs.16k8-7.csv
+8jobs/job0-spread,links/linkdata/multi/8jobs-1/job0/links-8jobs.16k8-0.csv,links/placements/8jobs-1/8jobs.16k8-0.csv
+8jobs/job1-2dstencil,links/linkdata/multi/8jobs-1/job1/links-8jobs.16k8-1.csv,links/placements/8jobs-1/8jobs.16k8-1.csv
+8jobs/job3-4dstencil,links/linkdata/multi/8jobs-1/job3/links-8jobs.16k8-3.csv,links/placements/8jobs-1/8jobs.16k8-3.csv
+8jobs/job5-many2many,links/linkdata/multi/8jobs-1/job5/links-8jobs.16k8-5.csv,links/placements/8jobs-1/8jobs.16k8-5.csv
+8jobs/job7-umesh,links/linkdata/multi/8jobs-1/job7/links-8jobs.16k8-7.csv,links/placements/8jobs-1/8jobs.16k8-7.csv
