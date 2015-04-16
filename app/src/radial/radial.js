@@ -281,8 +281,6 @@ define(function(require) {
     }
 
     function render() {
-
-
       group_arc = d3.svg.arc()
         .innerRadius(opt.innerRadius)
         .outerRadius(opt.outerRadius)
@@ -340,7 +338,7 @@ define(function(require) {
         .data(data.groups, function (g) { return g.id; })
         .classed('selected', function(g) { return g.id == id; });
 
-      renderLinks();
+      //renderLinks();
     }
 
     function Router() {
