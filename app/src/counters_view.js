@@ -194,18 +194,21 @@ define(function(require) {
     var value;
     run.links.forEach(function(link) {
       if (link.value >= filterRange[0] && link.value <= filterRange[1]) {
-        value = link.total[currentCounter];
+        value = link.value; //link.total[currentCounter];
         if (link.color == 'b') {
           b += value;
-          nb += link.n;
+          //nb += link.n;
+          nb++;
         }
         else if (link.color == 'g') {
           g += value;
-          ng += link.n;
+          //ng += link.n;
+          ng++;
         }
         else {
           k += value;
-          nk += link.n;
+          //nk += link.n;
+          nk++;
         }
       }
     });
