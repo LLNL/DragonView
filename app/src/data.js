@@ -169,7 +169,7 @@ define(function(require) {
         for (j=0; j<nc; j++) {
           link.counters[j] = Math.max(link.counters[j], values[j]);
           link.total[j] += values[j];
-          if (values[j] == 0) console.log('link:', link);
+          //if (values[j] == 0) console.log('link:', link);
         }
         link.n++;
       }
