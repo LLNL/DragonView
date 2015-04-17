@@ -59,6 +59,11 @@ div {
   .color-entry:hover {
     border: 1px solid black; }
 
+.swatch {
+  display: inline-block;
+  width: 20px;
+  height: 15px; }
+
 .controls {
   top: 10px;
   left: 5px;

@@ -167,10 +167,11 @@ define(function(require) {
         else run.blacks.push(link);
       } else {
         for (j=0; j<nc; j++) {
-          link.counters[j] = Math.max(values[j], link.counters[j]);
+          link.counters[j] = Math.max(link.counters[j], values[j]);
           link.total[j] += values[j];
-          link.n++;
+          if (values[j] == 0) console.log('link:', link);
         }
+        link.n++;
       }
     }
   }

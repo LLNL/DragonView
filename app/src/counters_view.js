@@ -54,6 +54,13 @@ define(function(require) {
     updateRange(dataRange);
   });
 
+  d3.select('#colormap').selectAll('.swatch')
+    .data(config.VALUES_COLORMAP)
+  .enter()
+    .append('span')
+    .attr('class', 'swatch')
+    .style('background-color', function(d) { return d; });
+
   Radio.channel('data').on('runsList', updateRunList);
   Radio.channel('data').on('run', newData);
   Radio.channel('app').on('ready', function() {
@@ -192,23 +199,40 @@ define(function(require) {
     var b = 0, g = 0, k = 0;
     var nb = 0, ng = 0, nk = 0;
     var value;
+    //run.links.forEach(function(link) {
+    //  if (link.value >= filterRange[0] && link.value <= filterRange[1]) {
+    //    value = link.value; //link.total[currentCounter];
+    //    if (link.color == 'b') {
+    //      b += value;
+    //      //nb += link.n;
+    //      nb++;
+    //    }
+    //    else if (link.color == 'g') {
+    //      g += value;
+    //      //ng += link.n;
+    //      ng++;
+    //    }
+    //    else {
+    //      k += value;
+    //      //nk += link.n;
+    //      nk++;
+    //    }
+    //  }
+    //});
     run.links.forEach(function(link) {
-      if (link.value >= filterRange[0] && link.value <= filterRange[1]) {
-        value = link.value; //link.total[currentCounter];
+      value = link.total[currentCounter];
+      if (value > 0) {
         if (link.color == 'b') {
           b += value;
-          //nb += link.n;
-          nb++;
+          nb += link.n;
         }
         else if (link.color == 'g') {
           g += value;
-          //ng += link.n;
-          ng++;
+          ng += link.n;
         }
         else {
           k += value;
-          //nk += link.n;
-          nk++;
+          nk += link.n;
         }
       }
     });

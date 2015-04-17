@@ -9,10 +9,12 @@ define(function(require) {
   var value_color = d3.scale.ordinal().domain([0, 8]).range(colorbrewer.YlOrRd[9]);
   var scale = d3.scale.quantize().range(colorbrewer.YlOrRd[9]);
   var JOBS_COLORMAP = colorbrewer.Set1[8].concat();
+  var VALUES_COLORMAP = colorbrewer.YlOrRd[9];
 
   return {
     MULTI_JOBS_COLOR: '#00ffff',
     UNKNOWN_JOB_COLOR: '#a0a0a0',
+    VALUES_COLORMAP: VALUES_COLORMAP,
 
     jobColor: function(id) {
       id = Math.min(id, JOBS_COLORMAP.length-1);

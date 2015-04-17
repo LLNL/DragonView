@@ -34,7 +34,12 @@ div {
   &:hover {
     border: 1px solid black;
   }
+}
 
+.swatch {
+  display: inline-block;
+  width: 20px;
+  height: 15px;
 }
 .controls {
 //  position: fixed;
