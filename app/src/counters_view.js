@@ -18,6 +18,7 @@ define(function(require) {
   var width = 250, height,
       svg, header,
       defaultCounter = 0, currentCounter = 0,
+      filterRange = [0, 0],
       run,
       knownRuns = [],
       dataRange = [0,0],
@@ -187,7 +188,39 @@ define(function(require) {
     sum();
   }
 
+  function sum() {
+    var b = 0, g = 0, k = 0;
+    var nb = 0, ng = 0, nk = 0;
+    var value;
+    run.links.forEach(function(link) {
+      if (link.value >= filterRange[0] && link.value <= filterRange[1]) {
+        value = link.total[currentCounter];
+        if (link.color == 'b') {
+          b += value;
+          nb += link.n;
+        }
+        else if (link.color == 'g') {
+          g += value;
+          ng += link.n;
+        }
+        else {
+          k += value;
+          nk += link.n;
+        }
+      }
+    });
+    nb = nb || 1;
+    ng = ng || 1;
+    nk = nk || 1;
+    var format = d3.format('4.3g');
+    d3.select('#vol-blues').text(format(b/nb));
+    d3.select('#vol-greens').text(format(g/ng));
+    d3.select('#vol-blacks').text(format(k/nk));
+    console.log('vol:',nb, b, ng, g, nk, k);
+  }
+
   function updateRange(range) {
+    filterRange = range;
     setRange(range);
     run.links.forEach(function(link) {
       link.value = link.counters[currentCounter];
@@ -219,20 +252,6 @@ define(function(require) {
     histogram.range(slider.extent());
   }
 
-  function sum() {
-    var b = 0, g = 0, k = 0;
-    run.links.forEach(function(link) {
-      if (link.color == 'b') b += link.total[0];
-      else if (link.color == 'g') g += link.total[0];
-      else k += link.total[0];
-    });
-    var format = d3.format('.2e');
-    d3.select('#vol-blues').text(format(b));
-    d3.select('#vol-greens').text(format(g));
-    d3.select('#vol-blacks').text(format(k));
-    console.log('vol:',b, g, k);
-  }
-
   function onZoom(size) {
     histogram.range(size);
   }
@@ -251,6 +270,8 @@ define(function(require) {
     d3.select('#num-greens').text(g);
     d3.select('#num-blacks').text(k);
     d3.select('#filter-range').text(' '+format(size[0])+'  '+format(size[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
+    filterRange = size;
+    sum();
   }
 
   function loadFile() {
