@@ -23,6 +23,7 @@ define(function(require) {
       knownRuns = [],
       dataRange = [0,0],
       isSimulation = true,
+      frozen = false,
       format = d3.format('.5f');
 
 
@@ -34,9 +35,30 @@ define(function(require) {
       selectRun(this.value);
     });
 
+  d3.select('body')
+    .on('keydown', function() {
+      var options = d3.select('#run');
+      var value = +options.property('value');
+      if (d3.event.keyCode == 38) {
+        if (value> 0 && knownRuns[value-1].name) {
+          options.property('value', value - 1);
+          selectRun(value - 1);
+        } else {
+          document.getElementById('play').play();
+        }
+      } else if (d3.event.keyCode == 40) {
+          if (value < knownRuns.length-1 && knownRuns[value+1].name) {
+          options.property('value', value+1);
+          selectRun(value+1);
+        } else {
+            document.getElementById('play').play();
+          }
+      }
+    });
+
   var counters = d3.select('#counter')
     .on('change', function () {
-      selectCounter(this.value);
+      selectCounter(this.value, false);
     });
 
   d3.select('#data-from').on('change', function() {
@@ -49,9 +71,14 @@ define(function(require) {
   });
 
   d3.select('#data-reset').on('click', function() {
-    d3.select('#data-from').property('value', dataRange[0]);
-    d3.select('#data-to').property('value', dataRange[1]);
+    d3.select('#data-from').property('value', format(dataRange[0]));
+    d3.select('#data-to').property('value', format(dataRange[1]));
     updateRange(dataRange);
+  });
+
+  d3.select('#range-frozen').on('change', function() {
+    frozen = this.checked;
+    d3.select('#data-reset').property('disabled', frozen);
   });
 
   d3.select('#colormap').selectAll('.swatch')
@@ -155,14 +182,16 @@ define(function(require) {
         }
       });
       if (min > max)  min = max;
-      dataRange = [min, max];
-      d3.select('#data-from').property('value', dataRange[0]);
-      d3.select('#data-to').property('value', dataRange[1]);
-      d3.select('#data-reset').property('disabled', true);
-      setRange(dataRange);
+      if (!frozen) {
+        dataRange = [min, max];
+        d3.select('#data-from').property('value', format(dataRange[0]));
+        d3.select('#data-to').property('value', format(dataRange[1]));
+        d3.select('#data-reset').property('disabled', true);
+        setRange(dataRange);
+      }
       sum();
     }
-    selectCounter(index);
+    selectCounter(index, frozen);
   }
 
   function counterRange(idx) {
@@ -191,7 +220,7 @@ define(function(require) {
       link.counters[0] += link.counters[index]*sign;
       link.total[0] += link.total[index]*sign;
     });
-    selectCounter(0);
+    selectCounter(0, false);
     sum();
   }
 
@@ -239,11 +268,11 @@ define(function(require) {
     nb = nb || 1;
     ng = ng || 1;
     nk = nk || 1;
-    var format = d3.format('4.3g');
-    d3.select('#vol-blues').text(format(b/nb));
-    d3.select('#vol-greens').text(format(g/ng));
-    d3.select('#vol-blacks').text(format(k/nk));
-    console.log('vol:',nb, b, ng, g, nk, k);
+    var fmt = d3.format('4.3g');
+    d3.select('#vol-blues').text(fmt(b/nb));
+    d3.select('#vol-greens').text(fmt(g/ng));
+    d3.select('#vol-blacks').text(fmt(k/nk));
+    //console.log('vol:',nb, b, ng, g, nk, k);
   }
 
   function updateRange(range) {
@@ -256,17 +285,17 @@ define(function(require) {
     histogram.range(slider.extent());
   }
 
-  function selectCounter(index) {
+  function selectCounter(index, isFrozen) {
     index = +index;
     currentCounter = index;
     d3.select('#sub').selectAll('input').property('disabled', index!=0);
 
-    if (!isSimulation) {
+    if (!isSimulation && !isFrozen) {
       dataRange = counterRange(index);
-      d3.select('#data-from').property('value', dataRange[0]);
-      d3.select('#data-to').property('value', dataRange[1]);
-      d3.select('#data-reset').property('disabled', true);
       setRange(dataRange);
+      d3.select('#data-from').property('value', format(dataRange[0]));
+      d3.select('#data-to').property('value', format(dataRange[1]));
+      d3.select('#data-reset').property('disabled', true);
     }
 
     run.links.forEach(function(link) {

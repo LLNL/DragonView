@@ -12,6 +12,8 @@
 
 <body class="page">
 
+<audio id="play" src="http://www.soundjay.com/button/beep-21.wav"></audio>
+
 <div class="title">Dragonfly</div>
 
 <div id="controls" class="controls">
@@ -51,7 +53,8 @@
             <label style="width:45px;display: inline-block">Range:</label><br>
               <input type="number" min="0" id="data-from" class="range-value">
               <input type="number" min="0" id="data-to" class="range-value">
-              <button id="data-reset">reset</button><br>
+              <button id="data-reset">reset</button>
+              <input type="checkbox" id="range-frozen" class="switch-input">Freeze<br>
                <br>
             <label style="width:45px;display: inline-block">Filter:</label><label id="filter-range"></label><br><br>
 

@@ -35,7 +35,7 @@ define(function(require) {
       //el = $(elem);
       var div = d3.select(elem).append('div');
       var ctrl = div.append('div').attr('class', 'graph-ctrl').selectAll('input')
-        .data(['blue', 'green', 'black'])
+        .data(['blue', 'green', 'black', 'all'])
         .enter()
         .append('g');
 

@@ -194,54 +194,70 @@ define(function(require) {
       var value, i, j;
       var map = d3.map(), node;
       var links = [];
-      var selected = select_color == 'blue' ? data.blues : select_color=='green' ? data.greens : data.blacks;
+      var selected = select_color == 'blue' ? data.blues
+                    : select_color == 'green' ? data.greens
+                    : select_color == 'black' ? data.blacks
+                    : data.links;
+      node_map.forEach(function(key, node) { node.value = 0; node.color = '#000'});
       selected.forEach(function(link) {
-        value = link.counters[counterId];
-        if (range[0] <= value && value <= range[1]) {
+        //value = link.counters[counterId];
+        if (range[0] <= link.value && link.value <= range[1]) {
           var sid = model.node_id(link.srcId.g, link.srcId.r, link.srcId.c, 0);
           for(i = 0; i < 4; i++) {
             node = node_map.get(sid + i);
-            if (node) map.set(sid + i, node);
+            if (node) {
+              if (link.value > node.value) {
+                node.value = link.value;
+                node.color = link.vis_color;
+              }
+              map.set(sid + i, node);
+            }
           }
           var did = model.node_id(link.destId.g, link.destId.r, link.destId.c, 0);
           for(i = 0; i < 4; i++) {
             node = node_map.get(did + i);
-            if (node) map.set(did + i, node);
+            if (node) {
+              if (link.value > node.value) {
+                node.value = link.value;
+                node.color = link.vis_color;
+              }
+              map.set(did + i, node);
+            }
           }
 
-          sid = Math.floor(sid/4);
-          did = Math.floor(did/4);
-          var id = sid < did ? sid+':'+did : did+':'+sid;
-          var l = link_map.get(id);
-          if (l) {
-            l.edges.forEach(function(entry, value) {
-              links.push(value);
-            });
-          }
+          //sid = Math.floor(sid/4);
+          //did = Math.floor(did/4);
+          //var id = sid < did ? sid+':'+did : did+':'+sid;
+          //var l = link_map.get(id);
+          //if (l) {
+          //  l.edges.forEach(function(entry, value) {
+          //    links.push(value);
+          //  });
+          //}
         }
       });
 
-      var color = colors[select_color];
+      //var color = colors[select_color];
 
-      var d3links = svg.select('.edges').selectAll('.edge')
-        .data(links,  function(d) { return d.id; });
-
-      d3links
-        .attr('stroke', color);
-
-      d3links.exit()
-        .attr('stroke', '#ddd');
+      //var d3links = svg.select('.edges').selectAll('.edge')
+      //  .data(links,  function(d) { return d.id; });
+      //
+      //d3links
+      //  .attr('stroke', color);
+      //
+      //d3links.exit()
+      //  .attr('stroke', '#ddd');
 
       var nodes = svgNodes.selectAll('.node')
         .data(map.values(), function(d) { return d.id;});
 
       nodes
-        .attr('fill', color)
+        .attr('fill', function(d) { return d.color;})
         .attr('r', 4);
 
       nodes.exit()
         .attr('fill', 'lightgray')
-        .attr('r', 3);
+        .attr('r', 2);
     }
 
     var view = {};
