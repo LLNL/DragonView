@@ -190,6 +190,17 @@ div {
     .radial circle:active {
       r: 4px; }
 
+.radial .greenLink{
+    stroke: green;
+    stroke-opacity: .4;
+    fill: none;
+    pointer-events: none; }
+
+.radial .blackLink{
+    stroke: black;
+    stroke-opacity: .4;
+    fill: none; }
+
 .matrix line {
   fill: none;
   stroke: lightgray;

@@ -32,6 +32,7 @@ define(function(require) {
     var range, counterId;
     var data, groups, connectors, connections;
     var d3groups, d3connectors, d3connections;
+    var d3greenLinksArc, d3greenLinksConn, d3blueLinks;
 
 
     var group_arc = d3.svg.arc()
@@ -370,7 +371,10 @@ define(function(require) {
 
     function Connection(selection) {
        this.append("path")
-          .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
+          .each(function(d) {
+               d.source = d[0]; d.target = d[d.length - 1];
+           })
+
           .attr("class", "connection")
           //.attr('stroke', function(d) { return d.color; })
           .attr("d", connectionPath);
@@ -396,6 +400,7 @@ define(function(require) {
           .classed('highlight', false);
       }
     }
+
     /*
      * radial
      */
