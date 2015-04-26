@@ -9,6 +9,7 @@ define(function(require) {
   var model = require('model');
   var BlackGreen = require('radial/black_green');
   var config = require('config');
+  var grid_view = require('grid_view');
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
@@ -127,7 +128,7 @@ define(function(require) {
       //} else {
       //  renderGreens();
       //}
-      //bg_view(greenLinks, blackLinks);
+      //bg_view(links, blackLinks);
       renderBlues();
       bg_overview(greenLinks, blackLinks);
     }
@@ -324,9 +325,13 @@ define(function(require) {
     function selectGroup(d) {
       var id;
       if (selectedGroup == d) {
+          // unselecting
+          hideGrid();
         selectedGroup = id = undefined;
         //svg.select('.green-black').selectAll('.something').remove();
       } else {
+          //selecting
+          showGrid(d);
         if (selectedGroup == undefined) {
           //svg.select('.connections').selectAll('.connection').remove();
         }
