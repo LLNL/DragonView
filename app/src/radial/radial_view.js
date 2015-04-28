@@ -3,6 +3,7 @@
  */
 define(function(require) {
   var Radial = require('radial/radial');
+  var Grid_view = require('grid_view');
   var _ = require('underscore');
   var $ = require('jquery');
   var Resize = require('resize');
@@ -30,6 +31,7 @@ define(function(require) {
     Radio.channel('counter').on('change', function (index) {
       _counter = index;
       if (active) radial.counter(index).filter();
+      //if (active) grid_view.addViewComponent();
     });
 
     function onResize() {
@@ -39,6 +41,7 @@ define(function(require) {
     var view = function(elem) {
       el = $(elem);
       radial = Radial().el(elem).counter(0).resize(600, 600);
+      //grid_view = Grid_view();
 
       el.detectResizing({onResize: onResize});
       return view;

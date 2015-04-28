@@ -2,9 +2,9 @@
  * Created by Divya on 4/14/2015.
  */
 
-
 var linkMatrixElement = (function linkMatrixElement(d){
     return function(d){
+
         return element = {
             "seg": false,
             "right": false,
@@ -12,16 +12,28 @@ var linkMatrixElement = (function linkMatrixElement(d){
     }
 })();
 
+var getLinkMatrix = (function (){
+    return function(color){
+        if(color == 'green'){
+            return createLinkMatrix(6, 16);
+        }
+        else{
+            return createLinkMatrix(16, 6);
+        }
+    }
+})();
+
 var createLinkMatrix =(function createLinkMatrix(){
-    return function(d){
+    return function(levelCount, channelCount){
+
         var linkMat = new Array();
-        for(var k=0; k<6; k++){
+        for(var k=0; k<levelCount; k++){
             var row = new Array();
 
-            for(var i=0; i<16; i++){
+            for(var i=0; i<channelCount; i++){
                 var channel = new Array();
 
-                for(var j=0; j<16; j++){
+                for(var j=0; j<channelCount; j++){
                     channel.push(linkMatrixElement());
                 }
                 row.push(channel);
@@ -47,9 +59,15 @@ var populateLinkMatrix = (function populateLinkMatrix(){
 
                 matrix[source.r][source.c][target.c].seg = true;
                 matrix[source.r][source.c][target.c].left = true;
-                console.log('true');
             }
-        })
+            else if(source.c == target.c){
+                matrix[source.c][source.r][source.r].seg = true;
+                matrix[source.c][source.r][source.r].right = true;
+
+                matrix[source.c][source.r][target.r].seg = true;
+                matrix[source.c][source.r][target.r].left = true;
+            }
+        });
         return matrix;
 
     }

@@ -14,8 +14,8 @@ var params = {xMargin: 20,
 
 var d3, svg;
 var _data;
-var links, linksInGroup, greenLinks;
-var groupId;
+var links, linksInGroup, greenLinks, blackLinks;
+var group, groupId;
 var linkMatrix;
 
 define(function(require){
@@ -28,17 +28,47 @@ define(function(require){
 
     return function(){
         Radio.channel('data').on('run', function(data){ _data = data; });
+        //Radio.channel('counter').on('change', function(){ addViewComponents(); });
+
+
+        var view_width = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
+        var view_height = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
 
         var view = d3.select('body').append('div')
+            .attr('id', 'grid-view')
             .attr('class', 'grid-view')
             .style('class', 'none');
 
-        svg =  view.append('svg')
-                .attr('width', ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15))+ 'px')
-                .attr('height', ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5))+'px')
-            .on('mouseover', function(){
-                view.style('cursor', 'move');
-            })
+        //var drag = d3.behavior.drag()
+        //    .origin(function(){
+        //        var t = d3.select(this);
+        //        //return {x: t.attr("x"), y: t.attr("y")};
+        //        //console.log('origin: ', t.attr("x"), t.attr("y"))
+        //
+        //        var x = document.getElementById('gid-view').getBoundingClientRect();
+        //        console.log('origin-----------------------------');
+        //        console.log(x.left, x.top);
+        //        return {x: 500, y: 600};
+        //    })
+        //    .on('drag', function(d){
+        //        console.log(d3.event.x, d3.event.y)
+        //        view.style("left", d3.event.x+"px").style("top", d3.event.y+"px");
+        //    })
+        //    //.on('dragstart', function(){
+        //    //    console.log('drag start');
+        //    //})
+        //    //.on('dragend', function(){
+        //    //    console.log('drag end');
+        //    //});
+
+        svg = view.append('svg')
+            .attr('width', view_width + 'px')
+            .attr('height', view_height +'px')
+            .style('cursor', 'move')
+            //.call(drag);
+            //.origin(function(){
+            //    return {x: view.getBoundingClientRect().left, y: view.getBoundingClientRect().top};
+            //})
             .on('drag', function(){
                 console.log("dragging");
 
@@ -49,30 +79,36 @@ define(function(require){
             .on('dragend', function(){
                 console.log("dragend")
                 view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
-                d3.select(this).classed("dragging", false);
             });
 
         svg.append('rect')
-            .attr('rx', 6)
-            .attr('ry', 6)
-            .attr('width', ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15))+ 'px')
-            .attr('height', ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5))+'px')
+            .attr('class', 'background')
+            .attr('rx', 10)
+            .attr('ry', 10)
+            .attr('width', view_width + 'px')
+            .attr('height', view_height +'px')
             .attr('fill', 'none');
 
         svg.append('g')
-            .attr('class', 'routers');
+            .attr('class', 'nodes');
 
         svg.append('g')
             .attr('class', 'greenLinks');
 
         svg.append('g')
             .attr('class', 'greenArcs');
+
+        svg.append('g')
+            .attr('class', 'blackLinks');
+
+        svg.append('g')
+            .attr('class', 'blackArcs');
     };
 });
 
 function showGrid(d) {
-    console.log("show grid ");
     groupId = d.id;
+    group = d;
 
     d3.select(".grid-view")
         .style('position', 'absolute')
@@ -86,9 +122,30 @@ function showGrid(d) {
         .attr('stroke', 'black')
         .attr('stroke-width', '1');
 
-    var rows = svg.select('.routers')
+
+    addViewComponents();
+}
+
+function hideGrid(require){
+    console.log("hide grid");
+
+    d3.select(".grid-view")
+        .style("display", "none");
+}
+
+function addViewComponents(){
+    addRouters();
+
+    addGreenLinks();
+
+    addBlackLinks();
+
+}
+
+function addRouters(){
+    var rows = svg.select('.nodes')
         .selectAll(".rows")
-        .data(d.routers)
+        .data(group.routers)
         .enter()
         .append("svg:g");
 
@@ -98,66 +155,86 @@ function showGrid(d) {
         .append("circle")
         .attr('cx', function(d){return (params.xMargin+(((d.c*2)+1)*params.radius)+((d.c)*params.xFactor));})
         .attr('cy', function(d){return (params.yMargin+(((d.r*2)+1)*params.radius)+((d.r)*params.yFactor));})
-        .attr('r', params.radius)
-        .attr('stroke', 'red')
-        .attr('stroke-width', 1)
-        .attr('fill', 'red');
-
-    showGreenLinks();
+        .attr('r', params.radius);
 }
 
-function showGreenLinks(){
+function addGreenLinks(){
     links = _data.greens;
+    linksInGroup = getLinksInGroup(links);
+    console.log("number of green links", linksInGroup.length);
 
     //create link matrix
-    linkMatrix = createLinkMatrix();
-    linksInGroup = getLinksInGroup(links);
-    console.log("number of links in this group", linksInGroup.length);
+    linkMatrix = getLinkMatrix('green');
 
     //populate link martix
     linkMatrix = populateLinkMatrix(linkMatrix, linksInGroup);
 
     //apply link algorithm
-    greenLinks = createReducedLinks();
+    greenLinks = createReducedLinks('green', linkMatrix);
 
-    showLinks(greenLinks);
+    //show the link
+    addLinks('green', greenLinks);
 }
 
-function getLinksInGroup(greenLinks){
+function addBlackLinks(){
+    links = _data.blacks;
+    linksInGroup = getLinksInGroup(links);
+    console.log("number of black links", linksInGroup.length);
+
+    //create link matrix
+    linkMatrix = getLinkMatrix('black');
+
+    //populate link martix
+    linkMatrix = populateLinkMatrix(linkMatrix, linksInGroup);
+
+    //apply link algorithm
+    blackLinks = createReducedLinks('black', linkMatrix);
+
+    //show the link
+    addLinks('black', blackLinks);
+}
+
+function getLinksInGroup(links){
     var linksInGroup = [];
-    for(var i=0; i<greenLinks.length; i++){
-        if(greenLinks[i].srcId.g==groupId){
-            linksInGroup.push(greenLinks[i]);
+    for(var i=0; i<links.length; i++){
+        if(links[i].srcId.g==groupId){
+            linksInGroup.push(links[i]);
         }
     }
     return linksInGroup;
 }
 
-function showLinks(greenLinks){
+function addLinks(color, paths){
+    if(color == 'green'){
+        showGreenLinks(paths);
+    }
+    else if(color == 'black'){
+        showBlackLinks(paths);
+    }
+}
 
-    var greenLink = greenLinks.links;
-    var greenArc = greenLinks.arcs;
-
+function showGreenLinks(paths){
+    var links = paths.links;
+    var arcs = paths.arcs;
 
     svg.select('.greenLinks').remove();
     svg.select('.greenArcs').remove();
 
-    var d3Links = svg.append('g')
+    svg.append('g')
         .attr('class', 'greenLinks');
 
-    var d3Arcs = svg.append('g')
+    svg.append('g')
         .attr('class', 'greenArcs');
 
-    d3Links.selectAll('link')
-        .data(greenLink)
+    var d3Links = svg.select('.greenLinks')
+        .selectAll('links')
+        .data(links)
         .enter()
         .append('line')
         .attr("x1", function(d){ return d.source.x})
         .attr("y1", function(d){ return d.source.y})
         .attr("x2", function(d){ return d.target.x})
-        .attr("y2", function(d){ return d.target.y})
-        .attr("stroke-width", 1)
-        .attr("stroke", "red");
+        .attr("y2", function(d){ return d.target.y});
 
     var arc = d3.svg.arc()
         .startAngle(function(d){return d.startAngle*(Math.PI/180);})
@@ -165,21 +242,51 @@ function showLinks(greenLinks){
         .innerRadius(function(){return params.channelGap-0.5;})
         .outerRadius(function(){return  params.channelGap+0.5;});
 
-    var d3arcs = svg.select('.greenArcs')
+    var d3Arcs = svg.select('.greenArcs')
         .selectAll('Arc')
-        .data(greenArc)
+        .data(arcs)
         .enter()
         .append('path')
         .attr('d', arc)
         .attr("transform", function(d){
-            return "translate("+ d.center.x+","+ d.center.y+")"; })
-        .attr('fill', 'red');
+            return "translate("+ d.center.x+","+ d.center.y+")"; });
 }
 
-function hideGrid(require){
-  console.log("hide grid");
+function showBlackLinks(paths){
+    var links = paths.links;
+    var arcs = paths.arcs;
 
-    d3.select(".grid-view")
-        .style("display", "none");
+    svg.select('.blackLinks').remove();
+    svg.select('.blackArcs').remove();
 
+    svg.append('g')
+        .attr('class', 'blackLinks');
+
+    svg.append('g')
+        .attr('class', 'blackArcs');
+
+    var d3Links = svg.select('.blackLinks')
+        .selectAll('links')
+        .data(links)
+        .enter()
+        .append('line')
+        .attr("x1", function(d){ return d.source.x})
+        .attr("y1", function(d){ return d.source.y})
+        .attr("x2", function(d){ return d.target.x})
+        .attr("y2", function(d){ return d.target.y});
+
+    var arc = d3.svg.arc()
+        .startAngle(function(d){return d.startAngle*(Math.PI/180);})
+        .endAngle(function(d){return d.endAngle*(Math.PI/180);})
+        .innerRadius(function(){return params.channelGap-0.5;})
+        .outerRadius(function(){return  params.channelGap+0.5;});
+
+    var d3Arcs = svg.select('.blackArcs')
+        .selectAll('Arc')
+        .data(arcs)
+        .enter()
+        .append('path')
+        .attr('d', arc)
+        .attr("transform", function(d){
+            return "translate("+ d.center.x+","+ d.center.y+")"; });
 }
