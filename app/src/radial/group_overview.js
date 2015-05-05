@@ -260,10 +260,10 @@ define(function(require){
                 .style('display', 'block');
 
             svg.select('rect')
-                .attr('fill', 'gray')
-                .attr('opacity', '0.3')
+                .attr('fill', 'white')
+                //.attr('opacity', '1')
                 .attr('stroke', 'black')
-                .attr('stroke-width', '1');
+                .attr('stroke-width', '2');
 
             addRouters();
 
