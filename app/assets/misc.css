@@ -25,7 +25,7 @@
 }
 
 .nodes{
-    fill: red;
-    stroke: red;
+    fill: black;
+    stroke: black;
     stroke-width:1;
 }

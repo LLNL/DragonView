@@ -2,7 +2,7 @@
  * Created by Divya on 4/12/2015.
  */
 
-var params = {xMargin: 20,
+var params = {xMargin: 60,
     yMargin: 60,
 
     xFactor: 35,

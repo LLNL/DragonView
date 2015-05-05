@@ -48,8 +48,7 @@ define(function(require){
                 view.style("left", d3.event.x+"px")
                     .style("top", d3.event.y+"px");
 
-                //d3.event.preventDefault();
-                //d3.event.stopPropagation();
+                //view.attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
             });
 
         var svg = view.append('svg')
@@ -198,7 +197,7 @@ define(function(require){
                 .enter()
                 .append('path')
                 .attr('d', arc)
-                .attr('stroke', function(d){return d.color;})
+                .attr('stroke', function(d){return d.color})
                 .attr("transform", function(d){
                     return "translate("+ d.center.x+","+ d.center.y+")"; });
         }
