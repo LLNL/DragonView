@@ -1,29 +1,33 @@
 /**
- * Created by divraj on 4/22/15.
- */
-var params = {xMargin: 20,
-    yMargin: 60,
-
-    xFactor: 35,
-    yFactor: 70,
-    radius: 2,
-
-    channelGap: 3,
-    linkBuf: 3,
-    controlBuf: 2};
+* Created by divraj on 4/22/15.
+*/
+//var params = {xMargin: 20,
+//    yMargin: 60,
+//
+//    xFactor: 35,
+//    yFactor: 70,
+//    radius: 2,
+//
+//    channelGap: 3,
+//    linkBuf: 3,
+//    controlBuf: 2};
 
 var d3, svg;
 var _data;
 var links, linksInGroup, greenLinks, blackLinks;
 var group, groupId;
 var linkMatrix;
+var active;
 
 define(function(require){
 
    var config = require('config'),
        Radio = require('radio'),
        link_matrix = require('grid/link_matrix'),
-       reduced_link_layout= require('grid/reduced_link_layout');
+       reduced_link_layout= require('grid/reduced_link_layout'),
+       condensed_link_layout= require('grid/condensed_link_layout'),
+       naive_link_layout = require('grid/naive_link_layout');
+
     d3 = require('d3');
 
     return function(){
@@ -34,7 +38,12 @@ define(function(require){
         var view_width = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
         var view_height = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
 
-        var view = d3.select('body').append('div')
+        var view = d3.select('body')
+            //.select('.views.tabs')
+            //.select('.tab-content')
+            //.select('.radial')
+            //.select('svg')
+            .append('g')
             .attr('id', 'grid-view')
             .attr('class', 'grid-view')
             .style('class', 'none');
@@ -106,7 +115,14 @@ define(function(require){
     };
 });
 
+//function setSelectedGroup(d){
+//    group = d;
+//    //if(active) \\
+//    showGrid()
+//}
+
 function showGrid(d) {
+
     groupId = d.id;
     group = d;
 
@@ -170,7 +186,11 @@ function addGreenLinks(){
     linkMatrix = populateLinkMatrix(linkMatrix, linksInGroup);
 
     //apply link algorithm
-    greenLinks = createReducedLinks('green', linkMatrix);
+    //greenLinks = createReducedLinks('green', linkMatrix);
+    //greenLinks = createCondensedLinks('green', linkMatrix);
+    greenLinks = createNaiveLinks('green', linkMatrix);
+
+
 
     //show the link
     addLinks('green', greenLinks);
@@ -188,7 +208,11 @@ function addBlackLinks(){
     linkMatrix = populateLinkMatrix(linkMatrix, linksInGroup);
 
     //apply link algorithm
-    blackLinks = createReducedLinks('black', linkMatrix);
+    //blackLinks = createReducedLinks('black', linkMatrix);
+    //blackLinks = createCondensedLinks('black', linkMatrix);
+    blackLinks = createNaiveLinks('black', linkMatrix);
+
+
 
     //show the link
     addLinks('black', blackLinks);

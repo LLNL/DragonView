@@ -9,7 +9,10 @@ define(function(require) {
   var model = require('model');
   var BlackGreen = require('radial/black_green');
   var config = require('config');
-  var grid_view = require('grid_view');
+  var GroupOverview = require('radial/group_overview');
+
+
+    //var grid_view = require('grid_view');
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
@@ -21,6 +24,7 @@ define(function(require) {
     var layout = Layout().size([WIDTH, HEIGHT]),
         layout_gb = LayoutGB(),
         bg_overview = BlackGreen(),
+        group_overview = GroupOverview(),
         opt = layout.parms(),
         mode = 'blue',
         selectedGroup = undefined,
@@ -327,12 +331,17 @@ define(function(require) {
       var id;
       if (selectedGroup == d) {
           // unselecting
-          hideGrid();
+          //hideGrid();
+          group_overview.hideView();
         selectedGroup = id = undefined;
         //svg.select('.green-black').selectAll('.something').remove();
       } else {
           //selecting
-          showGrid(d);
+          //showGrid(d);
+          group_overview.selectGroup(d);
+          group_overview.showView();
+          group_overview.renderLinks();
+
         if (selectedGroup == undefined) {
           //svg.select('.connections').selectAll('.connection').remove();
         }
@@ -424,6 +433,7 @@ define(function(require) {
       svg.append('g').attr('class', 'connections');
       svg.append('g').attr('class', 'green-blue');
       svg.append('g').attr('class', 'internal');
+      //svg.append('g').attr('class', 'grid-view');
 
       bg_overview.el(d3el); //.append('div'));
 
@@ -470,6 +480,8 @@ define(function(require) {
       if (!arguments.length) return counterId;
       counterId = _;
       valid = false;
+
+      group_overview.link(greenLinks, blackLinks);
       return this;
     };
 
@@ -477,6 +489,8 @@ define(function(require) {
       if (!arguments.length) return range;
       range = _;
       //console.log('range:',range);
+
+      group_overview.link(greenLinks, blackLinks);
       return this;
     };
 

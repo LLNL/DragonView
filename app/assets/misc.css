@@ -1,25 +1,25 @@
 .greenArcs{
 
-    stroke: green;
+    /*stroke: green;*/
     stroke-width: 1;
     opacity: 0.5;
 }
 
 .greenLinks{
-    stroke: green;
+    /*stroke: green;*/
     stroke-width: 1;
     opacity: 0.6;
 }
 
 .blackArcs{
 
-    stroke: black;
+    /*stroke: black;*/
     stroke-width: 1;
     opacity: 0.5;
 }
 
 .blackLinks{
-    stroke: black;
+    /*stroke: black;*/
     stroke-width: 1;
     opacity: 0.6;
 }

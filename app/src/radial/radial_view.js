@@ -3,14 +3,13 @@
  */
 define(function(require) {
   var Radial = require('radial/radial');
-  var Grid_view = require('grid_view');
   var _ = require('underscore');
   var $ = require('jquery');
   var Resize = require('resize');
   var Radio = require('radio');
 
   return function() {
-    var radial, el, group;
+    var radial, el, grid, group;
     var active = false, _data, _range, _counter;
 
     Radio.channel('data').on('run', function (data) {

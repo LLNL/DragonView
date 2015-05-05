@@ -22,7 +22,7 @@ define(function(require) {
       countersView = CountersView();
       controlsView = ControlsView();
       jobsView = JobsView();
-      gridView = GridView();
+      //gridView = GridView();
       Radio.channel('app').trigger('ready');
       return app;
     };
