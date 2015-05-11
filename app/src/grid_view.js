@@ -87,7 +87,7 @@ define(function(require){
             })
             .on('dragend', function(){
                 console.log("dragend")
-                view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
+                //view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
             });
 
         svg.append('rect')

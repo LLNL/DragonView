@@ -56,8 +56,18 @@ define(function(require){
             .attr('width', WIDTH + 'px')
             .attr('height', HEIGHT +'px')
             .style('cursor', 'move')
-            .call(drag);
+            //.call(drag);
+            .on('drag', function(){
+                console.log("dragging");
 
+                d3.event.preventDefault();
+                d3.event.stopPropagation();
+                view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
+            })
+            .on('dragend', function(){
+                console.log("dragend")
+                view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
+            });
 
 
         svg.append('rect')
@@ -124,9 +134,9 @@ define(function(require){
             linkMatrix = populateLinkMatrix(linkMatrix, greenLinks);
 
             //apply link algorithm
-            //greenLinkPaths = createReducedLinks('green', linkMatrix);
+            greenLinkPaths = createReducedLinks('green', linkMatrix);
             //greenLinkPaths = createCondensedLinks('green', linkMatrix);
-            greenLinkPaths = createNaiveLinks('green', linkMatrix);
+            //greenLinkPaths = createNaiveLinks('green', linkMatrix);
 
 
             addLinks('green', greenLinkPaths);
@@ -138,9 +148,9 @@ define(function(require){
             linkMatrix = populateLinkMatrix(linkMatrix, blackLinks);
 
             //apply link algorithm
-            //blackLinkPaths = createReducedLinks('black', linkMatrix);
+            blackLinkPaths = createReducedLinks('black', linkMatrix);
             //blackLinkPaths = createCondensedLinks('black', linkMatrix);
-            blackLinkPaths = createNaiveLinks('black', linkMatrix);
+            //blackLinkPaths = createNaiveLinks('black', linkMatrix);
 
 
             addLinks('black', blackLinkPaths);
@@ -177,9 +187,7 @@ define(function(require){
                 .data(links)
                 .enter()
                 .append('line')
-                .attr("x1", function(d){
-                    console.log("d ---", d);
-                    return d.source.x})
+                .attr("x1", function(d){ return d.source.x})
                 .attr("y1", function(d){ return d.source.y})
                 .attr("x2", function(d){ return d.target.x})
                 .attr("y2", function(d){ return d.target.y})
