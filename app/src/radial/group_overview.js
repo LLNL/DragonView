@@ -82,16 +82,16 @@ define(function(require){
             .attr('class', 'nodes');
 
         svg.append('g')
-            .attr('class', 'greenLinks');
+        //    .attr('class', 'greenLinks');
+        //
+        //svg.append('g')
+        //    .attr('class', 'greenArcs');
 
-        svg.append('g')
-            .attr('class', 'greenArcs');
-
-        svg.append('g')
-            .attr('class', 'blackLinks');
-
-        svg.append('g')
-            .attr('class', 'blackArcs');
+        //svg.append('g')
+        //    .attr('class', 'blackLinks');
+        //
+        //svg.append('g')
+        //    .attr('class', 'blackArcs');
 
 
 
@@ -205,7 +205,7 @@ define(function(require){
                 .enter()
                 .append('path')
                 .attr('d', arc)
-                .attr('stroke', function(d){return d.color})
+                .attr('fill', function(d){return d.color})
                 .attr("transform", function(d){
                     return "translate("+ d.center.x+","+ d.center.y+")"; });
         }
@@ -246,7 +246,7 @@ define(function(require){
                 .enter()
                 .append('path')
                 .attr('d', arc)
-                .attr('stroke', function(d){return d.color;})
+                .attr('fill', function(d){return d.color;})
                 .attr("transform", function(d){
                     return "translate("+ d.center.x+","+ d.center.y+")"; });
         }
