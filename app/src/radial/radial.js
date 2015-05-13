@@ -337,7 +337,6 @@ define(function(require) {
         //svg.select('.green-black').selectAll('.something').remove();
       } else {
           //selecting
-          //showGrid(d);
           group_overview.selectGroup(d);
           group_overview.showView();
           group_overview.renderLinks();

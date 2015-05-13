@@ -9,12 +9,17 @@ define(function(require){
     var condensed_layout = require('grid/condensed_link_layout');
     var reduced_layout = require('grid/reduced_link_layout');
     var param = require('grid/parameters');
+    var linkPosition = require('grid/linkPosition');
 
     return function(){
         var selectedGroupId, selectedGroup;
         var gLinks, kLinks;
         var greenLinks, blackLinks;
+        var greenPaths, blackPaths;
+        var showGreen=true, showBlack=true;
         var linkMatrix;
+
+        var link = {id: 'green', id:'black'};
 
         var WIDTH = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
         var HEIGHT = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
@@ -22,9 +27,47 @@ define(function(require){
 
         var view = d3.select('body')
             .append('g')
-            .attr('id', 'grid-view_new')
-            .attr('class', 'grid-view')
+            .attr('class', 'grid-overview')
             .style('class', 'none');
+
+
+        var link_control = view.append('div')
+            .attr('class', 'link-ctrl')
+            .selectAll('g')
+            .data(['Green', 'Black'])
+            .enter()
+            .append('g');
+
+        link_control.insert('input')
+            .attr('type', 'checkbox')
+            .attr('class', 'link-color')
+            .attr('value', function(d){ return d;})
+            .property('checked', function(d, i) {  d3.selectAll('input').property('checked', true); })
+            .on('change', function(){
+                if(this.value == 'Green'){
+                    showGreen = !showGreen;
+                    if(!showGreen){
+                        svg.select('.greenLinks').remove();
+                        svg.select('.greenArcs').remove();
+                    }
+                    else if(showGreen){
+                        showGreenLinks();
+                    }
+                }
+                else if(this.value == 'Black'){
+                    showBlack = !showBlack;
+                    if(!showBlack){
+                        svg.select('.blackLinks').remove();
+                        svg.select('.blackArcs').remove();
+                    }
+                    else if(showBlack){
+                        showBlackLinks();
+                    }
+                }
+            });
+
+        link_control.append('label')
+            .text(function(d){ return d;});
 
         var drag = d3.behavior.drag()
             //.origin(function(d){
@@ -70,29 +113,8 @@ define(function(require){
             });
 
 
-        svg.append('rect')
-            .attr('class', 'background')
-            .attr('rx', 10)
-            .attr('ry', 10)
-            .attr('width', WIDTH + 'px')
-            .attr('height', HEIGHT +'px')
-            .attr('fill', 'none');
-
         svg.append('g')
             .attr('class', 'nodes');
-
-        svg.append('g')
-        //    .attr('class', 'greenLinks');
-        //
-        //svg.append('g')
-        //    .attr('class', 'greenArcs');
-
-        //svg.append('g')
-        //    .attr('class', 'blackLinks');
-        //
-        //svg.append('g')
-        //    .attr('class', 'blackArcs');
-
 
 
         function filter(){
@@ -134,12 +156,12 @@ define(function(require){
             linkMatrix = populateLinkMatrix(linkMatrix, greenLinks);
 
             //apply link algorithm
-            greenLinkPaths = createReducedLinks('green', linkMatrix);
-            //greenLinkPaths = createCondensedLinks('green', linkMatrix);
+            //greenLinkPaths = createReducedLinks('green', linkMatrix);
+            greenPaths = createCondensedLinks('green', linkMatrix);
             //greenLinkPaths = createNaiveLinks('green', linkMatrix);
 
 
-            addLinks('green', greenLinkPaths);
+            addLinks('green');
         }
 
         function addBlackLinks(){
@@ -148,30 +170,26 @@ define(function(require){
             linkMatrix = populateLinkMatrix(linkMatrix, blackLinks);
 
             //apply link algorithm
-            blackLinkPaths = createReducedLinks('black', linkMatrix);
-            //blackLinkPaths = createCondensedLinks('black', linkMatrix);
+            //blackLinkPaths = createReducedLinks('black', linkMatrix);
+            blackPaths = createCondensedLinks('black', linkMatrix);
             //blackLinkPaths = createNaiveLinks('black', linkMatrix);
 
 
-            addLinks('black', blackLinkPaths);
+            addLinks('black');
         }
 
-        function blackLinks(){
-
-        }
-
-        function addLinks(color, path){
+        function addLinks(color){
             if(color == 'green'){
-                showGreenLinks(path);
+                showGreenLinks();
             }
             else if(color == 'black'){
-                showBlackLinks(path);
+                showBlackLinks();
             }
         }
 
-        function showGreenLinks(path){
-            var links = path.links;
-            var arcs = path.arcs;
+        function showGreenLinks(){
+            var links = greenPaths.links;
+            var arcs = greenPaths.arcs;
 
             svg.select('.greenLinks').remove();
             svg.select('.greenArcs').remove();
@@ -210,9 +228,9 @@ define(function(require){
                     return "translate("+ d.center.x+","+ d.center.y+")"; });
         }
 
-        function showBlackLinks(paths){
-            var links = paths.links;
-            var arcs = paths.arcs;
+        function showBlackLinks(){
+            var links = blackPaths.links;
+            var arcs = blackPaths.arcs;
 
             svg.select('.blackLinks').remove();
             svg.select('.blackArcs').remove();
@@ -260,25 +278,17 @@ define(function(require){
         };
 
         api.showView = function(){
-            d3.select(".grid-view")
+            d3.select(".grid-overview")
                 .style('position', 'absolute')
                 .style('left', (d3.event.pageX-5) + "px")
                 .style('top', (d3.event.pageY-5) + "px")
                 .style('display', 'block');
 
-            svg.select('rect')
-                .attr('fill', 'white')
-                //.attr('opacity', '1')
-                .attr('stroke', 'black')
-                .attr('stroke-width', '2');
-
             addRouters();
-
-
         };
 
         api.hideView = function(){
-            d3.select(".grid-view")
+            d3.select(".grid-overview")
                 .style("display", "none");
         };
 
@@ -291,8 +301,12 @@ define(function(require){
 
         api.renderLinks = function(){
             filter();
-            addGreenLinks();
-            addBlackLinks();
+            if(showGreen){
+                addGreenLinks();
+            }
+            if(showBlack){
+                addBlackLinks();
+            }
         };
 
         return api;

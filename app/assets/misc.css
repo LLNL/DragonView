@@ -29,3 +29,11 @@
     stroke: black;
     stroke-width:1;
 }
+
+.grid-overview{
+    margin: auto;
+    border: 1px solid;
+    border-radius: 8px;
+    background-color: #ffffff;
+    display: none;
+}

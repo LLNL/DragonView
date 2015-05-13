@@ -13,6 +13,7 @@ var createCondensedLinks = (function(){
 })();
 
 var condensedLinks = (function(){
+
     return function(linkMatrix){
         var links = [];
         var arcs= [];
@@ -27,8 +28,8 @@ var condensedLinks = (function(){
                 for(var j=0; j<linkMatrix[k][i].length; j++){
 
                     if(linkMatrix[k][i][j].left == true){
-                        beg = i;
-                        end = j;
+                        beg = Math.min(i, j);
+                        end = Math.max(i, j);
                         linkColor = linkMatrix[k][i][j].color;
 
                         if(channelLevel.has(i)){
