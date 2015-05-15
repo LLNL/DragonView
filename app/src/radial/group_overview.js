@@ -19,6 +19,9 @@ define(function(require){
         var showGreen=true, showBlack=true;
         var linkMatrix;
 
+        var algorithms = ['Naive', 'Condensed', 'Reduced'];
+        var selectedAlgo = algorithms[2];
+
         var link = {id: 'green', id:'black'};
 
         var WIDTH = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
@@ -30,9 +33,11 @@ define(function(require){
             .attr('class', 'grid-overview')
             .style('class', 'none');
 
+        var controls = view.append('div')
+            .attr('class', 'group-overview-control');
 
-        var link_control = view.append('div')
-            .attr('class', 'link-ctrl')
+        var link_control = controls.append('div')
+            .attr('class', 'link-control')
             .selectAll('g')
             .data(['Green', 'Black'])
             .enter()
@@ -69,19 +74,51 @@ define(function(require){
         link_control.append('label')
             .text(function(d){ return d;});
 
+        var algo_control = controls.append('div')
+            .attr('class', 'algo-control')
+            .selectAll('g')
+            .data(algorithms)
+            .enter()
+            .append('g');
+
+        algo_control.append('input')
+            .attr('type', 'radio')
+            .attr('value', function(d, i){ return d;})
+            .attr('name', 'algorithm-type')
+            .property('checked', function(d, i){ return i === 2;})
+            .on('change', function(){
+                if(this.value == algorithms[0]){
+                    selectedAlgo = algorithms[0];
+                }
+                else if(this.value == algorithms[1]){
+                    selectedAlgo = algorithms[1];
+                }
+                else if(this.value == algorithms[2]){
+                    selectedAlgo = algorithms[2];
+                }
+                addLinks();
+            });
+
+        algo_control.append('label')
+            .text(function(d){ return d;});
+
+
         var drag = d3.behavior.drag()
             //.origin(function(d){
-            //    console.log('in origin');
-            //    //return d
-            //
-            //    var t = d3.select(this);
-            //    return {x: t.attr("x"), y: t.attr("y")};
-            //
+            ////    console.log('in origin');
+            ////    //var t = d3.select(this);
+            ////    //return {x: t.attr("x"), y: t.attr("y")};
+            ////
+            //    return {x: view.style('left'), y: view.style('top')}
             //})
             .on('dragstart', function(){
-                console.log('dragging started');
-                d3.event.preventDefault();
-                d3.event.stopPropagation();
+
+                console.log('dragging started', view.style('top'),d3.event.x, d3.event.y, d3.event.dx, d3.event.dy, d3.event.clientX, d3.event.clientY);
+                //d3.event.sourceEvent.preventDefault();
+                d3.event.sourceEvent.stopPropagation();
+
+                x = 0;
+                y = 0;
             })
             .on('drag', function(){
                 console.log("dragging");
@@ -91,6 +128,19 @@ define(function(require){
                 view.style("left", d3.event.x+"px")
                     .style("top", d3.event.y+"px");
 
+
+
+                //x += d3.event.dx;
+                //y += d3.event.dy;
+                //
+                //view.style('left', function(){ return "translate"+x;})
+                //    .style('top', function(){ return "translate"+y});
+
+                    //"transform", function(d,i){
+                    //return "translate(" + [ x,y ] + ")"});
+
+                //d3.select(this).attr("transform", function(d,i){ return "translate(" + [ d3.event.x,d3.event.y ] + ")"});
+
                 //view.attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
             });
 
@@ -99,19 +149,18 @@ define(function(require){
             .attr('width', WIDTH + 'px')
             .attr('height', HEIGHT +'px')
             .style('cursor', 'move')
-            //.call(drag);
-            .on('drag', function(){
-                console.log("dragging");
-
-                d3.event.preventDefault();
-                d3.event.stopPropagation();
-                view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
-            })
-            .on('dragend', function(){
-                console.log("dragend")
-                view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
-            });
-
+            .call(drag);
+            //.on('drag', function(){
+            //    console.log("dragging");
+            //
+            //    d3.event.preventDefault();
+            //    d3.event.stopPropagation();
+            //    view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
+            //})
+            //.on('dragend', function(){
+            //    console.log("dragend")
+            //    view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
+            //});
 
         svg.append('g')
             .attr('class', 'nodes');
@@ -150,18 +199,31 @@ define(function(require){
                 .attr('r', params.radius);
         }
 
+        function addLinks(){
+            if(showGreen){
+                addGreenLinks();
+            }
+            if(showBlack){
+                addBlackLinks();
+            }
+        }
+
         function addGreenLinks(){
 
             linkMatrix = getLinkMatrix('green');
             linkMatrix = populateLinkMatrix(linkMatrix, greenLinks);
 
-            //apply link algorithm
-            //greenLinkPaths = createReducedLinks('green', linkMatrix);
-            greenPaths = createCondensedLinks('green', linkMatrix);
-            //greenLinkPaths = createNaiveLinks('green', linkMatrix);
+            if(selectedAlgo == algorithms[0]){
+                greenPaths = createNaiveLinks('green', linkMatrix);
+            }
+            else if(selectedAlgo == algorithms[1]){
+                greenPaths = createCondensedLinks('green', linkMatrix);
+            }
+            else{
+                greenPaths = createReducedLinks('green', linkMatrix);
+            }
 
-
-            addLinks('green');
+            showGreenLinks();
         }
 
         function addBlackLinks(){
@@ -169,22 +231,17 @@ define(function(require){
             linkMatrix = getLinkMatrix('black');
             linkMatrix = populateLinkMatrix(linkMatrix, blackLinks);
 
-            //apply link algorithm
-            //blackLinkPaths = createReducedLinks('black', linkMatrix);
-            blackPaths = createCondensedLinks('black', linkMatrix);
-            //blackLinkPaths = createNaiveLinks('black', linkMatrix);
-
-
-            addLinks('black');
-        }
-
-        function addLinks(color){
-            if(color == 'green'){
-                showGreenLinks();
+            if(selectedAlgo == algorithms[0]){
+                blackPaths = createNaiveLinks('black', linkMatrix);
             }
-            else if(color == 'black'){
-                showBlackLinks();
+            else if(selectedAlgo == algorithms[1]){
+                blackPaths = createCondensedLinks('black', linkMatrix);
             }
+            else{
+                blackPaths = createReducedLinks('black', linkMatrix);
+            }
+
+            showBlackLinks();
         }
 
         function showGreenLinks(){
@@ -301,12 +358,7 @@ define(function(require){
 
         api.renderLinks = function(){
             filter();
-            if(showGreen){
-                addGreenLinks();
-            }
-            if(showBlack){
-                addBlackLinks();
-            }
+            addLinks();
         };
 
         return api;

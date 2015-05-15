@@ -37,3 +37,9 @@
     background-color: #ffffff;
     display: none;
 }
+
+.group-overview-control{
+    border-bottom: 1px solid;
+    border-radius: 8px;
+
+}
