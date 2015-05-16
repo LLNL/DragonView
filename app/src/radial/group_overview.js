@@ -102,7 +102,6 @@ define(function(require){
         algo_control.append('label')
             .text(function(d){ return d;});
 
-
         var drag = d3.behavior.drag()
             //.origin(function(d){
             ////    console.log('in origin');
@@ -164,7 +163,6 @@ define(function(require){
 
         svg.append('g')
             .attr('class', 'nodes');
-
 
         function filter(){
             greenLinks = [];
@@ -244,29 +242,51 @@ define(function(require){
             showBlackLinks();
         }
 
+        function mousever(){
+            id = this.id;
+            svg.selectAll("#"+id)
+                .attr('stroke', 'black');
+        }
+        function mouseout(){
+            id = this.id;
+            svg.selectAll("#"+id)
+                .attr('stroke',
+                function(d){
+                    console.log(d);
+                    return d.color;
+                });
+        }
+
         function showGreenLinks(){
             var links = greenPaths.links;
             var arcs = greenPaths.arcs;
 
             svg.select('.greenLinks').remove();
-            svg.select('.greenArcs').remove();
 
             svg.append('g')
                 .attr('class', 'greenLinks');
 
-            svg.append('g')
-                .attr('class', 'greenArcs');
 
             var d3Links = svg.select('.greenLinks')
                 .selectAll('links')
                 .data(links)
                 .enter()
                 .append('line')
+                .attr('class', 'greenLink')
+                .attr('id', function(d){ return d.id})
                 .attr("x1", function(d){ return d.source.x})
                 .attr("y1", function(d){ return d.source.y})
                 .attr("x2", function(d){ return d.target.x})
                 .attr("y2", function(d){ return d.target.y})
-                .attr('stroke', function(d){return d.color;});
+                .attr('stroke', function(d){return d.color;})
+                .on('mouseover', mousever)
+                .on('mouseout', mouseout);
+                //.on('mouseover', function(){
+                //    console.log('1111111111111111111111111');
+                //    //d3.select(this).classed(".highlight-link", true)
+                //
+                //    d3.select(this).attr('stroke', "black");
+                //});
 
             var arc = d3.svg.arc()
                 .startAngle(function(d){return d.startAngle*(Math.PI/180);})
@@ -274,11 +294,13 @@ define(function(require){
                 .innerRadius(function(){return params.channelGap-0.5;})
                 .outerRadius(function(){return  params.channelGap+0.5;});
 
-            var d3Arcs = svg.select('.greenArcs')
+            var d3Arcs = svg.select('.greenLinks')
                 .selectAll('Arc')
                 .data(arcs)
                 .enter()
                 .append('path')
+                .attr('class', 'greenLink')
+                .attr('id', function(d){ return d.id})
                 .attr('d', arc)
                 .attr('fill', function(d){return d.color})
                 .attr("transform", function(d){
@@ -290,24 +312,26 @@ define(function(require){
             var arcs = blackPaths.arcs;
 
             svg.select('.blackLinks').remove();
-            svg.select('.blackArcs').remove();
 
             svg.append('g')
                 .attr('class', 'blackLinks');
-
-            svg.append('g')
-                .attr('class', 'blackArcs');
 
             var d3Links = svg.select('.blackLinks')
                 .selectAll('links')
                 .data(links)
                 .enter()
                 .append('line')
+                .attr('class', 'blackLink')
+                .attr('id', function(d){
+                    console.log(d.id);
+                    return d.id})
                 .attr("x1", function(d){ return d.source.x})
                 .attr("y1", function(d){ return d.source.y})
                 .attr("x2", function(d){ return d.target.x})
                 .attr("y2", function(d){ return d.target.y})
-                .attr('stroke', function(d){return d.color;});
+                .attr('stroke', function(d){return d.color;})
+                .on('mouseover', mousever)
+                .on('mouseout', mouseout);
 
             var arc = d3.svg.arc()
                 .startAngle(function(d){return d.startAngle*(Math.PI/180);})
@@ -315,17 +339,18 @@ define(function(require){
                 .innerRadius(function(){return params.channelGap-0.5;})
                 .outerRadius(function(){return  params.channelGap+0.5;});
 
-            var d3Arcs = svg.select('.blackArcs')
+            var d3Arcs = svg.select('.blackLinks')
                 .selectAll('Arc')
                 .data(arcs)
                 .enter()
                 .append('path')
+                .attr('class', 'blackLink')
+                .attr('id', function(d){ return d.id})
                 .attr('d', arc)
                 .attr('fill', function(d){return d.color;})
                 .attr("transform", function(d){
                     return "translate("+ d.center.x+","+ d.center.y+")"; });
         }
-
 
         var api = {};
 

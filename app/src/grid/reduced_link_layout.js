@@ -24,7 +24,7 @@ var createGreenLinks = (function(){
         var validChannel, channel;
 
         var arcs = [];
-
+        var counter = 0;
         for(var k=0; k<linkMatrix.length; k++){
             for(var i=0; i<linkMatrix[k].length; i++){
 
@@ -33,6 +33,8 @@ var createGreenLinks = (function(){
                         beg = Math.min(i, j);
                         end = Math.max(i, j);
                         color = linkMatrix[k][i][j].color;
+                        id = "green" + counter;
+                        counter += 1;
 
                         for(var channelIdx = 0; channelIdx < linkMatrix[k].length; channelIdx++){
                             validChannel = true;
@@ -64,16 +66,17 @@ var createGreenLinks = (function(){
                         //try arc
                         center1X = sNodeX+params.channelGap;
                         center1Y = sNodeLinkY+params.channelGap;
-                        arcs.push({"center": {"x": center1X, "y": center1Y}, "startAngle": 270, "endAngle": 360, "color": color});
+
+                        arcs.push({"center": {"x": center1X, "y": center1Y}, "startAngle": 270, "endAngle": 360, "color": color, "id": id });
 
                         center2X = tNodeX-params.channelGap;
                         center2Y = center1Y;
-                        arcs.push({"center": {"x": center2X, "y": center2Y}, "startAngle": 0, "endAngle": 90, "color": color});
+                        arcs.push({"center": {"x": center2X, "y": center2Y}, "startAngle": 0, "endAngle": 90, "color": color, "id": id});
 
                         //links
-                        links.push({"source":{"x":sNodeX , "y": sNodeY}, "target": {"x": sNodeX, "y": center1Y}, "color": color});
-                        links.push({"source": {"x": center1X, "y": sNodeLinkY}, "target": {"x": center2X, "y": tNodeLinkY}, "color": color});
-                        links.push({"source": {"x": tNodeX, "y": tNodeY}, "target": {"x": tNodeX, "y": center2Y}, "color": color})
+                        links.push({"source":{"x":sNodeX , "y": sNodeY}, "target": {"x": sNodeX, "y": center1Y}, "color": color, "id": id});
+                        links.push({"source": {"x": center1X, "y": sNodeLinkY}, "target": {"x": center2X, "y": tNodeLinkY}, "color": color, "id": id});
+                        links.push({"source": {"x": tNodeX, "y": tNodeY}, "target": {"x": tNodeX, "y": center2Y}, "color": color, "id": id})
                     }
                 }
             }
@@ -93,6 +96,7 @@ var createBlackLinks = (function(){
         var validChannel, channel;
 
         var arcs = [];
+        var counter = 0;
 
         for(var k=0; k<linkMatrix.length; k++){
             for(var i=0; i<linkMatrix[k].length; i++){
@@ -104,6 +108,9 @@ var createBlackLinks = (function(){
                         beg = Math.min(i, j);
                         end = Math.max(i, j);
                         color = linkMatrix[k][i][j].color;
+                        id = "black" + counter;
+                        counter += 1;
+
 
                         for(var channelIdx = 0; channelIdx < linkMatrix[k].length; channelIdx++){
                             validChannel = true;
@@ -136,16 +143,16 @@ var createBlackLinks = (function(){
                         ////try arc
                         center1Y = sNodeY+params.channelGap;
                         center1X = sNodeLinkX+params.channelGap; //-
-                        arcs.push({"center": {"x": center1X, "y": center1Y}, "startAngle": 270, "endAngle": 360, "color": color});
+                        arcs.push({"center": {"x": center1X, "y": center1Y}, "startAngle": 270, "endAngle": 360, "color": color, "id": id});
                         //
                         center2Y = tNodeY-params.channelGap;
                         center2X = center1X;
-                        arcs.push({"center": {"x": center2X, "y": center2Y}, "startAngle": 180, "endAngle": 270, "color": color});
+                        arcs.push({"center": {"x": center2X, "y": center2Y}, "startAngle": 180, "endAngle": 270, "color": color, "id": id});
 
                         //links
-                        links.push({"source":{"x":sNodeX , "y": sNodeY}, "target": {"x": sNodeLinkX, "y": sNodeY}, "color": color});
-                        links.push({"source": {"x": sNodeLinkX, "y": center1Y}, "target": {"x": tNodeLinkX, "y": center2Y}, "color": color});
-                        links.push({"source": {"x": tNodeX, "y": tNodeY}, "target": {"x": tNodeLinkX, "y": tNodeY}, "color": color});
+                        links.push({"source":{"x":sNodeX , "y": sNodeY}, "target": {"x": sNodeLinkX, "y": sNodeY}, "color": color, "id": id});
+                        links.push({"source": {"x": sNodeLinkX, "y": center1Y}, "target": {"x": tNodeLinkX, "y": center2Y}, "color": color, "id": id});
+                        links.push({"source": {"x": tNodeX, "y": tNodeY}, "target": {"x": tNodeLinkX, "y": tNodeY}, "color": color, "id": id});
                     }
                 }
             }

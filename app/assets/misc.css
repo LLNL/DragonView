@@ -1,28 +1,31 @@
-.greenArcs{
-
-    /*stroke: green;*/
-    stroke-width: 1;
-    /*opacity: 0.5;*/
+.greenLink{
+    stroke-width: 1px;
 }
 
-.greenLinks{
-    /*stroke: green;*/
-    stroke-width: 1;
-    /*opacity: 0.6;*/
+/*.greenLink:hover{*/
+    /*stroke-width: 3px;*/
+/*}*/
+
+.blackLink{
+    stroke-width: 1px;
 }
 
-.blackArcs{
+/*.blackLink:hover{*/
+    /*stroke-width: 3px;*/
+/*}*/
+
+/*.blackArcs{*/
 
     /*stroke: black;*/
-    stroke-width: 1;
+    /*stroke-width: 1;*/
     /*opacity: 0.5;*/
-}
+/*}*/
 
-.blackLinks{
+/*.blackLinks{*/
     /*stroke: black;*/
-    stroke-width: 1;
+    /*stroke-width: 1;*/
     /*opacity: 0.6;*/
-}
+/*}*/
 
 .nodes{
     fill: black;
@@ -41,5 +44,9 @@
 .group-overview-control{
     border-bottom: 1px solid;
     border-radius: 8px;
+}
 
+.highlight-link{
+    stroke: black;
+    stroke-width: 3px;
 }

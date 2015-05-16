@@ -6,6 +6,7 @@ var linkMatrixElement = (function linkMatrixElement(d){
     return function(d){
 
         return element = {
+            "id": null,
             "seg": false,
             "right": false,
             "left": false,
@@ -55,20 +56,23 @@ var populateLinkMatrix = (function populateLinkMatrix(){
             target = d.destId;
 
             if(source.r == target.r){
+                matrix[source.r][source.c][source.c].id = d.id;
                 matrix[source.r][source.c][source.c].seg = true;
                 matrix[source.r][source.c][source.c].right = true;
                 matrix[source.r][source.c][source.c].color = d.vis_color;
 
+                matrix[source.r][source.c][target.c].id = d.id;
                 matrix[source.r][source.c][target.c].seg = true;
                 matrix[source.r][source.c][target.c].left = true;
                 matrix[source.r][source.c][target.c].color = d.vis_color;
             }
             else if(source.c == target.c){
+                matrix[source.c][source.r][source.r].id = d.id;
                 matrix[source.c][source.r][source.r].seg = true;
                 matrix[source.c][source.r][source.r].right = true;
                 matrix[source.c][source.r][source.r].color = d.vis_color;
 
-
+                matrix[source.c][source.r][target.r].id = d.id;
                 matrix[source.c][source.r][target.r].seg = true;
                 matrix[source.c][source.r][target.r].left = true;
                 matrix[source.c][source.r][target.r].color = d.vis_color;
