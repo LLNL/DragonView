@@ -18,6 +18,8 @@ var condensedLinks = (function(){
         var links = [];
         var arcs= [];
         var counter = 0;
+        var sourceColor = 'green';
+
 
         for(var k=0; k<linkMatrix.length; k++){
             var channelLevel = new Map();
@@ -32,7 +34,14 @@ var condensedLinks = (function(){
                         beg = Math.min(i, j);
                         end = Math.max(i, j);
                         linkColor = linkMatrix[k][i][j].color;
-
+                        if (i == beg){
+                            leftArc = sourceColor;
+                            rightArc = linkColor;
+                        }
+                        else{
+                            leftArc = linkColor;
+                            rightArc = sourceColor;
+                        }
 
                         if(channelLevel.has(i)){
                             channel = channelLevel.get(i);
@@ -49,8 +58,8 @@ var condensedLinks = (function(){
                             id = "green" + counter;
                             counter += 1;
 
-                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": linkColor, "id": id});
-                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": linkColor, "id": id});
+                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id});
+                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": rightArc, "id": id});
 
                             links.push({"source":{"x": pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.sNodeX, "y": pos.center1Y}, "color": linkColor, "id": id});
                             links.push({"source": {"x": pos.center1X, "y": pos.sNodeLinkY}, "target": {"x": pos.center2X, "y": pos.tNodeLinkY}, "color": linkColor, "id": id});

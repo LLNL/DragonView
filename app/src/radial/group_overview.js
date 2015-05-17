@@ -246,16 +246,13 @@ define(function(require){
         function mousever(){
             id = this.id;
             svg.selectAll("#"+id)
-                .attr('stroke', 'black');
+                .attr('stroke', 'black')
+                .attr('stroke-opacity', '1');
         }
         function mouseout(){
             id = this.id;
             svg.selectAll("#"+id)
-                .attr('stroke',
-                function(d){
-                    console.log(d);
-                    return d.color;
-                });
+                .attr('stroke',function(d){ return d.color;});
         }
 
         function showGreenLinks(){

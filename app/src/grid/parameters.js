@@ -9,6 +9,6 @@ var params = {xMargin: 70,
     yFactor: 70,
     radius: 2,
 
-    channelGap: 3,
+    channelGap: 4,
     linkBuf: 3,
     controlBuf: 2};

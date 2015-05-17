@@ -15,10 +15,12 @@
 
 .greenLink{
     stroke-width: 1px;
+    stroke-opacity: 0.5;
 }
 
 .blackLink{
     stroke-width: 1px;
+    stroke-opacity: 0.5;
 }
 
 .nodes{
