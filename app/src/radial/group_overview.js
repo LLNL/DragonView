@@ -28,16 +28,15 @@ define(function(require){
         var HEIGHT = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
 
 
-        var view = d3.select('body')
-            .append('g')
-            .attr('class', 'grid-overview')
-            .style('class', 'none');
+        var view = d3.select('.group-overview');
 
-        var controls = view.append('div')
-            .attr('class', 'group-overview-control');
+        var controls = view.select('#tab-controls');
+        //append('div')
+        //    .attr('class', 'group-overview-control');
 
-        var link_control = controls.append('div')
-            .attr('class', 'link-control')
+        var link_control = controls.select('#link-control')
+            //.append('div')
+            //.attr('class', 'link-control')
             .selectAll('g')
             .data(['Green', 'Black'])
             .enter()
@@ -74,8 +73,9 @@ define(function(require){
         link_control.append('label')
             .text(function(d){ return d;});
 
-        var algo_control = controls.append('div')
-            .attr('class', 'algo-control')
+        var algo_control = controls.select('#layout-control')
+            //.append('div')
+            //.attr('class', 'algo-control')
             .selectAll('g')
             .data(algorithms)
             .enter()
@@ -143,7 +143,8 @@ define(function(require){
                 //view.attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
             });
 
-        var svg = view.append('svg')
+        var svg = view.select('#tab-overview')
+            .append('svg')
             .attr('class', 'svg')
             .attr('width', WIDTH + 'px')
             .attr('height', HEIGHT +'px')
@@ -360,7 +361,7 @@ define(function(require){
         };
 
         api.showView = function(){
-            d3.select(".grid-overview")
+            d3.select(".group-overview")
                 .style('position', 'absolute')
                 .style('left', (d3.event.pageX-5) + "px")
                 .style('top', (d3.event.pageY-5) + "px")
@@ -370,7 +371,7 @@ define(function(require){
         };
 
         api.hideView = function(){
-            d3.select(".grid-overview")
+            d3.select(".group-overview")
                 .style("display", "none");
         };
 
