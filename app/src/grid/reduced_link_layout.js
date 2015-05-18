@@ -131,7 +131,7 @@ var createBlackLinks = (function(){
                             leftArc = color;
                             rightArc = sourceColor;
                         }
-                        
+
                         for(var channelIdx = 0; channelIdx < linkMatrix[k].length; channelIdx++){
                             validChannel = true;
                             channel = channelIdx;

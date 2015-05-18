@@ -27,16 +27,28 @@ define(function(require){
         var WIDTH = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
         var HEIGHT = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
 
+        var drag = d3.behavior.drag()
+            .origin(function(d){
+                return {x: 0, y: 0}
+            })
+            .on('dragstart', function(){
+                d3.event.sourceEvent.stopPropagation();
+            })
+            .on('drag', function(){
+                xPosition = parseInt(view.style('left'), 10) + d3.event.x;
+                yPosition = parseInt(view.style('top'), 10) + d3.event.y;
+
+                view.style("left", xPosition+"px")
+                    .style("top", yPosition+"px");
+            });
 
         var view = d3.select('.group-overview');
 
-        var controls = view.select('#tab-controls');
-        //append('div')
-        //    .attr('class', 'group-overview-control');
+        var controls = view.select('#tab-controls')
+            .style('cursor', 'move')
+            .call(drag);
 
         var link_control = controls.select('#link-control')
-            //.append('div')
-            //.attr('class', 'link-control')
             .selectAll('g')
             .data(['Green', 'Black'])
             .enter()
@@ -74,8 +86,6 @@ define(function(require){
             .text(function(d){ return d;});
 
         var algo_control = controls.select('#layout-control')
-            //.append('div')
-            //.attr('class', 'algo-control')
             .selectAll('g')
             .data(algorithms)
             .enter()
@@ -102,65 +112,12 @@ define(function(require){
         algo_control.append('label')
             .text(function(d){ return d;});
 
-        var drag = d3.behavior.drag()
-            //.origin(function(d){
-            ////    console.log('in origin');
-            ////    //var t = d3.select(this);
-            ////    //return {x: t.attr("x"), y: t.attr("y")};
-            ////
-            //    return {x: view.style('left'), y: view.style('top')}
-            //})
-            .on('dragstart', function(){
-
-                console.log('dragging started', view.style('top'),d3.event.x, d3.event.y, d3.event.dx, d3.event.dy, d3.event.clientX, d3.event.clientY);
-                //d3.event.sourceEvent.preventDefault();
-                d3.event.sourceEvent.stopPropagation();
-
-                x = 0;
-                y = 0;
-            })
-            .on('drag', function(){
-                console.log("dragging");
-
-                console.log(d3.event.x, d3.event.y, d3.event.dx, d3.event.dy);
-
-                view.style("left", d3.event.x+"px")
-                    .style("top", d3.event.y+"px");
-
-
-
-                //x += d3.event.dx;
-                //y += d3.event.dy;
-                //
-                //view.style('left', function(){ return "translate"+x;})
-                //    .style('top', function(){ return "translate"+y});
-
-                    //"transform", function(d,i){
-                    //return "translate(" + [ x,y ] + ")"});
-
-                //d3.select(this).attr("transform", function(d,i){ return "translate(" + [ d3.event.x,d3.event.y ] + ")"});
-
-                //view.attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
-            });
 
         var svg = view.select('#tab-overview')
             .append('svg')
             .attr('class', 'svg')
             .attr('width', WIDTH + 'px')
             .attr('height', HEIGHT +'px')
-            .style('cursor', 'move')
-            .call(drag);
-            //.on('drag', function(){
-            //    console.log("dragging");
-            //
-            //    d3.event.preventDefault();
-            //    d3.event.stopPropagation();
-            //    view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
-            //})
-            //.on('dragend', function(){
-            //    console.log("dragend")
-            //    view.style("left", d3.event.pageX+"px").style("top", d3.event.pageY+"px");
-            //});
 
         svg.append('g')
             .attr('class', 'nodes');
@@ -279,12 +236,6 @@ define(function(require){
                 .attr('stroke', function(d){return d.color;})
                 .on('mouseover', mousever)
                 .on('mouseout', mouseout);
-                //.on('mouseover', function(){
-                //    console.log('1111111111111111111111111');
-                //    //d3.select(this).classed(".highlight-link", true)
-                //
-                //    d3.select(this).attr('stroke', "black");
-                //});
 
             var arc = d3.svg.arc()
                 .startAngle(function(d){return d.startAngle*(Math.PI/180);})
@@ -320,9 +271,7 @@ define(function(require){
                 .enter()
                 .append('line')
                 .attr('class', 'blackLink')
-                .attr('id', function(d){
-                    console.log(d.id);
-                    return d.id})
+                .attr('id', function(d){ return d.id})
                 .attr("x1", function(d){ return d.source.x})
                 .attr("y1", function(d){ return d.source.y})
                 .attr("x2", function(d){ return d.target.x})
