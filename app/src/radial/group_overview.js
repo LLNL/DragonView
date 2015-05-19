@@ -81,7 +81,7 @@ define(function(require){
                     }
                 }
             });
-
+        
         link_control.append('label')
             .text(function(d){ return d;});
 
