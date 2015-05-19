@@ -23,9 +23,12 @@ define(function(require){
         var selectedAlgo = algorithms[2];
 
         var link = {id: 'green', id:'black'};
+        var expandOverview = false;
 
         var WIDTH = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
         var HEIGHT = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
+
+
 
         var drag = d3.behavior.drag()
             .origin(function(d){
@@ -44,8 +47,23 @@ define(function(require){
 
         var view = d3.select('.group-overview');
 
+        var resize = view.select('#resize')
+            .on('click', function(){
+                if(!expandOverview){
+                    console.log('resize click occured');
+                    params.xMargin *= 2;
+                    console.log('view enlarged', params.xMargin);
+
+                }
+                else{
+                    params.xMargin /= 2;
+                    console.log('view compressed', params.xMargin);
+                }
+                expandOverview = !expandOverview;
+            });
+
+        var overview =eecvweeckvweecvweecvweecvweec;vweecvweecjvweec
         var controls = view.select('#tab-controls')
-            .style('cursor', 'move')
             .call(drag);
 
         var link_control = controls.select('#link-control')
@@ -81,7 +99,7 @@ define(function(require){
                     }
                 }
             });
-        
+
         link_control.append('label')
             .text(function(d){ return d;});
 
@@ -117,7 +135,7 @@ define(function(require){
             .append('svg')
             .attr('class', 'svg')
             .attr('width', WIDTH + 'px')
-            .attr('height', HEIGHT +'px')
+            .attr('height', HEIGHT +'px');
 
         svg.append('g')
             .attr('class', 'nodes');

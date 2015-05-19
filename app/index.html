@@ -95,25 +95,46 @@
 
 <div class = "group-overview">
     <ul class="overview" id="tab-controls">
-    <table>
-        <tbody>
-        <tr>
-            <td>Catalog :</td>
-            <td><div id ="link-control"></div>
-            </td>
-        </tr>
-        <tr>
-            <td>Layout :</td>
-            <td><div id="layout-control"></select></div>
-        </tr>
-        </tbody>
-    </table>
+        <div style="float: left">
+            <table>
+                <tbody>
+                <tr>
+                    <td>Catalog :</td>
+                    <td><div id ="link-control"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Layout :</td>
+                    <td><div id="layout-control"></select></div>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="overview" id="resize" style="float: right">
+            <img src="icons/compress.png" id="resizeIcon" onclick=changeResizeImage(this)>
+        </div>
+
+
     </ul>
 
     <div class="overview" id="tab-overview"></div>
 </div>
 
+<script>
+    function changeResizeImage(img)
+    {
+        if(img.src.match(/compress/))
+        {
+            img.src = "icons/expand.png";
+        }
+        else
+        {
+            img.src = "icons/compress.png";
+        }
+    }
 
+</script>
 <script src="lib/sprintf/dist/sprintf.min.js"></script>
 <script src="lib/colorbrewer/colorbrewer.js"></script>
 <script data-main="src/init" src="lib/requirejs/require.js"></script>

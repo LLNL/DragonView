@@ -39,7 +39,6 @@ var createLinks = (function(){
 
 
                         pos = linkPosition(k, beg, end, i, color);
-                        console.log(pos);
 
                         if(color == 'green'){
                             id = "green" + counter;

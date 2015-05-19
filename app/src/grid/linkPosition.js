@@ -4,8 +4,6 @@
 
 var linkPosition = (function linkPosition(){
     return function(k, beg, end, channel, color){
-        console.log('heheheheheh222222222222222222222222');
-
         if(color == 'green'){
             sNodeX = beg*params.xFactor+params.xMargin+(((beg*2)+1)*params.radius);
             sNodeY = k*params.yFactor+params.yMargin+(((k*2)+1)*params.radius);
