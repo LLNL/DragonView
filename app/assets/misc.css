@@ -6,11 +6,19 @@
     display: none;
 }
 
+.overview{
+    border-bottom: 1px solid #000000;
+}
+
 #tab-controls{
     margin: 0px;
     padding-left: 0px;
-    border-bottom: 1px solid;
+    height : 50px;
+
+    border-bottom: 1px solid #000000;
     border-radius: 8px;
+
+    cursor: move;
 }
 
 .greenLink{

@@ -28,8 +28,6 @@ define(function(require){
         var WIDTH = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
         var HEIGHT = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
 
-
-
         var drag = d3.behavior.drag()
             .origin(function(d){
                 return {x: 0, y: 0}
@@ -47,24 +45,36 @@ define(function(require){
 
         var view = d3.select('.group-overview');
 
-        var resize = view.select('#resize')
-            .on('click', function(){
-                if(!expandOverview){
-                    console.log('resize click occured');
-                    params.xMargin *= 2;
-                    console.log('view enlarged', params.xMargin);
-
-                }
-                else{
-                    params.xMargin /= 2;
-                    console.log('view compressed', params.xMargin);
-                }
-                expandOverview = !expandOverview;
-            });
-
-        var overview =eecvweeckvweecvweecvweecvweec;vweecvweecjvweec
         var controls = view.select('#tab-controls')
             .call(drag);
+
+        var resize_icon = controls.select('#resize')
+            .on('click', function(){
+                if(!expandOverview){
+                    console.log('view enlarged');
+
+                    params.xMargin = 100;
+                    params.yMargin = 107;
+                    params.xFactor = 50;
+                    params.yFactor = 100;
+                    params.channelGap = 6;
+                    params.linkBuf = 4;
+                    params.controlBuf = 3;
+                }
+                else{
+                    console.log('view compressed');
+
+                    params.xMargin = 70;
+                    params.yMargin = 75;
+                    params.xFactor = 35;
+                    params.yFactor = 70;
+                    params.channelGap = 4;
+                    params.linkBuf = 3;
+                    params.controlBuf = 2;
+                }
+                resize();
+                expandOverview = !expandOverview;
+            });
 
         var link_control = controls.select('#link-control')
             .selectAll('g')
@@ -140,6 +150,37 @@ define(function(require){
         svg.append('g')
             .attr('class', 'nodes');
 
+        function mousever(){
+            id = this.id;
+            svg.selectAll("#"+id)
+                .attr('stroke', 'black')
+                .attr('stroke-opacity', '1');
+        }
+
+        function mouseout(){
+            id = this.id;
+            svg.selectAll("#"+id)
+                .attr('stroke',function(d){ return d.color;});
+        }
+
+        function resize(){
+            view.select('svg').remove();
+
+            WIDTH = ((params.xMargin*2)+(params.radius*2*16)+(params.xFactor*15));
+            HEIGHT = ((params.yMargin+10)+(params.radius*2*6)+(params.yFactor*5));
+
+            svg = view.select('#tab-overview')
+                .append('svg')
+                .attr('class', 'svg')
+                .attr('width', WIDTH + 'px')
+                .attr('height', HEIGHT +'px');
+            svg.append('g')
+                .attr('class', 'nodes');
+
+            addRouters();
+            addLinks();
+        }
+
         function filter(){
             greenLinks = [];
             blackLinks = [];
@@ -174,6 +215,8 @@ define(function(require){
         }
 
         function addLinks(){
+            console.log('in add links');
+
             if(showGreen){
                 addGreenLinks();
             }
@@ -218,19 +261,9 @@ define(function(require){
             showBlackLinks();
         }
 
-        function mousever(){
-            id = this.id;
-            svg.selectAll("#"+id)
-                .attr('stroke', 'black')
-                .attr('stroke-opacity', '1');
-        }
-        function mouseout(){
-            id = this.id;
-            svg.selectAll("#"+id)
-                .attr('stroke',function(d){ return d.color;});
-        }
-
         function showGreenLinks(){
+            console.log('in show green links');
+
             var links = greenPaths.links;
             var arcs = greenPaths.arcs;
 
@@ -353,5 +386,4 @@ define(function(require){
 
         return api;
     };
-
 });
