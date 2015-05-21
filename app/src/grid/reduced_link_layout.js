@@ -1,17 +1,20 @@
 /**
  * Created by Divya on 4/14/2015.
  */
-color = null;
+var color = null;
+var linkMatrixNew = null;
 
 var createReducedLinks = (function(){
-    return function(linkColor, linkMatrix){
+    return function(linkColor, linkMatrix1){
         color = linkColor;
-        return reducedLinks(linkMatrix);
+        linkMatrixNew = linkMatrix1;
+
+        return reducedLinks();
     }
 })();
 
 var reducedLinks = (function(){
-    return function(linkMatrix){
+    return function(){
         var links = [];
         var linkOccupancy = null;
         var beg, end;
@@ -20,6 +23,10 @@ var reducedLinks = (function(){
         var counter = 0;
         var sourceColor = 'green';
 
+        var hasLinks;
+        var nodeChannel, nodeIndex;
+        var begSegment, endSegment;
+
         if(color == 'green'){
             linkOccupancy = getLinkMatrix('green');
         }
@@ -27,15 +34,83 @@ var reducedLinks = (function(){
             linkOccupancy = getLinkMatrix('black');
         }
 
-        for(var k=0; k<linkMatrix.length; k++){
-            for(var i=0; i<linkMatrix[k].length; i++){
+        //console.log(linkMatrixNew);
 
-                for(var j=0; j<linkMatrix[k][i].length; j++){
-                    if(linkMatrix[k][i][j].left == true){
+        for(var k=0; k<linkMatrixNew.length; k++){
+            for(var i=0; i<linkMatrixNew[k].length; i++){
 
+                ////--------------------------------
+                //get one valid channel for all the links of that source node
+                //newChannel = getValidChannel(k, i, linkOccupancy);
+                //channel = newChannel.nodeChannel;
+                //linkOccupancy = newChannel.linkOccupancy;
+
+                hasLinks = false;
+                begSegment = linkMatrixNew[k].length;
+                endSegment = 0;
+
+                nodeChannel = 0;
+                startAgain = true;
+
+                while(startAgain){
+                    startAgain = false;
+
+                    for(var j=0; j<linkMatrixNew[k][i].length; j++){
+                        if(linkMatrixNew[k][i][j].left == true){
+                            hasLinks = true;
+
+                            if(begSegment > Math.min(i, j)){
+                                begSegment = Math.min(i, j);
+                            }
+                            if(endSegment < Math.max(i, j)){
+                                endSegment = Math.max(i, j);
+                            }
+
+                            for(var channelIdx = 0; channelIdx < linkMatrixNew[k].length; channelIdx++){
+                                validChannel = true;
+                                channel = channelIdx;
+
+                                for(var col = beg; col <= end; col++){
+                                    if(col == beg){
+                                        if(linkOccupancy[k][channelIdx][col].left == true || (linkOccupancy[k][channelIdx][col].right == true)){
+                                            validChannel = false;
+                                            break;
+                                        }
+                                    }
+                                    if(linkOccupancy[k][channelIdx][col].seg == true){
+                                        validChannel = false;
+                                        break;
+                                    }
+                                }
+                                if(validChannel == true){
+                                    break;
+                                }
+                            }
+
+                            if(nodeChannel != channel){
+                                nodeChannel = channel;
+                                startAgain = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(hasLinks){
+                    for(var l=begSegment; l<endSegment; l++){
+                        linkOccupancy[k][nodeChannel][l].seg = true;
+                    }
+                }
+
+                ////--------------------------------
+
+
+                for(var j=0; j<linkMatrixNew[k][i].length; j++){
+
+                    if(linkMatrixNew[k][i][j].left == true){
                         beg = Math.min(i, j);
                         end = Math.max(i, j);
-                        linkColor = linkMatrix[k][i][j].color;
+                        linkColor = linkMatrixNew[k][i][j].color;
 
                         if (i == beg){
                             leftArc = sourceColor;
@@ -46,26 +121,7 @@ var reducedLinks = (function(){
                             rightArc = sourceColor;
                         }
 
-                        for(var channelIdx = 0; channelIdx < linkMatrix[k].length; channelIdx++){
-                            validChannel = true;
-                            channel = channelIdx;
-
-                            for(var col = beg; col <= end; col++){
-                                if(linkOccupancy[k][channelIdx][col].seg == true){
-                                    validChannel = false;
-                                    break;
-                                }
-                            }
-                            if(validChannel == true){
-                                break;
-                            }
-                        }
-
-                        for(col = beg; col < end; col++){
-                            linkOccupancy[k][channel][col].seg = true;
-                        }
-
-                        pos = linkPosition(k, beg, end, channel, color);
+                        pos = linkPosition(k, beg, end, nodeChannel, color);
                         if(color == 'green'){
                             id = "green" + counter;
                             counter += 1;
