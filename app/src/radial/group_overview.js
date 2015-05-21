@@ -5,6 +5,7 @@
 define(function(require){
 
     var d3 = require('d3');
+
     var naive_layout = require('grid/naive_link_layout');
     var condensed_layout = require('grid/condensed_link_layout');
     var reduced_layout = require('grid/reduced_link_layout');
@@ -215,8 +216,6 @@ define(function(require){
         }
 
         function addLinks(){
-            console.log('in add links');
-
             if(showGreen){
                 addGreenLinks();
             }
@@ -262,8 +261,6 @@ define(function(require){
         }
 
         function showGreenLinks(){
-            console.log('in show green links');
-
             var links = greenPaths.links;
             var arcs = greenPaths.arcs;
 
@@ -356,12 +353,45 @@ define(function(require){
             selectedGroup = group;
             selectedGroupId = group.id;
         };
+        var xPos, yPos;
 
         api.showView = function(){
+
+            if(d3.select('.group-overview').style('top') == 'auto'){
+                xPos = d3.event.pageX-5;
+                yPos = d3.event.pageY-5;
+            }
+            else{
+                x = parseInt(d3.select('.group-overview').style('left'), 10);
+                y = parseInt(d3.select('.group-overview').style('top'), 10);
+
+                if(x < 0 || y < 0 || x + WIDTH > window.innerWidth || y + HEIGHT > window.innerHeight){
+                    console.log('condition true');
+                    xPos = d3.event.pageX-5;
+                    yPos = d3.event.pageY-5;
+                }
+            }
+
+            if(d3.event.pageX-5 + WIDTH > window.innerWidth){
+            console.log('condition 1');
+                xPos = d3.event.pageX - WIDTH;
+                if(xPos < 0){
+                    xPos = 0;
+                }
+            }
+
+            if(d3.event.pageY-5 + HEIGHT + 50 > window.innerHeight){
+                console.log('condition 2');
+                yPos = d3.event.pageY - HEIGHT - 50;
+                if(yPos < 0){
+                    yPos = 0;
+                }
+            }
+
             d3.select(".group-overview")
                 .style('position', 'absolute')
-                .style('left', (d3.event.pageX-5) + "px")
-                .style('top', (d3.event.pageY-5) + "px")
+                .style('left', (xPos) + "px")
+                .style('top', (yPos) + "px")
                 .style('display', 'block');
 
             addRouters();
