@@ -358,10 +358,12 @@ define(function(require){
         api.showView = function(){
 
             if(d3.select('.group-overview').style('top') == 'auto'){
+                console.log('auto');
                 xPos = d3.event.pageX-5;
                 yPos = d3.event.pageY-5;
             }
             else{
+                console.log('make sure it is inside the view');
                 x = parseInt(d3.select('.group-overview').style('left'), 10);
                 y = parseInt(d3.select('.group-overview').style('top'), 10);
 
@@ -372,7 +374,7 @@ define(function(require){
                 }
             }
 
-            if(d3.event.pageX-5 + WIDTH > window.innerWidth){
+            if(xPos + WIDTH > window.innerWidth){
             console.log('condition 1');
                 xPos = d3.event.pageX - WIDTH;
                 if(xPos < 0){
@@ -380,7 +382,7 @@ define(function(require){
                 }
             }
 
-            if(d3.event.pageY-5 + HEIGHT + 50 > window.innerHeight){
+            if(yPos + HEIGHT + 50 > window.innerHeight){
                 console.log('condition 2');
                 yPos = d3.event.pageY - HEIGHT - 50;
                 if(yPos < 0){
