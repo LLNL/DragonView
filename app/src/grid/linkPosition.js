@@ -6,10 +6,10 @@ var linkPosition = (function linkPosition(){
     return function(k, beg, end, channel, color){
         if(color == 'green'){
             sNodeX = beg*params.xFactor+params.xMargin+(((beg*2)+1)*params.radius);
-            sNodeY = k*params.yFactor+params.yMargin+(((k*2)+1)*params.radius);
+            sNodeY = k*params.yFactor+params.yMargin+(((k*2)+1)*params.radius) - params.radius;
 
             tNodeX = end*params.xFactor+params.xMargin+(((end*2)+1)*params.radius);
-            tNodeY = k*params.yFactor+params.yMargin+(((k*2)+1)*params.radius);
+            tNodeY = k*params.yFactor+params.yMargin+(((k*2)+1)*params.radius) - params.radius;
 
             sNodeLinkY = sNodeY-(channel+1)*params.channelGap;
             tNodeLinkY = tNodeY-(channel+1)*params.channelGap;
@@ -39,10 +39,10 @@ var linkPosition = (function linkPosition(){
         }
 
         else if(color == 'black'){
-            sNodeX = k*params.xFactor+params.xMargin+(((k*2)+1)*params.radius);
+            sNodeX = k*params.xFactor+params.xMargin+(((k*2)+1)*params.radius) - params.radius;
             sNodeY = beg*params.yFactor+params.yMargin+(((beg*2)+1)*params.radius);
 
-            tNodeX = k*params.xFactor+params.xMargin+(((k*2)+1)*params.radius);
+            tNodeX = k*params.xFactor+params.xMargin+(((k*2)+1)*params.radius) - params.radius;
             tNodeY = end*params.yFactor+params.yMargin+(((end*2)+1)*params.radius);
 
             sNodeLinkX = sNodeX-(channel+1)*params.channelGap;

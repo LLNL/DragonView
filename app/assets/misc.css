@@ -34,10 +34,16 @@
 .nodes{
     fill: black;
     stroke: black;
-    stroke-width:1;
+    stroke-width:1px;
 }
 
-.highlight-link{
+.node-highlight{
+    fill: green;
+    stroke: green;
+    stroke-width:5px;
+}
+
+.link-highlight {
     stroke: black;
-    stroke-width: 3px;
+    stroke-opacity: 1;
 }

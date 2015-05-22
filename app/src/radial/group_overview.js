@@ -153,35 +153,75 @@ define(function(require){
         svg.append('g')
             .attr('class', 'links');
 
-        function mousever(){
-            //console.log('in here', this.id, this);
+        function mousever_link(){
             id = this.id;
+            console.log(id);
+
             svg.select('.links')
                 .selectAll("#"+id)
-                .attr('stroke', 'black')
-                .attr('stroke-opacity', '1');
+                .classed('link-highlight', true);
 
-            //svg.select('.links')
-            //    .select('.greenLinks')
-            //    .selectAll("*:not(#"+id+")")
-            //    .attr('stroke-opacity', '0.3');
-            //    //.attr('fill', 'none');
-            //
-            //svg.select('.links')
-            //    .select('.blackLinks')
-            //    .selectAll("*:not(#"+id+")")
-            //    .attr('stroke-opacity', '0.3');
-            //    //.attr('fill', 'none');
-
+            id = 'node-' + id.split('-')[1];
+            svg.select('.nodes')
+                .select('#'+id)
+                .classed('node-highlight', true);
         }
 
-        function mouseout(){
+        function mouseout_link(){
             id = this.id;
             svg.select('.links')
                 .selectAll("#"+id)
-                .attr('stroke',function(d){
-                    //console.log(d);
-                    return d.color;});
+                .classed('link-highlight', false);
+
+            id = 'node-' + id.split('-')[1];
+            svg.select('.nodes')
+                .select('#'+id)
+                .classed('node-highlight', false);
+        }
+
+        function mouseover_node(){
+            console.log('!!');
+
+            id = this.id;
+            console.log(id);
+            svg.select('.nodes')
+                .select('#'+id)
+                .classed('node-highlight', true);
+
+            nodeId = id.split('-')[1];
+
+            id = 'green-'+nodeId;
+            svg.select('.links')
+                .selectAll('#'+id)
+                .classed('link-highlight', true);
+
+            id = 'black-'+nodeId;
+            svg.select('.links')
+                .selectAll('#'+id)
+                .classed('link-highlight', true);
+        }
+
+        function mouseout_node(){
+            console.log('in mouseout');
+
+            id = this.id;
+            console.log(id);
+            svg.select('.nodes')
+                .select('#'+id)
+                .classed('node-highlight', false);
+            nodeId = id.split('-')[1];
+
+            id = 'green-'+nodeId;
+            svg.select('.links')
+                .selectAll('#'+id)
+                .classed('link-highlight', false);
+
+            id = 'black-'+nodeId;
+            svg.select('.links')
+                .selectAll('#'+id)
+                .classed('link-highlight', false);
+
+
         }
 
         function resize(){
@@ -231,9 +271,16 @@ define(function(require){
                     return d;})
                 .enter()
                 .append("circle")
-                .attr('cx', function(d){return (params.xMargin+(((d.c*2)+1)*params.radius)+((d.c)*params.xFactor));})
-                .attr('cy', function(d){return (params.yMargin+(((d.r*2)+1)*params.radius)+((d.r)*params.yFactor));})
-                .attr('r', params.radius);
+                .attr('id', function(d){
+                    var id = 'node-' + d.g.toString() + d.r.toString() + d.c.toString();
+                    console.log(id);
+
+                    return id})
+                .attr('cx', function(d){ return (params.xMargin+(((d.c*2)+1)*params.radius)+((d.c)*params.xFactor));})
+                .attr('cy', function(d){ return (params.yMargin+(((d.r*2)+1)*params.radius)+((d.r)*params.yFactor));})
+                .attr('r', params.radius)
+                .on('mouseover', mouseover_node)
+                .on('mouseout', mouseout_node);
         }
 
         function addLinks(){
@@ -303,8 +350,8 @@ define(function(require){
                 .attr("x2", function(d){ return d.target.x})
                 .attr("y2", function(d){ return d.target.y})
                 .attr('stroke', function(d){return d.color;})
-                .on('mouseover', mousever)
-                .on('mouseout', mouseout);
+                .on('mouseover', mousever_link)
+                .on('mouseout', mouseout_link);
 
             var arc = d3.svg.arc()
                 .startAngle(function(d){return d.startAngle*(Math.PI/180);})
@@ -346,8 +393,8 @@ define(function(require){
                 .attr("x2", function(d){ return d.target.x})
                 .attr("y2", function(d){ return d.target.y})
                 .attr('stroke', function(d){return d.color;})
-                .on('mouseover', mousever)
-                .on('mouseout', mouseout);
+                .on('mouseover', mousever_link)
+                .on('mouseout', mouseout_link);
 
             var arc = d3.svg.arc()
                 .startAngle(function(d){return d.startAngle*(Math.PI/180);})

@@ -36,8 +36,8 @@ var condensedLinks = (function(){
                         end = Math.max(i, j);
                         linkColor = linkMatrix[k][i][j].color;
                         sourceID = linkMatrix[k][i][j].sourceID;
-                        sourceID = sourceID.replace(':', '');
-                        sourceID = sourceID.replace(':', '');
+                        temp = sourceID.split(':');
+                        sourceID = temp[0] + temp[1] + temp[2];
 
                         if (i == beg){
                             leftArc = sourceColor;
@@ -63,7 +63,7 @@ var condensedLinks = (function(){
                             id = "green" + counter;
                             counter += 1;
 
-                            sourceID = 'green' + sourceID;
+                            sourceID = 'green-' + sourceID;
 
                             arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id, 'sourceID': sourceID});
                             arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": rightArc, "id": id, 'sourceID': sourceID});
@@ -76,7 +76,7 @@ var condensedLinks = (function(){
                             id = "black" + counter;
                             counter += 1;
 
-                            sourceID = 'black' + sourceID;
+                            sourceID = 'black-' + sourceID;
 
                             arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id, 'sourceID': sourceID});
                             arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": rightArc, "id": id, 'sourceID': sourceID});
