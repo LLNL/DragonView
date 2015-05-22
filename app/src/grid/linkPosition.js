@@ -48,7 +48,6 @@ var linkPosition = (function linkPosition(){
             sNodeLinkX = sNodeX-(channel+1)*params.channelGap;
             tNodeLinkX = tNodeX-(channel+1)*params.channelGap;
 
-
             center1Y = sNodeY+params.channelGap;
             center1X = sNodeLinkX+params.channelGap;
 

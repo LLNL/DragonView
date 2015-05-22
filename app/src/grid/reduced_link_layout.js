@@ -38,13 +38,6 @@ var reducedLinks = (function(){
 
         for(var k=0; k<linkMatrixNew.length; k++){
             for(var i=0; i<linkMatrixNew[k].length; i++){
-
-                ////--------------------------------
-                //get one valid channel for all the links of that source node
-                //newChannel = getValidChannel(k, i, linkOccupancy);
-                //channel = newChannel.nodeChannel;
-                //linkOccupancy = newChannel.linkOccupancy;
-
                 hasLinks = false;
                 begSegment = linkMatrixNew[k].length;
                 endSegment = 0;
@@ -73,11 +66,13 @@ var reducedLinks = (function(){
                                 for(var col = beg; col <= end; col++){
                                     if(col == beg){
                                         if(linkOccupancy[k][channelIdx][col].left == true || (linkOccupancy[k][channelIdx][col].right == true)){
+                                            console.log('1111111111111111111111111111111111111111');
                                             validChannel = false;
                                             break;
                                         }
                                     }
                                     if(linkOccupancy[k][channelIdx][col].seg == true){
+                                        console.log('^^^^^^^^^^^^^^^^^^^^^^');
                                         validChannel = false;
                                         break;
                                     }
@@ -101,8 +96,6 @@ var reducedLinks = (function(){
                         linkOccupancy[k][nodeChannel][l].seg = true;
                     }
                 }
-
-                ////--------------------------------
 
 
                 for(var j=0; j<linkMatrixNew[k][i].length; j++){
@@ -142,9 +135,9 @@ var reducedLinks = (function(){
                             arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": rightArc, "id": id});
 
                             //links
-                            links.push({"source":{"x":pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.sNodeLinkX, "y": pos.sNodeY}, "color": linkColor, "id": id});
+                            links.push({"source":{"x":pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.center1X, "y": pos.sNodeY}, "color": linkColor, "id": id});
                             links.push({"source": {"x": pos.sNodeLinkX, "y": pos.center1Y}, "target": {"x": pos.tNodeLinkX, "y": pos.center2Y}, "color": linkColor, "id": id});
-                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.tNodeLinkX, "y": pos.tNodeY}, "color": linkColor, "id": id});
+                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.center2X, "y": pos.tNodeY}, "color": linkColor, "id": id});
                         }
                     }
                 }
