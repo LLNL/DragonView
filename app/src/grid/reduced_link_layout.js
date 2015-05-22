@@ -22,6 +22,7 @@ var reducedLinks = (function(){
         var arcs = [];
         var counter = 0;
         var sourceColor = 'green';
+        var sourceID;
 
         var hasLinks;
         var nodeChannel, nodeIndex;
@@ -33,8 +34,6 @@ var reducedLinks = (function(){
         else{
             linkOccupancy = getLinkMatrix('black');
         }
-
-        //console.log(linkMatrixNew);
 
         for(var k=0; k<linkMatrixNew.length; k++){
             for(var i=0; i<linkMatrixNew[k].length; i++){
@@ -66,13 +65,11 @@ var reducedLinks = (function(){
                                 for(var col = beg; col <= end; col++){
                                     if(col == beg){
                                         if(linkOccupancy[k][channelIdx][col].left == true || (linkOccupancy[k][channelIdx][col].right == true)){
-                                            console.log('1111111111111111111111111111111111111111');
                                             validChannel = false;
                                             break;
                                         }
                                     }
                                     if(linkOccupancy[k][channelIdx][col].seg == true){
-                                        console.log('^^^^^^^^^^^^^^^^^^^^^^');
                                         validChannel = false;
                                         break;
                                     }
@@ -104,6 +101,9 @@ var reducedLinks = (function(){
                         beg = Math.min(i, j);
                         end = Math.max(i, j);
                         linkColor = linkMatrixNew[k][i][j].color;
+                        sourceID = linkMatrixNew[k][i][j].sourceID;
+                        sourceID = sourceID.replace(':', '');
+                        sourceID = sourceID.replace(':', '');
 
                         if (i == beg){
                             leftArc = sourceColor;
@@ -119,25 +119,29 @@ var reducedLinks = (function(){
                             id = "green" + counter;
                             counter += 1;
 
-                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id });
-                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": rightArc, "id": id});
+                            sourceID = 'green' + sourceID;
+
+                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id, 'sourceID': sourceID });
+                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": rightArc, "id": id, 'sourceID': sourceID});
 
                             //links
-                            links.push({"source":{"x":pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.sNodeX, "y": pos.center1Y}, "color": linkColor, "id": id});
-                            links.push({"source": {"x": pos.center1X, "y": pos.sNodeLinkY}, "target": {"x": pos.center2X, "y": pos.tNodeLinkY}, "color": linkColor, "id": id});
-                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.tNodeX, "y": pos.center2Y}, "color": linkColor, "id": id})
+                            links.push({"source":{"x":pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.sNodeX, "y": pos.center1Y}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                            links.push({"source": {"x": pos.center1X, "y": pos.sNodeLinkY}, "target": {"x": pos.center2X, "y": pos.tNodeLinkY}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.tNodeX, "y": pos.center2Y}, "color": linkColor, "id": id, 'sourceID': sourceID})
                         }
                         else if(color == 'black'){
                             id = "black" + counter;
                             counter += 1;
 
-                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id});
-                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": rightArc, "id": id});
+                            sourceID = 'black' + sourceID;
+
+                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id, 'sourceID': sourceID});
+                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": rightArc, "id": id, 'sourceID': sourceID});
 
                             //links
-                            links.push({"source":{"x":pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.center1X, "y": pos.sNodeY}, "color": linkColor, "id": id});
-                            links.push({"source": {"x": pos.sNodeLinkX, "y": pos.center1Y}, "target": {"x": pos.tNodeLinkX, "y": pos.center2Y}, "color": linkColor, "id": id});
-                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.center2X, "y": pos.tNodeY}, "color": linkColor, "id": id});
+                            links.push({"source":{"x":pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.center1X, "y": pos.sNodeY}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                            links.push({"source": {"x": pos.sNodeLinkX, "y": pos.center1Y}, "target": {"x": pos.tNodeLinkX, "y": pos.center2Y}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.center2X, "y": pos.tNodeY}, "color": linkColor, "id": id, 'sourceID': sourceID});
                         }
                     }
                 }

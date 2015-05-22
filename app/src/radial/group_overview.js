@@ -150,18 +150,38 @@ define(function(require){
 
         svg.append('g')
             .attr('class', 'nodes');
+        svg.append('g')
+            .attr('class', 'links');
 
         function mousever(){
+            //console.log('in here', this.id, this);
             id = this.id;
-            svg.selectAll("#"+id)
+            svg.select('.links')
+                .selectAll("#"+id)
                 .attr('stroke', 'black')
                 .attr('stroke-opacity', '1');
+
+            //svg.select('.links')
+            //    .select('.greenLinks')
+            //    .selectAll("*:not(#"+id+")")
+            //    .attr('stroke-opacity', '0.3');
+            //    //.attr('fill', 'none');
+            //
+            //svg.select('.links')
+            //    .select('.blackLinks')
+            //    .selectAll("*:not(#"+id+")")
+            //    .attr('stroke-opacity', '0.3');
+            //    //.attr('fill', 'none');
+
         }
 
         function mouseout(){
             id = this.id;
-            svg.selectAll("#"+id)
-                .attr('stroke',function(d){ return d.color;});
+            svg.select('.links')
+                .selectAll("#"+id)
+                .attr('stroke',function(d){
+                    //console.log(d);
+                    return d.color;});
         }
 
         function resize(){
@@ -207,7 +227,8 @@ define(function(require){
                 .append("svg:g");
 
             var routers = rows.selectAll(".nodes")
-                .data(function(d){return d;})
+                .data(function(d){
+                    return d;})
                 .enter()
                 .append("circle")
                 .attr('cx', function(d){return (params.xMargin+(((d.c*2)+1)*params.radius)+((d.c)*params.xFactor));})
@@ -264,9 +285,9 @@ define(function(require){
             var links = greenPaths.links;
             var arcs = greenPaths.arcs;
 
-            svg.select('.greenLinks').remove();
+            svg.select('.links').select('.greenLinks').remove();
 
-            svg.append('g')
+            svg.select('.links').append('g')
                 .attr('class', 'greenLinks');
 
 
@@ -276,7 +297,7 @@ define(function(require){
                 .enter()
                 .append('line')
                 .attr('class', 'greenLink')
-                .attr('id', function(d){ return d.id})
+                .attr('id', function(d){ return d.sourceID})
                 .attr("x1", function(d){ return d.source.x})
                 .attr("y1", function(d){ return d.source.y})
                 .attr("x2", function(d){ return d.target.x})
@@ -297,7 +318,7 @@ define(function(require){
                 .enter()
                 .append('path')
                 .attr('class', 'greenLink')
-                .attr('id', function(d){ return d.id})
+                .attr('id', function(d){ return d.sourceID})
                 .attr('d', arc)
                 .attr('fill', function(d){return d.color})
                 .attr("transform", function(d){
@@ -308,9 +329,9 @@ define(function(require){
             var links = blackPaths.links;
             var arcs = blackPaths.arcs;
 
-            svg.select('.blackLinks').remove();
+            svg.select('.links').select('.blackLinks').remove();
 
-            svg.append('g')
+            svg.select('.links').append('g')
                 .attr('class', 'blackLinks');
 
             var d3Links = svg.select('.blackLinks')
@@ -319,7 +340,7 @@ define(function(require){
                 .enter()
                 .append('line')
                 .attr('class', 'blackLink')
-                .attr('id', function(d){ return d.id})
+                .attr('id', function(d){ return d.sourceID})
                 .attr("x1", function(d){ return d.source.x})
                 .attr("y1", function(d){ return d.source.y})
                 .attr("x2", function(d){ return d.target.x})
@@ -340,7 +361,7 @@ define(function(require){
                 .enter()
                 .append('path')
                 .attr('class', 'blackLink')
-                .attr('id', function(d){ return d.id})
+                .attr('id', function(d){ return d.sourceID})
                 .attr('d', arc)
                 .attr('fill', function(d){return d.color;})
                 .attr("transform", function(d){
