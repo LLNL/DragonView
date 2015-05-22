@@ -52,8 +52,6 @@ define(function(require){
         var resize_icon = controls.select('#resize')
             .on('click', function(){
                 if(!expandOverview){
-                    console.log('view enlarged');
-
                     params.xMargin = 100;
                     params.yMargin = 107;
                     params.xFactor = 50;
@@ -63,8 +61,6 @@ define(function(require){
                     params.controlBuf = 3;
                 }
                 else{
-                    console.log('view compressed');
-
                     params.xMargin = 70;
                     params.yMargin = 75;
                     params.xFactor = 35;
@@ -155,8 +151,6 @@ define(function(require){
 
         function mousever_link(){
             id = this.id;
-            console.log(id);
-
             svg.select('.links')
                 .selectAll("#"+id)
                 .classed('link-highlight', true);
@@ -180,10 +174,7 @@ define(function(require){
         }
 
         function mouseover_node(){
-            console.log('!!');
-
             id = this.id;
-            console.log(id);
             svg.select('.nodes')
                 .select('#'+id)
                 .classed('node-highlight', true);
@@ -202,10 +193,7 @@ define(function(require){
         }
 
         function mouseout_node(){
-            console.log('in mouseout');
-
             id = this.id;
-            console.log(id);
             svg.select('.nodes')
                 .select('#'+id)
                 .classed('node-highlight', false);
@@ -237,6 +225,8 @@ define(function(require){
                 .attr('height', HEIGHT +'px');
             svg.append('g')
                 .attr('class', 'nodes');
+            svg.append('g')
+                .attr('class', 'links');
 
             addRouters();
             addLinks();
@@ -273,8 +263,6 @@ define(function(require){
                 .append("circle")
                 .attr('id', function(d){
                     var id = 'node-' + d.g.toString() + d.r.toString() + d.c.toString();
-                    console.log(id);
-
                     return id})
                 .attr('cx', function(d){ return (params.xMargin+(((d.c*2)+1)*params.radius)+((d.c)*params.xFactor));})
                 .attr('cy', function(d){ return (params.yMargin+(((d.r*2)+1)*params.radius)+((d.r)*params.yFactor));})
@@ -430,10 +418,10 @@ define(function(require){
                 yPos = d3.event.pageY-5;
             }
             else{
-                x = parseInt(d3.select('.group-overview').style('left'), 10);
-                y = parseInt(d3.select('.group-overview').style('top'), 10);
+                xPos = parseInt(d3.select('.group-overview').style('left'), 10);
+                yPos = parseInt(d3.select('.group-overview').style('top'), 10);
 
-                if(x < 0 || y < 0 || x + WIDTH > window.innerWidth || y + HEIGHT > window.innerHeight){
+                if(xPos < 0 || yPos < 0 || xPos + WIDTH > window.innerWidth || yPos + HEIGHT > window.innerHeight){
                     xPos = d3.event.pageX-5;
                     yPos = d3.event.pageY-5;
                 }
