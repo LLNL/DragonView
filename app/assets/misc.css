@@ -24,11 +24,14 @@
 .greenLink{
     stroke-width: 1px;
     /*stroke-opacity: 0.5;*/
+    z-index: 0;
+
 }
 
 .blackLink{
     stroke-width: 1px;
     /*stroke-opacity: 0.5;*/
+    z-index: 0;
 }
 
 .nodes{
@@ -46,4 +49,16 @@
 .link-highlight {
     stroke: black;
     stroke-opacity: 1;
+    stroke-width: 3px;
+    /*z-index: 20;*/
+}
+
+.link-unhighlight{
+    stroke-width: 0px;
+    /*opacity: 0;*/
+    /*stroke: orange;*/
+}
+
+.link-unhighlight .path{
+    fill-opacity: 0;
 }

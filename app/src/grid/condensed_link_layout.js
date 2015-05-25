@@ -20,6 +20,10 @@ var condensedLinks = (function(){
         var counter = 0;
         var sourceColor = 'green';
         var sourceID;
+        var linkColor, linkValue;
+
+        var segmentColor = segment_color();
+        segmentColor.reset();
 
 
         for(var k=0; k<linkMatrix.length; k++){
@@ -35,6 +39,7 @@ var condensedLinks = (function(){
                         beg = Math.min(i, j);
                         end = Math.max(i, j);
                         linkColor = linkMatrix[k][i][j].color;
+                        linkValue = linkMatrixNew[k][i][j].value;
                         sourceID = linkMatrix[k][i][j].sourceID;
                         temp = sourceID.split(':');
                         sourceID = temp[0] + temp[1] + temp[2];
@@ -58,6 +63,8 @@ var condensedLinks = (function(){
                         }
 
                         pos = linkPosition(k, beg, end, channel, color);
+                        colors = segmentColor.set_color(pos.axis, pos.row, pos.channel, pos.firstSegment, pos.segments, linkValue, linkColor);
+                        connector_colors = segmentColor.set_connector_color(pos, linkValue, linkColor);
 
                         if(color == 'green'){
                             id = "green" + counter;

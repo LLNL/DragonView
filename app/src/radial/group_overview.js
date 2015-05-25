@@ -11,6 +11,7 @@ define(function(require){
     var reduced_layout = require('grid/reduced_link_layout');
     var param = require('grid/parameters');
     var linkPosition = require('grid/linkPosition');
+    var segmentColor = require('grid/segmentColor');
 
     return function(){
         var selectedGroupId, selectedGroup;
@@ -149,11 +150,34 @@ define(function(require){
         svg.append('g')
             .attr('class', 'links');
 
-        function mousever_link(){
+        function moveToFront(){
+            //console.log(this);
+            //return this.parentNode.appendChild(this);
+
+            orig = d3.select(this);
+            console.log(orig);
+
+
+        }
+        function mouseover_link(){
             id = this.id;
+
+            orig = d3.select(this);
+            //console.log(orig.outerHTML);
+            var origNode = orig.node();
+            var dupe = d3.select(origNode.parentNode.appendChild(origNode.cloneNode(true), origNode.nextSibling));
+
+
             svg.select('.links')
                 .selectAll("#"+id)
+
                 .classed('link-highlight', true);
+                //.call(moveToFront());
+
+            //svg.select('.links')
+            //    .selectAll("*:not(#"+id+")")
+            //    .classed("link-unhighlight", true);
+
 
             id = 'node-' + id.split('-')[1];
             svg.select('.nodes')
@@ -166,6 +190,10 @@ define(function(require){
             svg.select('.links')
                 .selectAll("#"+id)
                 .classed('link-highlight', false);
+
+            svg.select('.links')
+                .selectAll("*:not(#"+id+")")
+                .classed("link-unhighlight", false);
 
             id = 'node-' + id.split('-')[1];
             svg.select('.nodes')
@@ -338,7 +366,7 @@ define(function(require){
                 .attr("x2", function(d){ return d.target.x})
                 .attr("y2", function(d){ return d.target.y})
                 .attr('stroke', function(d){return d.color;})
-                .on('mouseover', mousever_link)
+                .on('mouseover', mouseover_link)
                 .on('mouseout', mouseout_link);
 
             var arc = d3.svg.arc()
@@ -381,7 +409,7 @@ define(function(require){
                 .attr("x2", function(d){ return d.target.x})
                 .attr("y2", function(d){ return d.target.y})
                 .attr('stroke', function(d){return d.color;})
-                .on('mouseover', mousever_link)
+                .on('mouseover', mouseover_link)
                 .on('mouseout', mouseout_link);
 
             var arc = d3.svg.arc()
@@ -395,7 +423,7 @@ define(function(require){
                 .data(arcs)
                 .enter()
                 .append('path')
-                .attr('class', 'blackLink')
+                .attr('class', 'blackLink path')
                 .attr('id', function(d){ return d.sourceID})
                 .attr('d', arc)
                 .attr('fill', function(d){return d.color;})

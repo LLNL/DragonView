@@ -3,13 +3,14 @@
  */
 
 var linkMatrixElement = (function linkMatrixElement(d){
-    return function(d){
+    return function(){
 
         return element = {
             "sourceID": null,
             "seg": false,
             "right": false,
             "left": false,
+            "value": null,
             "color": null};
     }
 })();
@@ -55,29 +56,32 @@ var populateLinkMatrix = (function populateLinkMatrix(){
         data.forEach(function(d){
             source = d.srcId;
             target = d.destId;
-            //console.log(d.id.split('-')[0]);
             sourceID = d.id.split('-')[0];
 
             if(source.r == target.r){
                 matrix[source.r][source.c][source.c].sourceID = sourceID;
                 matrix[source.r][source.c][source.c].seg = true;
                 matrix[source.r][source.c][source.c].right = true;
+                matrix[source.r][source.c][source.c].value = d.value;
                 matrix[source.r][source.c][source.c].color = d.vis_color;
 
                 matrix[source.r][source.c][target.c].sourceID = sourceID;
                 matrix[source.r][source.c][target.c].seg = true;
                 matrix[source.r][source.c][target.c].left = true;
+                matrix[source.r][source.c][target.c].value = d.value;
                 matrix[source.r][source.c][target.c].color = d.vis_color;
             }
             else if(source.c == target.c){
                 matrix[source.c][source.r][source.r].sourceID = sourceID;
                 matrix[source.c][source.r][source.r].seg = true;
                 matrix[source.c][source.r][source.r].right = true;
+                matrix[source.c][source.r][source.r].value = d.value;
                 matrix[source.c][source.r][source.r].color = d.vis_color;
 
                 matrix[source.c][source.r][target.r].sourceID = sourceID;
                 matrix[source.c][source.r][target.r].seg = true;
                 matrix[source.c][source.r][target.r].left = true;
+                matrix[source.c][source.r][target.r].value = d.value;
                 matrix[source.c][source.r][target.r].color = d.vis_color;
             }
         });
