@@ -39,19 +39,10 @@ var condensedLinks = (function(){
                         beg = Math.min(i, j);
                         end = Math.max(i, j);
                         linkColor = linkMatrix[k][i][j].color;
-                        linkValue = linkMatrixNew[k][i][j].value;
+                        linkValue = linkMatrix[k][i][j].value;
                         sourceID = linkMatrix[k][i][j].sourceID;
                         temp = sourceID.split(':');
                         sourceID = temp[0] + temp[1] + temp[2];
-
-                        if (i == beg){
-                            leftArc = sourceColor;
-                            rightArc = linkColor;
-                        }
-                        else{
-                            leftArc = linkColor;
-                            rightArc = sourceColor;
-                        }
 
                         if(channelLevel.has(i)){
                             channel = channelLevel.get(i);
@@ -72,12 +63,53 @@ var condensedLinks = (function(){
 
                             sourceID = 'green-' + sourceID;
 
-                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id, 'sourceID': sourceID});
-                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": rightArc, "id": id, 'sourceID': sourceID});
+                            side = 'beg';
+                            bend_color = segmentColor.set_bend_color(pos, linkValue, linkColor, side);
+                            key = pos.axis + pos.row.toString() + side + pos.channel.toString();
+                            c = bend_color.get(key).color;
+                            if(i == beg){
+                                c = sourceColor;
+                            }
+                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": c, "id": id, 'sourceID': sourceID });
 
-                            links.push({"source":{"x": pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.sNodeX, "y": pos.center1Y}, "color": linkColor, "id": id, 'sourceID': sourceID});
-                            links.push({"source": {"x": pos.center1X, "y": pos.sNodeLinkY}, "target": {"x": pos.center2X, "y": pos.tNodeLinkY}, "color": linkColor, "id": id, 'sourceID': sourceID});
-                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.tNodeX, "y": pos.center2Y}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                            side = 'end';
+                            bend_color = segmentColor.set_bend_color(pos, linkValue, linkColor, side);
+                            key = pos.axis + pos.row.toString() + side + pos.channel.toString();
+                            c = bend_color.get(key).color;
+                            if(j == beg){
+                                c = sourceColor;
+                            }
+                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": c, "id": id, 'sourceID': sourceID});
+
+                            //beginning connectors
+                            y1 = pos.sNodeY;
+                            for(var z=0; z< pos.beg_connector_segments.length; z++){
+                                key = pos.axis + pos.row.toString() + pos.beg.toString() + z.toString();
+                                c = connector_colors.get(key).color;
+                                y2 = pos.beg_connector_segments[z];
+                                links.push({"source":{"x":pos.sNodeX , "y": y1}, "target": {"x": pos.sNodeX, "y": y2}, "color": c, "id": id, 'sourceID': sourceID});
+                                y1 = y2;
+                            }
+
+                            //segments
+                            x1 = pos.center1X;
+                            for(var z= 0; z<pos.segments.length; z++){
+                                key = pos.axis + pos.row.toString() + pos.channel.toString() + pos.segments[z].toString();
+                                c = colors.get(key).color;
+                                x2 = pos.segments[z];
+                                links.push({"source": {"x": x1, "y": pos.sNodeLinkY}, "target": {"x": x2, "y": pos.tNodeLinkY}, "color": c, "id": id, 'sourceID': sourceID});
+                                x1 = x2;
+                            }
+
+                            //end connector
+                            y1 = pos.tNodeY;
+                            for(var z=0; z< pos.end_connector_segments.length; z++){
+                                key = pos.axis + pos.row.toString() + pos.end1.toString() + z.toString();
+                                c = connector_colors.get(key).color;
+                                y2 = pos.end_connector_segments[z];
+                                links.push({"source":{"x":pos.tNodeX , "y": y1}, "target": {"x": pos.tNodeX, "y": y2}, "color": c, "id": id, 'sourceID': sourceID});
+                                y1 = y2;
+                            }
                         }
                         else if(color == 'black'){
                             id = "black" + counter;
@@ -85,15 +117,55 @@ var condensedLinks = (function(){
 
                             sourceID = 'black-' + sourceID;
 
-                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": leftArc, "id": id, 'sourceID': sourceID});
-                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": rightArc, "id": id, 'sourceID': sourceID});
+                            side = 'beg';
+                            bend_color = segmentColor.set_bend_color(pos, linkValue, linkColor, side);
+                            key = pos.axis + pos.row.toString() + side + pos.channel.toString();
+                            c = bend_color.get(key).color;
+                            if(j == beg){
+                                c = sourceColor;
+                            }
+                            arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": c, "id": id, 'sourceID': sourceID });
 
-                            links.push({"source":{"x":pos.sNodeX , "y": pos.sNodeY}, "target": {"x": pos.center1X, "y": pos.sNodeY}, "color": linkColor, "id": id, 'sourceID': sourceID});
-                            links.push({"source": {"x": pos.sNodeLinkX, "y": pos.center1Y}, "target": {"x": pos.tNodeLinkX, "y": pos.center2Y}, "color": linkColor, "id": id, 'sourceID': sourceID});
-                            links.push({"source": {"x": pos.tNodeX, "y": pos.tNodeY}, "target": {"x": pos.center2X, "y": pos.tNodeY}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                            side = 'end';
+                            bend_color = segmentColor.set_bend_color(pos, linkValue, linkColor, side);
+                            key = pos.axis + pos.row.toString() + side + pos.channel.toString();
+                            c = bend_color.get(key).color;
+                            if(j == beg){
+                                c = sourceColor;
+                            }
+                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": c, "id": id, 'sourceID': sourceID});
+
+                            //beginning connectors
+                            x1 = pos.sNodeX;
+                            for(var z=0; z< pos.beg_connector_segments.length; z++){
+                                key = pos.axis + pos.row.toString() + pos.beg.toString() + z.toString();
+                                c = connector_colors.get(key).color;
+                                x2 = pos.beg_connector_segments[z];
+                                links.push({"source":{"x":x1 , "y": pos.sNodeY}, "target": {"x": x2, "y": pos.sNodeY}, "color": c, "id": id, 'sourceID': sourceID});
+                                x1 = x2;
+                            }
+
+                            //segments
+                            y1 = pos.center1Y;
+                            for(var z= 0; z<pos.segments.length; z++){
+                                key = pos.axis + pos.row.toString() + pos.channel.toString() + pos.segments[z].toString();
+                                c = colors.get(key).color;
+                                y2 = pos.segments[z];
+                                links.push({"source": {"x": pos.sNodeLinkX, "y": y1}, "target": {"x": pos.tNodeLinkX, "y": y2}, "color": c, "id": id, 'sourceID': sourceID});
+                                y1 = y2;
+                            }
+
+                            //end connector
+                            x1 = pos.tNodeX;
+                            for(var z=0; z< pos.end_connector_segments.length; z++){
+                                key = pos.axis + pos.row.toString() + pos.end1.toString() + z.toString();
+                                c1 = connector_colors.get(key).color;
+                                x2 = pos.end_connector_segments[z];
+                                links.push({"source": {"x": x1, "y": pos.tNodeY}, "target": {"x": x2, "y": pos.tNodeY}, "color": c, "id": id, 'sourceID': sourceID});
+                                y1 = y2;
+                            }
                         }
                     }
-
                 }
 
             }

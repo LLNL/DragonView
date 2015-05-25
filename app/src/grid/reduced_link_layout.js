@@ -110,16 +110,6 @@ var reducedLinks = (function(){
                         temp = sourceID.split(':');
                         sourceID = temp[0] + temp[1] + temp[2];
 
-
-                        if (i == beg){
-                            leftArc = sourceColor;
-                            rightArc = linkColor;
-                        }
-                        else{
-                            leftArc = linkColor;
-                            rightArc = sourceColor;
-                        }
-
                         pos = linkPosition(k, beg, end, nodeChannel, color);
                         colors = segmentColor.set_color(pos.axis, pos.row, pos.channel, pos.firstSegment, pos.segments, linkValue, linkColor);
                         connector_colors = segmentColor.set_connector_color(pos, linkValue, linkColor);
@@ -149,7 +139,7 @@ var reducedLinks = (function(){
                             if(j == beg){
                                 c = sourceColor;
                             }
-                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": rightArc, "id": id, 'sourceID': sourceID});
+                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 0, "endAngle": 90, "color": c, "id": id, 'sourceID': sourceID});
 
                             //beginning connectors
                             y1 = pos.sNodeY;
@@ -175,9 +165,9 @@ var reducedLinks = (function(){
                             y1 = pos.tNodeY;
                             for(var z=0; z< pos.end_connector_segments.length; z++){
                                 key = pos.axis + pos.row.toString() + pos.end1.toString() + z.toString();
-                                c1 = connector_colors.get(key).color;
+                                c = connector_colors.get(key).color;
                                 y2 = pos.end_connector_segments[z];
-                                links.push({"source":{"x":pos.tNodeX , "y": y1}, "target": {"x": pos.tNodeX, "y": y2}, "color": c1, "id": id, 'sourceID': sourceID});
+                                links.push({"source":{"x":pos.tNodeX , "y": y1}, "target": {"x": pos.tNodeX, "y": y2}, "color": c, "id": id, 'sourceID': sourceID});
                                 y1 = y2;
                             }
                         }
@@ -191,13 +181,19 @@ var reducedLinks = (function(){
                             bend_color = segmentColor.set_bend_color(pos, linkValue, linkColor, side);
                             key = pos.axis + pos.row.toString() + side + pos.channel.toString();
                             c = bend_color.get(key).color;
+                            if(j == beg){
+                                c = sourceColor;
+                            }
                             arcs.push({"center": {"x": pos.center1X, "y": pos.center1Y}, "startAngle": 270, "endAngle": 360, "color": c, "id": id, 'sourceID': sourceID });
 
                             side = 'end';
                             bend_color = segmentColor.set_bend_color(pos, linkValue, linkColor, side);
                             key = pos.axis + pos.row.toString() + side + pos.channel.toString();
                             c = bend_color.get(key).color;
-                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": rightArc, "id": id, 'sourceID': sourceID});
+                            if(j == beg){
+                                c = sourceColor;
+                            }
+                            arcs.push({"center": {"x": pos.center2X, "y": pos.center2Y}, "startAngle": 180, "endAngle": 270, "color": c, "id": id, 'sourceID': sourceID});
 
                             //beginning connectors
                             x1 = pos.sNodeX;
@@ -215,7 +211,7 @@ var reducedLinks = (function(){
                                 key = pos.axis + pos.row.toString() + pos.channel.toString() + pos.segments[z].toString();
                                 c = colors.get(key).color;
                                 y2 = pos.segments[z];
-                                    links.push({"source": {"x": pos.sNodeLinkX, "y": y1}, "target": {"x": pos.tNodeLinkX, "y": y2}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                                    links.push({"source": {"x": pos.sNodeLinkX, "y": y1}, "target": {"x": pos.tNodeLinkX, "y": y2}, "color": c, "id": id, 'sourceID': sourceID});
                                 y1 = y2;
                             }
 
@@ -225,7 +221,7 @@ var reducedLinks = (function(){
                                 key = pos.axis + pos.row.toString() + pos.end1.toString() + z.toString();
                                 c1 = connector_colors.get(key).color;
                                 x2 = pos.end_connector_segments[z];
-                                links.push({"source": {"x": x1, "y": pos.tNodeY}, "target": {"x": x2, "y": pos.tNodeY}, "color": linkColor, "id": id, 'sourceID': sourceID});
+                                links.push({"source": {"x": x1, "y": pos.tNodeY}, "target": {"x": x2, "y": pos.tNodeY}, "color": c, "id": id, 'sourceID': sourceID});
                                 y1 = y2;
                             }
                         }
@@ -239,4 +235,3 @@ var reducedLinks = (function(){
         };
     }
 })();
-
