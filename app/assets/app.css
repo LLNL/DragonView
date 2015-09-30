@@ -98,38 +98,36 @@ div {
   margin-top: 0px; }
 
 .counter {
-  width: 200px;
+  width: 250px;
   background-color: #fdf5ce; }
 
 .views {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 300px;
+  left: 260px;
   right: 0; }
 
 .view {
   overflow: scroll; }
 
-.histogram {
-  height: 100px; }
-  .histogram .bar {
-    shape-rendering: crispEdges;
-    pointer-events: none; }
-  .histogram .bar text {
-    fill: #fff; }
-  .histogram .axis text {
-    font-size: 12px; }
-  .histogram .axis path, .histogram .axis line {
-    fill: none;
-    stroke: #333;
-    shape-rendering: crispEdges; }
-  .histogram .brush .extent {
-    fill: #ddd;
-    fill-opacity: 0.2;
-    stroke: #888;
-    stroke-width: 1px;
-    shape-rendering: crispEdges; }
+.histogram .bar {
+  shape-rendering: crispEdges;
+  pointer-events: none; }
+.histogram .bar text {
+  fill: #fff; }
+.histogram .axis text {
+  font-size: 12px; }
+.histogram .axis path, .histogram .axis line {
+  fill: none;
+  stroke: #333;
+  shape-rendering: crispEdges; }
+.histogram .brush .extent {
+  fill: #ddd;
+  fill-opacity: 0.2;
+  stroke: #888;
+  stroke-width: 1px;
+  shape-rendering: crispEdges; }
 
 .slider {
   stroke: #333; }
@@ -159,8 +157,7 @@ div {
     stroke: #ccc; }
     .radial .group text {
       stroke: none;
-      fill: #888;
-      font-size: 16px; }
+      fill: #888; }
     .radial .group:hover {
       stroke: #808080;
       stroke-width: 1px; }
