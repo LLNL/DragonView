@@ -17,8 +17,8 @@ define(function(require) {
 
         spaceBetweenGroups: 5,
 
-        outerOffset: 10,
-        groupHeight: 100,
+        outerOffset: 12,
+        groupHeight: 35,
         connectorsOffset: 4,
 
         connectorsHeight: 6,
