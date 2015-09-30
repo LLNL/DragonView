@@ -15,7 +15,7 @@ define(function(require) {
 
   var DEFAULT_COLLECTION = 'data/runs-4jobs-1.csv';
 
-  var width = 250, height,
+  var width = 220, height,
       svg, header,
       defaultCounter = 0, currentCounter = 0,
       filterRange = [0, 0],
@@ -356,7 +356,7 @@ define(function(require) {
 
     g.call(histogram
       .width(width)
-      .height(100));
+      .height(110));
 
     histogram.on('brushed', onHighlight);
 
