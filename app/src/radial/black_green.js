@@ -92,13 +92,13 @@ define(function(require) {
       /* header */
       ctx.font = "14px sans-serif";
       ctx.fillStyle = '#000';
-      ctx.fillText('Row All-to-all (Green) links: '+greenLinks.length, GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Row All-to-all (Green) links").width/2, GREEN_Y_OFFSET - 15);
-      ctx.fillText('Column All-to-all (Black) links: '+blackLinks.length, BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Column All-to-all (Black) links").width/2, BLACK_Y_OFFSET - 15);
+      ctx.fillText('Row All-to-all (Green) links: '+greenLinks.length, GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Row All-to-all (Green) links").width/2 - 30, GREEN_Y_OFFSET - 20);
+      ctx.fillText('Column All-to-all (Black) links: '+blackLinks.length, BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Column All-to-all (Black) links").width/2 - 25, BLACK_Y_OFFSET - 20);
 
       ctx.font = "14px sans-serif";
       ctx.fillText('G',    0, GREEN_Y_OFFSET - 3);
       for (i=0; i<6; i++) {
-        ctx.fillStyle = greenHeader[i] ? '#000' : '#a0a0a0';
+        ctx.fillStyle = greenHeader[i] ? '#008000' : '#a0a0a0';
         ctx.fillText(i, GREEN_X_OFFSET + i*GREEN_BOX_SIZE + GREEN_BOX_SIZE/2 - 8, GREEN_Y_OFFSET - 3);
       }
 
