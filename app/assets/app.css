@@ -31,7 +31,8 @@
 
 body {
   position: relative;
-  font: 12pt sans serif; }
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px; }
 
 .nav, .pagination, .carousel, .panel-title a {
   cursor: pointer; }
@@ -68,7 +69,7 @@ div {
   top: 10px;
   left: 5px;
   width: 250px;
-  font: 12px sans-serif; }
+  font-size: 12px; }
   .controls ul {
     list-style-type: none;
     padding: 0px;
@@ -77,8 +78,7 @@ div {
     padding-left: 15px;
     padding-top: 10px; }
   .controls .li-title {
-    font-size: 11pt;
-    font-style: italic; }
+    font-size: 11pt; }
   .controls .li-body {
     margin-left: 10px; }
   .controls .range-value {
@@ -125,7 +125,7 @@ div {
   .histogram .bar text {
     fill: #fff; }
   .histogram .axis text {
-    font: 8px sans-serif; }
+    font-size: 8px; }
   .histogram .axis path, .histogram .axis line {
     fill: none;
     stroke: #333;
@@ -138,7 +138,7 @@ div {
     shape-rendering: crispEdges; }
 
 .slider {
-  font: 8px sans-serif;
+  font-size: 8px;
   stroke: #333; }
   .slider .axis line, .slider path {
     fill: none;
@@ -167,7 +167,7 @@ div {
     .radial .group text {
       stroke: none;
       fill: #888;
-      font: 11pt sans-serif; }
+      font-size: 11pt; }
     .radial .group:hover {
       stroke: #808080;
       stroke-width: 1px; }
@@ -221,5 +221,3 @@ div {
   stroke-width: 1px;
   stroke: green;
   shape-rendering: crispEdges; }
-
-/*# sourceMappingURL=app.css.map */

@@ -2,7 +2,8 @@
 
 body {
   position:  relative;
-  font: 12pt sans serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
 }
 
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
@@ -41,13 +42,14 @@ div {
   width: 20px;
   height: 15px;
 }
+
 .controls {
 //  position: fixed;
   top: 10px;
   left: 5px;
   width: 250px;
 
-  font: 12px sans-serif;
+  font-size: 12px;
 
   ul {
     list-style-type: none;
@@ -62,7 +64,7 @@ div {
 
   .li-title {
     font-size: 11pt;
-    font-style: italic;
+//    font-style: italic;
 //    font-weight: bold;
   }
 
@@ -138,7 +140,7 @@ div {
   }
 
   .axis text {
-    font: 8px sans-serif;
+    font-size: 8px;
   }
 
   .axis path, .axis line {
@@ -157,7 +159,7 @@ div {
 }
 
 .slider {
-  font: 8px sans-serif;
+  font-size: 8px;
   stroke: #333;
 
   .axis line, path {
@@ -197,7 +199,7 @@ div {
     text {
       stroke: none;
       fill: #888;
-      font: 11pt sans-serif;
+      font-size: 11pt;
     }
 
     &:hover {
