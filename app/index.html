@@ -14,7 +14,7 @@
 
 <audio id="play" src="http://www.soundjay.com/button/beep-21.wav"></audio>
 
-<div class="title">Dragonfly</div>
+<h1>Dragonview</h1>
 
 <div id="controls" class="controls">
     <input id="file" type="file" name="input_file" accept=".csv" style="display:none">
@@ -45,28 +45,22 @@
         </li>
 
         <li>
-            <Label>Values colormap</Label>
             <div id="colormap" style="margin:10px"></div>
-        </li>
-
-        <li>
-            <label style="width:45px;display: inline-block">Range:</label><br>
               <input type="number" min="0" id="data-from" class="range-value">
               <input type="number" min="0" id="data-to" class="range-value">
               <button id="data-reset">reset</button>
               <input type="checkbox" id="range-frozen" class="switch-input">Freeze<br>
-               <br>
             <label style="width:45px;display: inline-block">Filter:</label><label id="filter-range"></label><br><br>
 
-            <label style="width:45px;display: inline-block">Links:</label>
-                    b: <span id="num-blues" style="padding-right:5px">0</span>
-                   g: <span id="num-greens" style="padding-right:5px">0</span>
-                   k: <span id="num-blacks">0</span><br><br>
+            <label style="width:45px;display: inline-block">#Links:</label>
+                    <span style="color:blue;font-weight:bold">B:</span> <span id="num-blues" style="padding-right:5px">0</span>
+                    <span style="color:green;font-weight:bold">G:</span> <span id="num-greens" style="padding-right:5px">0</span>
+                    <span style="font-weight:bold">K:</span> <span id="num-blacks">0</span><br>
 
             <label style="width:45px;display: inline-block">Avg:</label>
-                    b: <span id="vol-blues" style="padding-right:5px">0</span>
-                    g: <span id="vol-greens" style="padding-right:5px">0</span>
-                    k: <span id="vol-blacks">0</span>
+                    <span style="color:blue;font-weight:bold">B:</span> <span id="vol-blues" style="padding-right:5px">0</span>
+                    <span style="color:green;font-weight:bold">G:</span> <span id="vol-greens" style="padding-right:5px">0</span>
+                    <span style="font-weight:bold">K:</span> <span id="vol-blacks">0</span>
 
             <svg id="info" class="info"></svg>
 
@@ -74,13 +68,13 @@
         </li>
 
         <li>
-            <span class="li-title">Jobs</span>
+            <span class="li-title">List of Jobs</span>
             <table id="jobs" class="jobs li-body">
                 <thead>
                 <tr>
-                    <th>id</th>
-                    <th>size</th>
-                    <th>color</th>
+                    <th>ID</th>
+                    <th>#Nodes</th>
+                    <th>Color</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

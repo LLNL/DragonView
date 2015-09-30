@@ -21,7 +21,6 @@ div {
 }
 
 .title {
-  font: 16pt sans-serif;
 }
 
 .color-menu {
@@ -49,8 +48,6 @@ div {
   left: 5px;
   width: 250px;
 
-  font-size: 12px;
-
   ul {
     list-style-type: none;
     padding: 0px;
@@ -63,7 +60,6 @@ div {
   }
 
   .li-title {
-    font-size: 11pt;
 //    font-style: italic;
 //    font-weight: bold;
   }
@@ -140,7 +136,7 @@ div {
   }
 
   .axis text {
-    font-size: 8px;
+    font-size: 12px;
   }
 
   .axis path, .axis line {
@@ -159,7 +155,6 @@ div {
 }
 
 .slider {
-  font-size: 8px;
   stroke: #333;
 
   .axis line, path {
@@ -199,7 +194,7 @@ div {
     text {
       stroke: none;
       fill: #888;
-      font-size: 11pt;
+      font-size: 16px;
     }
 
     &:hover {

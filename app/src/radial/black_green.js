@@ -90,12 +90,12 @@ define(function(require) {
 
 
       /* header */
-      ctx.font = "14px";
+      ctx.font = "14px sans-serif";
       ctx.fillStyle = '#000';
-      ctx.fillText('Green links: '+greenLinks.length, GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Green links").width/2, GREEN_Y_OFFSET - 15);
-      ctx.fillText('Black links: '+blackLinks.length, BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Black links").width/2, BLACK_Y_OFFSET - 15);
+      ctx.fillText('Row All-to-all (Green) links: '+greenLinks.length, GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Row All-to-all (Green) links").width/2, GREEN_Y_OFFSET - 15);
+      ctx.fillText('Column All-to-all (Black) links: '+blackLinks.length, BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Column All-to-all (Black) links").width/2, BLACK_Y_OFFSET - 15);
 
-      ctx.font = "12px";
+      ctx.font = "14px sans-serif";
       ctx.fillText('G',    0, GREEN_Y_OFFSET - 3);
       for (i=0; i<6; i++) {
         ctx.fillStyle = greenHeader[i] ? '#000' : '#a0a0a0';
