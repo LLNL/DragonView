@@ -119,6 +119,7 @@ define(function(require) {
 
     function renderLinks() {
       var i, n;
+      if (!blueLinks) return;
       //if (selectedGroup == undefined) {
       //  svg.select('.connectors').selectAll('circle').remove();
       //  svg.select('.internal').selectAll('path').remove();
@@ -475,6 +476,11 @@ define(function(require) {
       if (data && range) {
         filter();
       }
+      return this;
+    };
+
+    radial.renderLinks = function() {
+      renderLinks();
       return this;
     };
 

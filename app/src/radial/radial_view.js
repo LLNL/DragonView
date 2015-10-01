@@ -32,6 +32,9 @@ define(function(require) {
       if (active) radial.counter(index).filter();
     });
 
+    Radio.channel('cmap').on('changed', function() {
+      if (active) radial.renderLinks();
+    });
     function onResize() {
       //console.log('w:',el.width(), 'h:', el.height());
       radial.resize(el.width(), el.height());

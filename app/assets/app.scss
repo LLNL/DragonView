@@ -37,7 +37,8 @@ div {
 }
 
 .swatch {
-  display: inline-block;
+  //display: inline-block;
+  display: block;
   width: 20px;
   height: 15px;
 }
@@ -70,6 +71,7 @@ div {
 
   .range-value {
     width:90px;
+    position: absolute;
   }
 
   .jobs {

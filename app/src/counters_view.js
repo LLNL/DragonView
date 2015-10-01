@@ -26,6 +26,7 @@ define(function(require) {
       frozen = false,
       format = d3.format('.5f');
 
+  var cmap_yellow_pos = 50;
 
   var histogram = Histogram().counter(defaultCounter);
   var slider = Slider();
@@ -61,11 +62,60 @@ define(function(require) {
       selectCounter(this.value, false);
     });
 
-  d3.select('#data-from').on('change', function() {
+
+  d3.select('#cmap')
+    .style("width", "20px")
+    .style("height", "135px")
+    .style("position", "absolute")
+    .style("left", "30px")
+    .style('background-image', "linear-gradient("+createColormap(cmap_yellow_pos)+")")
+    .on('mousedown', function() {
+      d3.event.preventDefault();
+      d3.select(this)
+        .on('mousemove', function() { updateCmap(d3.mouse(this)[1]/135); })
+        .on('mouseup', function() {
+          d3.select(this)
+            .on('mousemove', null)
+            .on('mouseup', null);
+        });
+      updateCmap(cmap_yellow_pos/100);
+    });
+
+    //.append("div")
+    //  .style("width", "20px")
+    //  .style("height", "1px")
+    //  .style("position", "absolute")
+    //  .style("top", "30px")
+    //  .style("background", "black");
+
+  d3.select('#colormap').selectAll('.swatch')
+    .data(config.VALUES_COLORMAP.concat().reverse())
+    .enter()
+      .append('span')
+      .attr('class', 'swatch')
+      .style('background-color', function(d) { return d; });
+
+  d3.select('#data-from')
+    .style('left', '60px')
+    .style('bottom', 0)
+    .on('change', function() {
     updateRange([+this.value, +d3.select('#data-to').property('value')]);
     d3.select('#data-reset').property('disabled', false);
   });
-  d3.select('#data-to').on('change', function() {
+
+  d3.select('#data-mid')
+    .style('left', '60px')
+    .style('top', (135/2)+'px')
+    //.on('change', function() {
+    //  d3.select('#data-mid').property('value'),+this.value]);
+    //  d3.select('#data-reset').property('disabled', false);
+    //})
+    ;
+
+  d3.select('#data-to')
+    .style('left', '60px')
+    .style('top', 0)
+    .on('change', function() {
     updateRange([+d3.select('#data-from').property('value'),+this.value]);
     d3.select('#data-reset').property('disabled', false);
   });
@@ -81,19 +131,30 @@ define(function(require) {
     d3.select('#data-reset').property('disabled', frozen);
   });
 
-  d3.select('#colormap').selectAll('.swatch')
-    .data(config.VALUES_COLORMAP)
-  .enter()
-    .append('span')
-    .attr('class', 'swatch')
-    .style('background-color', function(d) { return d; });
-
   Radio.channel('data').on('runsList', updateRunList);
   Radio.channel('data').on('run', newData);
   Radio.channel('app').on('ready', function() {
     d3.select('#catalog').text(DEFAULT_COLLECTION);
     dataService.loadCatalog(DEFAULT_COLLECTION);
   });
+
+  function createColormap(pos) {
+    return config.VALUES_COLORMAP.concat().reverse().map( function(v, i) { return i==4 ? v + " "+pos+"%" : v }).toString();
+  }
+
+  function updateCmap(f) {
+    cmap_yellow_pos = f * 100;
+
+    d3.select('#cmap')
+      .style('background-image', "linear-gradient("+createColormap(cmap_yellow_pos)+")");
+
+    d3.select('#data-mid').property('value', dataRange[0]+(1-f)*(dataRange[1]-dataRange[0]));
+    config.value_scale.domain([0, f, 1 ]);
+    run.links.forEach(function(link) {
+      link.vis_color = config.color(link.value);
+    });
+    Radio.channel('cmap').trigger('changed');
+  }
 
   function updateRunList(list) {
     knownRuns = list;
@@ -124,7 +185,6 @@ define(function(require) {
 
     run = data;
     isSimulation = run.countersNames[0] == 'bytes';
-    console.log('isSimulation:',isSimulation);
     /* list of counters */
     var options = counters.selectAll('option')
       .data(run.countersNames);
@@ -186,6 +246,7 @@ define(function(require) {
         dataRange = [min, max];
         d3.select('#data-from').property('value', format(dataRange[0]));
         d3.select('#data-to').property('value', format(dataRange[1]));
+        updateCmap(cmap_yellow_pos/100);
         d3.select('#data-reset').property('disabled', true);
         setRange(dataRange);
       }

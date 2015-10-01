@@ -15,11 +15,14 @@ define(function(require) {
   var JOBS_COLORMAP = colorbrewer.Set1[8].concat();
   var value_color = d3.scale.ordinal().domain([0, 8]).range(VALUES_COLORMAP);
   var scale = d3.scale.quantize().range(VALUES_COLORMAP);
+  var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]);
 
   return {
     MULTI_JOBS_COLOR: '#00ffff',
     UNKNOWN_JOB_COLOR: '#a0a0a0',
     VALUES_COLORMAP: VALUES_COLORMAP,
+
+    value_scale: value_scale,
 
     jobColor: function(id) {
       id = Math.min(id, JOBS_COLORMAP.length-1);
@@ -32,7 +35,7 @@ define(function(require) {
     },
 
     color: function (v) {
-      return scale(v);
+      return scale(value_scale(v));
     },
 
     color2: d3.scale.linear()

@@ -45,9 +45,13 @@
         </li>
 
         <li>
-            <div id="colormap" style="margin:10px"></div>
-              <input type="number" min="0" id="data-from" class="range-value">
-              <input type="number" min="0" id="data-to" class="range-value">
+            <div style="margin:10px; position:relative">
+              <div id="cmap"></div>
+              <div id="colormap" ></div>
+                <input type="number" min="0" id="data-to" class="range-value">
+                <input type="number" min="0" id="data-mid" class="range-value">
+                <input type="number" min="0" id="data-from" class="range-value">
+            </div>
               <button id="data-reset">reset</button>
               <input type="checkbox" id="range-frozen" class="switch-input">Freeze<br>
             <label style="width:45px;display: inline-block">Filter:</label><label id="filter-range"></label><br><br>

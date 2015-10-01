@@ -58,7 +58,7 @@ div {
     border: 1px solid black; }
 
 .swatch {
-  display: inline-block;
+  display: block;
   width: 20px;
   height: 15px; }
 
@@ -76,7 +76,8 @@ div {
   .controls .li-body {
     margin-left: 10px; }
   .controls .range-value {
-    width: 90px; }
+    width: 90px;
+    position: absolute; }
   .controls .jobs {
     border-collapse: collapse;
     border-width: 2px;
@@ -211,3 +212,5 @@ div {
   stroke-width: 1px;
   stroke: green;
   shape-rendering: crispEdges; }
+
+/*# sourceMappingURL=app.css.map */
