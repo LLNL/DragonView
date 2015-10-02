@@ -133,6 +133,12 @@ div {
   stroke: #888;
   stroke-width: 1px;
   shape-rendering: crispEdges; }
+.histogram .externalHandler {
+  fill: #ddd;
+  fill-opacity: 0.2;
+  stroke: #888;
+  stroke-width: 1px;
+  shape-rendering: crispEdges; }
 
 .slider {
   stroke: #333; }

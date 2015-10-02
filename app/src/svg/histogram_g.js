@@ -17,6 +17,9 @@ define(function(require) {
         counterId = undefined,
         dispatch = d3.dispatch('brushed');
 
+    var insideMode = true;
+    var leftHandle, rightHandle;
+
     var stack = d3.layout.stack();
     var x = d3.scale.linear()
       .domain([0, 1])
@@ -47,7 +50,11 @@ define(function(require) {
 
     function brushed() {
       var e = brush.extent();
-      //console.log('brush:',e[0], e[1]);
+      if (!insideMode) {
+        leftHandle.attr('width', x(e[0]));
+        var r = x(e[1]);
+        rightHandle.attr('x', r).attr('width', width-r);
+      }
       dispatch.brushed(e);
     }
 
@@ -113,6 +120,17 @@ define(function(require) {
       handle = svg.append('g')
         .attr('class', 'brush')
         .call(brush);
+
+      leftHandle = svg.append('rect')
+        .attr('class', 'externalHandler')
+        .attr('width', 0)
+        .attr('height', height);
+
+      rightHandle = svg.append('rect')
+        .attr('class', 'externalHandler')
+        .attr('width', 0)
+        .attr('height', height)
+        .attr('x', width);
 
       handle.selectAll('rect')
         .attr('height', height);
@@ -207,6 +225,22 @@ define(function(require) {
       duration = save;
 
       return this;
+    };
+
+    api.mode = function(on) {
+      insideMode = on;
+      if (insideMode) {
+        leftHandle.attr('x', 0).attr('width', 0);
+        rightHandle.attr('x', width).attr('width', 0);
+        svg.select('.brush .extent').attr('fill', 'steelblue');
+      } else {
+        var e = brush.extent();
+        var r = x(e[1]);
+        leftHandle.attr('width', x(e[0]));
+        rightHandle.attr('x', r).attr('width', width-r);
+        svg.select('.brush .extent').attr('fill', 'red');
+      }
+      svg.select('.brush').call(brush);
     };
 
     api.on = function(type, listener) {

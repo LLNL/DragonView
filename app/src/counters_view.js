@@ -125,6 +125,13 @@ define(function(require) {
     d3.select('#data-reset').property('disabled', frozen);
   });
 
+  var inout = true;
+  d3.select('#inout').on('click', function() {
+      inout = !inout;
+    d3.select(this).text(inout ? 'in' : 'out');
+    histogram.mode(inout);
+  });
+
   Radio.channel('data').on('runsList', updateRunList);
   Radio.channel('data').on('run', newData);
   Radio.channel('app').on('ready', function() {
