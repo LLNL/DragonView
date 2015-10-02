@@ -16,7 +16,7 @@ define(function(require) {
   var DEFAULT_COLLECTION = 'data/runs-4jobs-1.csv';
 
   var width = 220, height,
-      svg, header,
+      svg,
       defaultCounter = 0, currentCounter = 0,
       filterRange = [0, 0],
       run,
@@ -67,12 +67,12 @@ define(function(require) {
     .style("width", "20px")
     .style("height", "135px")
     .style("position", "absolute")
-    .style("left", "30px")
+    .style("left", "0px")
     .style('background-image', "linear-gradient("+createColormap(cmap_yellow_pos)+")")
     .on('mousedown', function() {
       d3.event.preventDefault();
       d3.select(this)
-        .on('mousemove', function() { updateCmap(d3.mouse(this)[1]/135); })
+        .on('mousemove', function() { updateCmap(1-d3.mouse(this)[1]/135); })
         .on('mouseup', function() {
           d3.select(this)
             .on('mousemove', null)
@@ -81,48 +81,42 @@ define(function(require) {
       updateCmap(cmap_yellow_pos/100);
     });
 
-    //.append("div")
-    //  .style("width", "20px")
-    //  .style("height", "1px")
-    //  .style("position", "absolute")
-    //  .style("top", "30px")
-    //  .style("background", "black");
-
-  d3.select('#colormap').selectAll('.swatch')
-    .data(config.VALUES_COLORMAP.concat().reverse())
-    .enter()
-      .append('span')
-      .attr('class', 'swatch')
-      .style('background-color', function(d) { return d; });
 
   d3.select('#data-from')
-    .style('left', '60px')
+    .style('left', '30px')
     .style('bottom', 0)
     .on('change', function() {
-    updateRange([+this.value, +d3.select('#data-to').property('value')]);
-    d3.select('#data-reset').property('disabled', false);
-  });
+      updateRange([+this.value, +d3.select('#data-to').property('value')]);
+      d3.select('#data-reset').property('disabled', false);
+    });
 
   d3.select('#data-mid')
-    .style('left', '60px')
-    .style('top', (135/2)+'px')
-    //.on('change', function() {
+    .style('left', '30px')
+    .style('top', (135/2-10)+'px')
+    .on('change', function() {
+      var min = +d3.select('#data-from').property('value');
+      var max = +d3.select('#data-to').property('value');
+      var f = (+this.value - min)/(max - min);
+      console.log('mid changed:', f);
+      updateCmap(f);
+    })
     //  d3.select('#data-mid').property('value'),+this.value]);
     //  d3.select('#data-reset').property('disabled', false);
     //})
     ;
 
   d3.select('#data-to')
-    .style('left', '60px')
+    .style('left', '30px')
     .style('top', 0)
     .on('change', function() {
-    updateRange([+d3.select('#data-from').property('value'),+this.value]);
-    d3.select('#data-reset').property('disabled', false);
-  });
+      updateRange([+d3.select('#data-from').property('value'),+this.value]);
+      d3.select('#data-reset').property('disabled', false);
+    });
 
   d3.select('#data-reset').on('click', function() {
     d3.select('#data-from').property('value', format(dataRange[0]));
     d3.select('#data-to').property('value', format(dataRange[1]));
+    updateCmap(0.5);
     updateRange(dataRange);
   });
 
@@ -143,12 +137,14 @@ define(function(require) {
   }
 
   function updateCmap(f) {
-    cmap_yellow_pos = f * 100;
+    cmap_yellow_pos = (1-f) * 100;
 
     d3.select('#cmap')
       .style('background-image', "linear-gradient("+createColormap(cmap_yellow_pos)+")");
 
-    d3.select('#data-mid').property('value', dataRange[0]+(1-f)*(dataRange[1]-dataRange[0]));
+    var min = +d3.select('#data-from').property('value');
+    var max = +d3.select('#data-to').property('value');
+    d3.select('#data-mid').property('value', min+f*(max-min));
     config.value_scale.domain([0, f, 1 ]);
     run.links.forEach(function(link) {
       link.vis_color = config.color(link.value);

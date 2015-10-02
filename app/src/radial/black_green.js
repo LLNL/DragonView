@@ -7,7 +7,7 @@ define(function(require) {
   var config = require('config');
 
   return function () {
-    var margin = {left: 20, top: 30, right: 10, bottom: 10};
+    var margin = {left: 20, top: 40, right: 10, bottom: 10};
     var w = 2, h = 2, dx = 4, dy = 4;
     var GREEN_X_OFFSET = margin.left, GREEN_Y_OFFSET = margin.top, GREEN_BOX_SIZE = 16*w + dx;
     var BLACK_X_OFFSET = GREEN_X_OFFSET + 6 * GREEN_BOX_SIZE + dx, BLACK_Y_OFFSET = GREEN_Y_OFFSET, BLACK_BOX_SIZE = 6*w + dx;
@@ -92,11 +92,22 @@ define(function(require) {
       /* header */
       ctx.font = "14px sans-serif";
       ctx.fillStyle = '#000';
-      ctx.fillText('Row All-to-all (Green) links: '+greenLinks.length, GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Row All-to-all (Green) links").width/2 - 30, GREEN_Y_OFFSET - 20);
-      ctx.fillText('Column All-to-all (Black) links: '+blackLinks.length, BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Column All-to-all (Black) links").width/2 - 25, BLACK_Y_OFFSET - 20);
+      ctx.fillText('Row All-to-all (Green) links: '+greenLinks.length,
+        GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Row All-to-all (Green) links").width/2 - 30,
+        GREEN_Y_OFFSET - 20);
+
+      ctx.fillText('Column All-to-all (Black) links: '+blackLinks.length,
+        BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Column All-to-all (Black) links").width/2 - 25,
+        BLACK_Y_OFFSET - 20);
 
       ctx.font = "14px sans-serif";
-      ctx.fillText('G',    0, GREEN_Y_OFFSET - 3);
+      ctx.save();
+      ctx.translate(10, GREEN_Y_OFFSET-20 );
+      ctx.rotate(-Math.PI/2);
+      ctx.textAlign = "center";
+      ctx.fillText('Group', 0, 0);
+      ctx.restore();
+
       for (i=0; i<6; i++) {
         ctx.fillStyle = greenHeader[i] ? '#008000' : '#a0a0a0';
         ctx.fillText(i, GREEN_X_OFFSET + i*GREEN_BOX_SIZE + GREEN_BOX_SIZE/2 - 8, GREEN_Y_OFFSET - 3);
@@ -108,9 +119,9 @@ define(function(require) {
       }
 
       for (g=0; g<16; g++) {
-        if (groups[g]) {
+        //if (groups[g]) {
           ctx.fillText(g, 0, GREEN_Y_OFFSET + g * GROUP_HEIGHT + 9*h);
-        }
+        //}
       }
 
       y = GREEN_Y_OFFSET;

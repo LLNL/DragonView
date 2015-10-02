@@ -14,7 +14,7 @@ define(function(require) {
     var WIDTH = 1000, HEIGHT = 1000,
         INNER_RADIUS = 400, GROUP_HEIGHT = 100;
     var MULTI_JOBS_COLOR = '#00ffff';
-    var UNKNOWN_JOB_COLOR = '#a0a0a0';
+    var UNKNOWN_JOB_COLOR = '#d0d0d0';
 
     var minimum, maximum, valid = false;
     var layout = Layout().size([WIDTH, HEIGHT]),

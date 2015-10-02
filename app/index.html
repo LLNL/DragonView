@@ -14,7 +14,7 @@
 
 <audio id="play" src="http://www.soundjay.com/button/beep-21.wav"></audio>
 
-<h1>Dragonview</h1>
+<div class="title">DragonView</div>
 
 <div id="controls" class="controls">
     <input id="file" type="file" name="input_file" accept=".csv" style="display:none">
@@ -45,15 +45,16 @@
         </li>
 
         <li>
-            <div style="margin:10px; position:relative">
-              <div id="cmap"></div>
-              <div id="colormap" ></div>
+            <div style="margin:10px; position:relative; height: 135px">
+              <div>
+                  <div id="cmap"></div>
                 <input type="number" min="0" id="data-to" class="range-value">
                 <input type="number" min="0" id="data-mid" class="range-value">
                 <input type="number" min="0" id="data-from" class="range-value">
+              </div>
             </div>
-              <button id="data-reset">reset</button>
-              <input type="checkbox" id="range-frozen" class="switch-input">Freeze<br>
+            <button id="data-reset">reset</button>
+            <input type="checkbox" id="range-frozen" class="switch-input">Freeze<br>
             <label style="width:45px;display: inline-block">Filter:</label><label id="filter-range"></label><br><br>
 
             <label style="width:45px;display: inline-block">#Links:</label>
