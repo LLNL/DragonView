@@ -320,7 +320,7 @@ define(function(require) {
         .on('click', selectGroup);
 
       g.append('text')
-        .text(function(d, i) { return i; })
+        .text(function(d, i) { return i; });
 
 
       return selection;

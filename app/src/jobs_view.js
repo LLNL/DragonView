@@ -42,21 +42,25 @@ define(function(require) {
     function newRun(run) {
       currentRun = run;
       var jobs = run.jobs.values().sort(function(a,b) { return b.n - a.n;});
+      var l = jobs.length/2;
 
-      d3.select('#jobs').select('tbody').selectAll('tr').remove();
+      d3.select('#jobs').selectAll("div").remove();
 
-      d3.select('#jobs').select('tbody').selectAll('tr')
+      d3.select('#jobs').selectAll("div")
         .data(jobs, function(d) { return d.id;})
         .enter()
-          .append('tr')
+          .append('div')
+          .style('position', 'absolute')
+          .style('top', function(d,i) { return (i<l ? i:i-l)*15+'px'; })
+          .style('left', function(d,i) { return i<l ? 0: '115px'; })
           .call(render);
+
+      d3.select('#jobs').style('height', (5+l*15)+'px');
     }
 
     function render() {
-      this.append('td')
-        .append('div')
-        .style('width', '20px')
-        .style('height', '10px')
+      this.append('div')
+        .attr('class', 'job-color')
         .style('background-color', function(d) { return d.color; })
         .on('mousedown', function(d) {
           context = d;
@@ -69,24 +73,9 @@ define(function(require) {
           d3.event.stopPropagation();
         });
 
-      this.append('td')
-        .text(function(d) { return d.id;});
-    }
+      this.append('span').text(function(d) { return d.id;}).style('padding-left', '10px');
 
-    function newRun2() {
-      currentRun = run;
-      var jobs = run.jobs.values().sort(function(a,b) { return b.n - a.n;});
-
-      d3.select('#jobs').remove();
-
-      d3.select('#jobs').select('tbody').selectAll('tr')
-        .data(jobs, function(d) { return d.id;})
-        .enter()
-        .append('tr')
-        .call(render);
-    }
-    function render2() {
-
+      this.append('span').text(function(d) { return d.n;}).style('padding-left', '15px');
     }
   };
 });

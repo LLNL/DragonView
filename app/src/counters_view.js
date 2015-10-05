@@ -97,7 +97,6 @@ define(function(require) {
       var min = +d3.select('#data-from').property('value');
       var max = +d3.select('#data-to').property('value');
       var f = (+this.value - min)/(max - min);
-      console.log('mid changed:', f);
       updateCmap(f);
     });
 
@@ -147,7 +146,7 @@ define(function(require) {
 
     var min = +d3.select('#data-from').property('value');
     var max = +d3.select('#data-to').property('value');
-    d3.select('#data-mid').property('value', min+f*(max-min));
+    d3.select('#data-mid').property('value', format(min+f*(max-min)));
     config.value_scale.domain([0, 1-f, 1 ]);
     run.links.forEach(function(link) {
       link.vis_color = config.color(link.value);
@@ -243,11 +242,12 @@ define(function(require) {
       if (min > max)  min = max;
       if (!frozen) {
         dataRange = [min, max];
+        setRange(dataRange);
         d3.select('#data-from').property('value', format(dataRange[0]));
         d3.select('#data-to').property('value', format(dataRange[1]));
         updateCmap(cmap_yellow_pos/100);
         d3.select('#data-reset').property('disabled', true);
-        setRange(dataRange);
+
       }
       sum();
     }
@@ -270,8 +270,9 @@ define(function(require) {
     config.data_range(range);
     slider.domain(range);
     histogram.range(range);
-    if (range[0] < 100000) format = d3.format('7.5f');
-    else format = d3.format('.5e');
+    if (range[1] < 100) format = d3.format('5.2f');
+    else if (range[1] < 100000) format = d3.format('7.1f');
+    else format = d3.format('.2e');
   }
 
   function subtract(index, on) {
@@ -388,7 +389,7 @@ define(function(require) {
     d3.select('#num-blues').text(b);
     d3.select('#num-greens').text(g);
     d3.select('#num-blacks').text(k);
-    d3.select('#filter-range').text((range[2]? ' in: ' : 'out: ') +format(range[0])+ ' ' +format(range[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
+    d3.select('#filter-range').text((range[2]? ' [in]: ' : ']out[: ') +format(range[0])+ '   ' +format(range[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
     filterRange = range;
     sum();
   }

@@ -59,11 +59,10 @@
                 <span style="color:RoyalBlue;font-weight:bold">B:</span> <span id="num-blues" style="padding-right:5px">0</span>
                 <span style="color:green;font-weight:bold">G:</span> <span id="num-greens" style="padding-right:5px">0</span>
                 <span style="font-weight:bold">K:</span> <span id="num-blacks">0</span><br>
-                <br>
-                <span>Filter range </span><button id="inout">in</button>
-                <svg id="info" class="info"></svg>
             </div>
-
+            <svg id="info" class="info"></svg>
+            <!--<span>Filter range </span>-->
+            <button id="inout" style="position: relative; top:-35px">in</button>
         </li>
 
         <li>
@@ -71,9 +70,9 @@
             <div style="margin:5px 0 5px 0; position:relative; height: 135px">
                 <div>
                     <div id="cmap"></div>
-                    <input type="number" min="0" id="data-to" class="range-value">
-                    <input type="number" min="0" id="data-mid" class="range-value">
-                    <input type="number" min="0" id="data-from" class="range-value">
+                    <input type="text" min="0" id="data-to" class="range-value">
+                    <input type="text" min="0" id="data-mid" class="range-value">
+                    <input type="text" min="0" id="data-from" class="range-value">
                 </div>
             </div>
             <button id="data-reset">reset</button>
@@ -82,11 +81,10 @@
 
 
         <li>
-            <span class="li-title">Jobs </span>
-            <table id="jobs" class="jobs li-body">
-                <thead><td></td><td>Id</td></thead>
-                <tbody></tbody>
-            </table>
+            <span class="li-title">Jobs </span><br>
+            <span style="padding-left:30px">id</span><span style="padding-left: 10px">nodes</span>
+            <span style="padding-left:50px">id</span><span style="padding-left: 10px">nodes</span>
+            <div id="jobs" style="position: relative"></div>
         </li>
     </ul>
 </div>

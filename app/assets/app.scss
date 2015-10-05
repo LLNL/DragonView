@@ -76,10 +76,18 @@ div {
   }
 
   .range-value {
-    width:90px;
+    width:50px;
     position: absolute;
+    text-align: right;
   }
 
+
+  .job-color {
+    display: inline-block;
+    width: 20px;
+    height: 10px;
+
+  }
   .jobs {
     //  background-color: #f0f0f0;
     border-collapse: collapse;
@@ -172,6 +180,9 @@ div {
 .slider {
   stroke: #333;
 
+  .axis text {
+    font-size: 12px;
+  }
   .axis line, path {
     fill: none;
     stroke: #333;
@@ -191,7 +202,12 @@ div {
     fill: #888;
   }
 }
-
+.inout-button {
+  width: 20px;
+  height: 14px;
+  fill: #fff;
+  //border: solid black 1px;
+}
 
 .radial-view {
   display: inline-block;

@@ -86,8 +86,13 @@ div {
   .controls .li-body {
     margin-left: 10px; }
   .controls .range-value {
-    width: 90px;
-    position: absolute; }
+    width: 50px;
+    position: absolute;
+    text-align: right; }
+  .controls .job-color {
+    display: inline-block;
+    width: 20px;
+    height: 10px; }
   .controls .jobs {
     border-collapse: collapse;
     border-width: 2px;
@@ -148,6 +153,8 @@ div {
 
 .slider {
   stroke: #333; }
+  .slider .axis text {
+    font-size: 12px; }
   .slider .axis line, .slider path {
     fill: none;
     stroke: #333;
@@ -161,6 +168,11 @@ div {
     shape-rendering: crispEdges; }
   .slider .resize {
     fill: #888; }
+
+.inout-button {
+  width: 20px;
+  height: 14px;
+  fill: #fff; }
 
 .radial-view {
   display: inline-block; }
