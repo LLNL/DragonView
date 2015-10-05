@@ -110,7 +110,7 @@ div {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 260px;
+  left: 280px;
   right: 0; }
 
 .view {
@@ -222,5 +222,3 @@ div {
   stroke-width: 1px;
   stroke: green;
   shape-rendering: crispEdges; }
-
-/*# sourceMappingURL=app.css.map */
