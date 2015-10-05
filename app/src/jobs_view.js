@@ -9,7 +9,7 @@ define(function(require) {
   return function() {
     Radio.channel('data').on('run', newRun);
 
-    var colors = colorbrewer.Set1[8];
+    var colors = config.JOBS_COLORMAP; // colorbrewer.Set1[8];
     var context;
     var currentRun;
 

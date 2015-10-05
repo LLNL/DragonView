@@ -152,7 +152,7 @@ define(function(require) {
     var min = +d3.select('#data-from').property('value');
     var max = +d3.select('#data-to').property('value');
     d3.select('#data-mid').property('value', min+f*(max-min));
-    config.value_scale.domain([0, f, 1 ]);
+    config.value_scale.domain([0, 1-f, 1 ]);
     run.links.forEach(function(link) {
       link.vis_color = config.color(link.value);
     });
@@ -383,14 +383,14 @@ define(function(require) {
     }
     return c;
   }
-  function onHighlight(size) {
-    Radio.channel('counter').trigger('range', size);
-    var b = count(run.blues, size), g = count(run.greens, size), k = count(run.blacks, size);
+  function onHighlight(range) {
+    Radio.channel('counter').trigger('range', range);
+    var b = count(run.blues, range), g = count(run.greens, range), k = count(run.blacks, range);
     d3.select('#num-blues').text(b);
     d3.select('#num-greens').text(g);
     d3.select('#num-blacks').text(k);
-    d3.select('#filter-range').text(' '+format(size[0])+'  '+format(size[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
-    filterRange = size;
+    d3.select('#filter-range').text(' '+format(range[0])+'  '+format(range[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
+    filterRange = range;
     sum();
   }
 

@@ -21,6 +21,7 @@ define(function(require) {
     MULTI_JOBS_COLOR: '#00ffff',
     UNKNOWN_JOB_COLOR: '#e0e0e0',
     VALUES_COLORMAP: VALUES_COLORMAP,
+    JOBS_COLORMAP: JOBS_COLORMAP,
 
     value_scale: value_scale,
 

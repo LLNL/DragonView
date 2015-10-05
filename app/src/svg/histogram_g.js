@@ -232,13 +232,13 @@ define(function(require) {
       if (insideMode) {
         leftHandle.attr('x', 0).attr('width', 0);
         rightHandle.attr('x', width).attr('width', 0);
-        svg.select('.brush .extent').attr('fill', 'steelblue');
+        svg.select('.brush .extent').style('opacity', 1);
       } else {
         var e = brush.extent();
         var r = x(e[1]);
         leftHandle.attr('width', x(e[0]));
         rightHandle.attr('x', r).attr('width', width-r);
-        svg.select('.brush .extent').attr('fill', 'red');
+        svg.select('.brush .extent').style('opacity', 0);
       }
       svg.select('.brush').call(brush);
     };

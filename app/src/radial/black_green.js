@@ -9,7 +9,8 @@ define(function(require) {
   return function () {
     var margin = {left: 20, top: 40, right: 10, bottom: 10};
     var w = 2, h = 2, dx = 4, dy = 4;
-    var GREEN_X_OFFSET = margin.left, GREEN_Y_OFFSET = margin.top, GREEN_BOX_SIZE = 16*w + dx;
+    var GROUP_X_OFFSET = margin.left; GROUP_Y_OFFSET = margin.top;
+    var GREEN_X_OFFSET = margin.left+20, GREEN_Y_OFFSET = margin.top, GREEN_BOX_SIZE = 16*w + dx;
     var BLACK_X_OFFSET = GREEN_X_OFFSET + 6 * GREEN_BOX_SIZE + dx, BLACK_Y_OFFSET = GREEN_Y_OFFSET, BLACK_BOX_SIZE = 6*w + dx;
     var GROUP_HEIGHT = 16*h + dy;
     var width = bx({r:5, c:16}) + margin.right;
@@ -100,12 +101,12 @@ define(function(require) {
         BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Column All-to-all (Black) links").width/2 - 25,
         BLACK_Y_OFFSET - 20);
 
-      ctx.font = "14px sans-serif";
+      ctx.font = "12px sans-serif";
       ctx.save();
-      ctx.translate(10, GREEN_Y_OFFSET-20 );
+      ctx.translate(GROUP_X_OFFSET, GROUP_Y_OFFSET );
       ctx.rotate(-Math.PI/2);
-      ctx.textAlign = "center";
-      ctx.fillText('Group', 0, 0);
+      ctx.textAlign = "bottom";
+      ctx.fillText('Group', 0, 7);
       ctx.restore();
 
       for (i=0; i<6; i++) {
@@ -120,7 +121,7 @@ define(function(require) {
 
       for (g=0; g<16; g++) {
         //if (groups[g]) {
-          ctx.fillText(g, 0, GREEN_Y_OFFSET + g * GROUP_HEIGHT + 9*h);
+          ctx.fillText(g, GROUP_X_OFFSET, GROUP_Y_OFFSET + g * GROUP_HEIGHT + 9*h);
         //}
       }
 

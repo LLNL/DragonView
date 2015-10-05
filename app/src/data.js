@@ -90,7 +90,8 @@ define(function(require) {
           node_rank = rank;
         } else {
           node_rank = Math.floor(rank/24);
-          if (rank % 24 > 0) console.log('rank issue:', rank, node_rank)
+          if (rank % 24 > 0)
+            console.log('rank issue:', rank, node_rank)
         }
 
         item.rank = node_rank;
