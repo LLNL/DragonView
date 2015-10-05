@@ -54,12 +54,6 @@ define(function(require) {
 
     function render() {
       this.append('td')
-        .text(function(d) { return d.id;});
-
-      this.append('td')
-        .text(function(d) { return d.n;});
-
-      this.append('td')
         .append('div')
         .style('width', '20px')
         .style('height', '10px')
@@ -74,6 +68,9 @@ define(function(require) {
           d3.event.preventDefault();
           d3.event.stopPropagation();
         })
+
+      this.append('td')
+        .text(function(d) { return d.id;});
     }
   };
 });
