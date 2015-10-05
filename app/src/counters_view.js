@@ -99,11 +99,7 @@ define(function(require) {
       var f = (+this.value - min)/(max - min);
       console.log('mid changed:', f);
       updateCmap(f);
-    })
-    //  d3.select('#data-mid').property('value'),+this.value]);
-    //  d3.select('#data-reset').property('disabled', false);
-    //})
-    ;
+    });
 
   d3.select('#data-to')
     .style('left', '30px')

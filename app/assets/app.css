@@ -75,8 +75,14 @@ div {
     padding: 0px;
     margin: 0px; }
   .controls ul li {
+    border-radius: 5px;
     padding-left: 15px;
-    padding-top: 10px; }
+    padding-top: 5px;
+    margin-top: 10px;
+    background-color: #f0f0f0; }
+  .controls .li-title {
+    margin-left: -10px;
+    font-weight: bold; }
   .controls .li-body {
     margin-left: 10px; }
   .controls .range-value {
@@ -222,3 +228,5 @@ div {
   stroke-width: 1px;
   stroke: green;
   shape-rendering: crispEdges; }
+
+/*# sourceMappingURL=app.css.map */

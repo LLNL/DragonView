@@ -67,10 +67,26 @@ define(function(require) {
             .style('display', 'block');
           d3.event.preventDefault();
           d3.event.stopPropagation();
-        })
+        });
 
       this.append('td')
         .text(function(d) { return d.id;});
+    }
+
+    function newRun2() {
+      currentRun = run;
+      var jobs = run.jobs.values().sort(function(a,b) { return b.n - a.n;});
+
+      d3.select('#jobs').remove();
+
+      d3.select('#jobs').select('tbody').selectAll('tr')
+        .data(jobs, function(d) { return d.id;})
+        .enter()
+        .append('tr')
+        .call(render);
+    }
+    function render2() {
+
     }
   };
 });

@@ -58,13 +58,17 @@ div {
   }
 
   ul li {
+    border-radius: 5px;
     padding-left: 15px;
-    padding-top: 10px;
+    padding-top: 5px;
+    margin-top: 10px;
+    background-color: #f0f0f0;
   }
 
   .li-title {
 //    font-style: italic;
-//    font-weight: bold;
+    margin-left: -10px;
+    font-weight: bold;
   }
 
   .li-body {
