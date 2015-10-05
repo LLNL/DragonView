@@ -18,7 +18,7 @@ define(function(require) {
   var width = 220, height,
       svg,
       defaultCounter = 0, currentCounter = 0,
-      filterRange = [0, 0],
+      filterRange = [0, 0, true],
       run,
       knownRuns = [],
       dataRange = [0,0],
@@ -378,18 +378,21 @@ define(function(require) {
 
   function count(list, range) {
     var c = 0, i=-1, n = list.length;
+    var inside, mode=range[2];
     while (++i < n) {
-      if (range[0] <= list[i].value  && list[i].value <= range[1]) c++;
+      inside = range[0] <= list[i].value  && list[i].value <= range[1];
+      if (!mode != !inside) c++;  // a xor
     }
     return c;
   }
+
   function onHighlight(range) {
     Radio.channel('counter').trigger('range', range);
     var b = count(run.blues, range), g = count(run.greens, range), k = count(run.blacks, range);
     d3.select('#num-blues').text(b);
     d3.select('#num-greens').text(g);
     d3.select('#num-blacks').text(k);
-    d3.select('#filter-range').text(' '+format(range[0])+'  '+format(range[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
+    d3.select('#filter-range').text((range[2]? ' in: ' : 'out: ') +format(range[0])+ ' ' +format(range[1])); //' min:'+format(size[0]) + ' max:'+format(size[1]));
     filterRange = range;
     sum();
   }

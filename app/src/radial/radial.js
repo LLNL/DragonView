@@ -69,12 +69,16 @@ define(function(require) {
       renderLinks();
     }
 
+    function xor(a,b) {
+      return !a != !b;
+    }
+
     function filterBlues(routers) {
-      var value;
+      var value, inout = range[2];
       blueLinks = [];
       if (range[0] < range[1]) {
         data.blues.forEach(function (link) {
-            if (range[0] <= link.value && link.value <= range[1]) {
+            if ((range[0] <= link.value && link.value <= range[1]) == inout) {
               link.source = find(link.srcId);
               link.target = find(link.destId);
               blueLinks.push(link);
@@ -88,11 +92,11 @@ define(function(require) {
     }
 
     function filterGreens(routers) {
-      var value;
+      var value, inout = range[2];
       greenLinks = [];
       if (range[0] < range[1]) {
         data.greens.forEach(function (link) {
-          if (range[0] <= link.value && link.value <= range[1]) {
+            if ((range[0] <= link.value && link.value <= range[1]) == inout) {
             greenLinks.push(link);
             routers.set(link.src.id, link.src);
             routers.set(link.dest.id, link.dest);
@@ -103,11 +107,11 @@ define(function(require) {
     }
 
     function filterBlacks(routers) {
-      var value;
+      var value, inout = range[2];
       blackLinks = [];
       if (range[0] < range[1]) {
         data.blacks.forEach(function (link) {
-          if (range[0] <= link.value && link.value <= range[1]) {
+            if ((range[0] <= link.value && link.value <= range[1]) == inout) {
             blackLinks.push(link);
             routers.set(link.src.id, link.src);
             routers.set(link.dest.id, link.dest);

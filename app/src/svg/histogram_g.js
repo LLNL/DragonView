@@ -55,7 +55,7 @@ define(function(require) {
         var r = x(e[1]);
         rightHandle.attr('x', r).attr('width', width-r);
       }
-      dispatch.brushed(e);
+      dispatch.brushed([e[0], e[1], insideMode]);
     }
 
     var colorAccessor = function(link) {
@@ -241,6 +241,7 @@ define(function(require) {
         svg.select('.brush .extent').style('opacity', 0);
       }
       svg.select('.brush').call(brush);
+      brushed();
     };
 
     api.on = function(type, listener) {
