@@ -12,7 +12,7 @@ define(function(require) {
 
   var value_band = d3.scale.linear().rangeRound([8, 0]);
   var VALUES_COLORMAP = newcolormaps.BuYlRd[9];
-  var JOBS_COLORMAP = colorbrewer.Set3[12].filter( function(v,i) { return i != 1; });  // ignore yellow
+  var JOBS_COLORMAP = colorbrewer.Set2[8];
   var value_color = d3.scale.ordinal().domain([0, 8]).range(VALUES_COLORMAP);
   var scale = d3.scale.quantize().range(VALUES_COLORMAP);
   var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]);
