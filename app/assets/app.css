@@ -140,13 +140,13 @@ div {
   shape-rendering: crispEdges; }
 .histogram .brush .extent {
   fill: #ddd;
-  fill-opacity: 0.2;
+  fill-opacity: 1;
   stroke: #888;
   stroke-width: 1px;
   shape-rendering: crispEdges; }
 .histogram .externalHandler {
   fill: #ddd;
-  fill-opacity: 0.2;
+  fill-opacity: 1;
   stroke: #888;
   stroke-width: 1px;
   shape-rendering: crispEdges; }
