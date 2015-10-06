@@ -18,7 +18,7 @@ define(function(require) {
     this.groups = [];
     this.routers = d3.map();
     this.routers = d3.map();
-    this.nodes = new Map();
+    //this.nodes = new Map();
     this.counters = [];
     this.blues = [];
     this.greens = [];
@@ -80,21 +80,9 @@ define(function(require) {
   }
 
   function loadPlacement(data, run) {
-    var job, router, idx=0;
-    var rank=-1, node_rank, n;
-    var multi = 0;
+    var job, router, idx=0, n;
     data.forEach(function (item) {
-      rank++;
       if (item.core == undefined || item.core == 0) {
-        if (item.core == undefined) {
-          node_rank = rank;
-        } else {
-          node_rank = Math.floor(rank/24);
-          if (rank % 24 > 0)
-            console.log('rank issue:', rank, node_rank)
-        }
-
-        item.rank = node_rank;
         item.g = +item.g;
         item.r = +item.r;
         item.c = +item.c;
@@ -102,7 +90,9 @@ define(function(require) {
         item.id = model.node_id(item);
         item.jobid = +item.jobid;
         if (item.jobid == undefined)
-          console.log('undefined jobid');
+          console.log('undefined jobid for core:',item);
+
+        //run.nodes.set(item.id, item);
 
         job = run.jobs.get(item.jobid);
         if (!job) {
@@ -111,18 +101,13 @@ define(function(require) {
           run.jobs.set(item.jobid, job);
           idx++;
         }
-        run.nodes.set(item.rank, item);
+        job.n++;
 
         router = run.routers.get(model.router_id(item));
         if (router.jobs.indexOf(job) == -1) {
           router.jobs.push(job);
-          if (router.jobs.length == 1) router.color = job.color;
-          else {
-            router.color = config.MULTI_JOBS_COLOR;
-            if (router.jobs.length == 2) multi++;
-          }
+          router.color = router.jobs.length == 1 ? job.color : config.MULTI_JOBS_COLOR;
         }
-        job.n++;
       }
     });
   }
