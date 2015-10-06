@@ -78,16 +78,17 @@ define(function(require) {
       blueLinks = [];
       if (range[0] < range[1]) {
         data.blues.forEach(function (link) {
-            if ((range[0] <= link.value && link.value <= range[1]) == inout) {
-              link.source = find(link.srcId);
-              link.target = find(link.destId);
-              blueLinks.push(link);
+            if (link.value > 0) {
+              if ((range[0] <= link.value && link.value <= range[1]) == inout) {
+                link.source = find(link.srcId);
+                link.target = find(link.destId);
+                blueLinks.push(link);
 
-              routers.set(link.src.id, link.src);
-              routers.set(link.dest.id, link.dest);
+                routers.set(link.src.id, link.src);
+                routers.set(link.dest.id, link.dest);
+              }
             }
-          }
-        );
+        });
       }
     }
 
@@ -96,13 +97,14 @@ define(function(require) {
       greenLinks = [];
       if (range[0] < range[1]) {
         data.greens.forEach(function (link) {
-            if ((range[0] <= link.value && link.value <= range[1]) == inout) {
-            greenLinks.push(link);
-            routers.set(link.src.id, link.src);
-            routers.set(link.dest.id, link.dest);
-          }
-        }
-        );
+            if (link.value > 0) {
+              if ((range[0] <= link.value && link.value <= range[1]) == inout) {
+                greenLinks.push(link);
+                routers.set(link.src.id, link.src);
+                routers.set(link.dest.id, link.dest);
+              }
+            }
+        });
       }
     }
 
@@ -111,13 +113,14 @@ define(function(require) {
       blackLinks = [];
       if (range[0] < range[1]) {
         data.blacks.forEach(function (link) {
-            if ((range[0] <= link.value && link.value <= range[1]) == inout) {
-            blackLinks.push(link);
-            routers.set(link.src.id, link.src);
-            routers.set(link.dest.id, link.dest);
-          }
-        }
-        );
+            if (link.value > 0) {
+              if ((range[0] <= link.value && link.value <= range[1]) == inout) {
+                blackLinks.push(link);
+                routers.set(link.src.id, link.src);
+                routers.set(link.dest.id, link.dest);
+              }
+            }
+        });
       }
     }
 

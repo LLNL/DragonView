@@ -374,11 +374,11 @@ define(function(require) {
   }
 
   function count(list, range) {
-    var c = 0, i=-1, n = list.length;
-    var inside, mode=range[2];
+    var c = 0, i=-1, n = list.length, v, inside, mode = range[2];
     while (++i < n) {
-      inside = range[0] <= list[i].value  && list[i].value <= range[1];
-      if (!mode != !inside) c++;  // a xor
+      v = list[i].value;
+      if (v == 0) continue;
+      if (mode == (range[0] <= v  && v <= range[1])) c++;  // note: '==' for (T & T) or (F & F)
     }
     return c;
   }
