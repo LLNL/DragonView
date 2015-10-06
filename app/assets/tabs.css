@@ -13,8 +13,6 @@
     padding: 4px 8px;
     display: inline-block;
     border-radius: 3px 3px 0px 0px;
-    font-size: 14px;
-    font-weight: 600;
     color: #4c4c4c;
     transition: all linear 0.15s; }
   .tabs .tab-links a:hover {
@@ -24,11 +22,9 @@
     background: #e0e0e0;
     color: #4c4c4c; }
   .tabs .tab-content {
-    padding: 10px;
+    padding: 0px;
     border-radius: 3px; }
   .tabs .tab {
     display: none; }
   .tabs .tab.active {
     display: block; }
-
-/*# sourceMappingURL=tabs.css.map */
