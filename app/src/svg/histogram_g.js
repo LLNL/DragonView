@@ -36,13 +36,14 @@ define(function(require) {
     var xAxis = d3.svg.axis()
       .scale(x)
       .orient("bottom")
-      .ticks(5)
-      .tickFormat(d3.format('.02e'));
+      .ticks(4)
+      .tickFormat(d3.format('4g'));
 
     var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
-      .ticks(4);
+      .ticks(4)
+      .tickFormat(d3.format('4g'));
 
     var brush = d3.svg.brush()
       .x(x)
@@ -194,11 +195,6 @@ define(function(require) {
 
     api.range = function(range) {
       var save=duration; duration = 0;
-
-      if (range[0] > 1000)
-        xAxis.tickFormat(d3.format('.01e'));
-      else
-        xAxis.tickFormat(d3.format('g'));
 
       var extent = brush.extent();
 
