@@ -86,8 +86,10 @@ define(function(require) {
     .style('left', '30px')
     .style('bottom', 0)
     .on('change', function() {
+      updateCmap(1-cmap_yellow_pos/100);
       updateRange([+this.value, +d3.select('#data-to').property('value')]);
       d3.select('#data-reset').property('disabled', false);
+
     });
 
   d3.select('#data-mid')
@@ -104,6 +106,7 @@ define(function(require) {
     .style('left', '30px')
     .style('top', 0)
     .on('change', function() {
+      updateCmap(1-cmap_yellow_pos/100);
       updateRange([+d3.select('#data-from').property('value'),+this.value]);
       d3.select('#data-reset').property('disabled', false);
     });
