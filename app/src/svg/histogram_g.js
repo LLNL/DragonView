@@ -10,11 +10,13 @@ define(function(require) {
   return function() {
     var
         margin = {top: 20, right:10, bottom: 10, left: 40},
+
         width = 250-margin.left-margin.right,
         height = 150 - margin.top - margin.bottom,
         dx = 5, duration = 500,
         svg, histogram, _series, handle,
         counterId = undefined,
+        percentile = undefined,
         dispatch = d3.dispatch('brushed');
 
     var insideMode = true;
@@ -23,7 +25,8 @@ define(function(require) {
     var stack = d3.layout.stack();
     var x = d3.scale.linear()
       .domain([0, 1])
-      .range([0, width]);
+      .range([0, width])
+      .clamp(true);
 
     var y = d3.scale.linear()
       .domain([0, 1])
@@ -66,6 +69,12 @@ define(function(require) {
     function draw() {
       if (svg == undefined) return;
 
+      if (!percentile) {
+        var values = _series.map(valueAccessor).sort(d3.ascending);
+        var l = values.length;
+        percentile = [values[l/4], values[l/2], values[l*3/4]];
+        console.log('percentile:', percentile);
+      }
       svg.select('.x')
         .call(xAxis);
 
@@ -104,6 +113,35 @@ define(function(require) {
 
       bar.exit()
         .remove();
+
+      //svg.select('.percentile rect')
+      //  .attr('x', x(percentile[0]))
+      //  .attr('width', x(percentile[2])-x(percentile[0]));
+
+      var lx = percentile.map(x);
+      var lines = [
+        {x1: lx[0], x2: lx[0], y1: 0, y2: -6, visible: lx[0] > 0 && lx[0] < width},
+        {x1: lx[1], x2: lx[1], y1: 0, y2: -6, visible: lx[1] > 0 && lx[1] < width},
+        {x1: lx[2], x2: lx[2], y1: 0, y2: -6, visible: lx[2] > 0 && lx[2] < width},
+        {x1: lx[0], x2: lx[2], y1: -2.5, y2: -2.5, visible: true}
+      ];
+
+      var line = svg.select('.percentile').selectAll('line')
+        .data(lines);
+
+      line.enter()
+        .append('line')
+        .style('stroke', 'black')
+        .style('stroke-width', '1')
+        .style('shape-rendering', 'crispEdges');
+
+      line
+        .attr('x1', function(d) { return d.x1; })
+        .attr('x2', function(d) { return d.x2; })
+        .attr('y1', function(d) { return d.y1; })
+        .attr('y2', function(d) { return d.y2; })
+        .attr('visibility', function(d) { return d.visible && 'visible' || 'hidden'; });
+
     }
 
     function api(selection) {
@@ -117,6 +155,24 @@ define(function(require) {
         .attr('height', height)
         .style('fill', 'steelblue')
         .style('opacity', 0.0);
+
+      var p = svg.append('g')
+        .attr('class', 'percentile');
+
+      //p.append('rect')
+      //  .attr('x', x(0))
+      //  .attr('y', -5)
+      //  .attr('height', 5)
+      //  .attr('width', 0)
+      //  .attr('fill', 'orange');
+
+      //p.append('line')
+      //  .attr('x1', 0)
+      //  .attr('x2', 0)
+      //  .attr('y1', 0)
+      //  .attr('y2', -5)
+      //  .style('stroke', 'black')
+      //  .style('stroke-width', 1);
 
       handle = svg.append('g')
         .attr('class', 'brush')
@@ -181,6 +237,7 @@ define(function(require) {
 
     api.counter = function(id) {
       counterId = id;
+      percentile = undefined;
       return this;
     };
 
@@ -190,6 +247,7 @@ define(function(require) {
 
     api.data = function(series, domain) {
       _series = series;
+      percentile = undefined;
       return this;
     };
 
@@ -217,9 +275,7 @@ define(function(require) {
         svg.select('.brush').call(brush);
         brush.event(svg.select('.brush'));
       }
-
       duration = save;
-
       return this;
     };
 
