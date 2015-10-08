@@ -50,11 +50,11 @@ define(function(require) {
     }
   }
 
-  Run.prototype.updateJobColor = function(idx, color) {
-    var prev = this.jobsColor[idx];
-    this.jobsColor[idx] = color;
+  Run.prototype.updateJobColor = function(job, color) {
+    //var prev = this.jobsColor[idx];
+    this.jobsColor[job.idx] = color;
     this.routers.values().forEach(function (router) {
-      if (router.color == prev)
+      if (router.jobs.length == 1 && router.jobs[0] == job)
         router.color = color;
     });
   };
