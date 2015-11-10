@@ -10,6 +10,7 @@ define(function(require) {
   var CountersView = require('counters_view');
   var JobsView = require('jobs_view');
   var Radio = require('radio');
+  var Compare = require('compare/compare');
 
   return function() {
     var radialView, countersView, controlsView, jobsView;
