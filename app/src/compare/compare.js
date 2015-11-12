@@ -17,7 +17,7 @@ define(function(require) {
     color:   {name: 'color',   type: 'category', values: [0, 1, 2, 3]}
   };
 
-  var options = ['', 'opt 1', 'opt 2'];
+  var options = ['', 'config,dataset,sim / color,jobid / max', 'config,sim / dataset,color,jobid / max'];
 
   d3.select('#show-compare')
     .on('click', function() {
@@ -117,20 +117,27 @@ define(function(require) {
   function select() {
     var config;
     var opt = d3.select(this).property('value');
-    if (opt == 'opt 1') {
-      config = {rows: [fields.config, fields.sim], cols: [fields.color, fields.jobid]};
-      //config = {rows: [fields.config], cols: [fields.jobid]};
-      var tree = compute(config);
-      var mat = collect(config, tree);
-      render(mat);
+    if (opt == 'config,dataset,sim / color,jobid / max') {
+      config = {
+        rows: [fields.config, fields.dataset, fields.sim],
+        cols: [fields.color, fields.jobid],
+        filter: function(d) { return d.dataset == '4jobs-1' || d.dataset == '4jobs-2'}
+      };
     }
-    else if (opt == 'opt 2') {
-
+    else if (opt == 'config,sim / dataset,color,jobid / max') {
+      config = {
+        rows: [fields.config, fields.sim],
+        cols: [fields.dataset, fields.color, fields.jobid],
+        filter: function(d) { return d.dataset == '8jobs-1'; }
+      };
     }
+    var tree = compute(config);
+    var mat = collect(config, tree);
+    render(mat);
   }
 
   function compute(config) {
-    var active = data.filter(function (d) { return d.dataset == '4jobs-1'});
+    var active = config.filter && data.filter(config.filter) || data;
 
     var nest = d3.nest();
     config.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
@@ -222,8 +229,6 @@ define(function(require) {
       .style('height', function(d) { return d.w;})
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
-      //.style('transform', 'rotate(-90deg)')
-      //.style('transform-origin', 'left 0px')
      //.style('background-color', function(d) { return d.color;})
     ;
 
