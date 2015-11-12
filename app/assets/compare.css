@@ -15,4 +15,20 @@
   right: 0;
   border: solid lightblue 1px; }
 
+#results {
+  font-size: 10px; }
+  #results .value {
+    position: absolute;
+    background-color: lightgray; }
+  #results .row {
+    position: absolute;
+    background-color: paleturquoise;
+    transform: rotate(-90deg);
+    transform-origin: left 0px;
+    text-align: center; }
+  #results .col {
+    position: absolute;
+    background-color: palegreen;
+    text-align: center; }
+
 /*# sourceMappingURL=compare.css.map */

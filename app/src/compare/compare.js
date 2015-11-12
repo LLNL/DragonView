@@ -10,11 +10,11 @@ define(function(require) {
   var root = null;
   var data = null;
   var fields = {
-    config:  {type: 'category', values: []},
-    dataset: {type: 'category', values: []},
-    sim:     {type: 'category', values: []},
-    jobid:   {type: 'category', values: []},
-    color:   {type: 'category', values: [0, 1, 2, 3]}
+    config:  {name: 'config',  type: 'category', values: []},
+    dataset: {name: 'dataset', type: 'category', values: []},
+    sim:     {name: 'sim',     type: 'category', values: []},
+    jobid:   {name: 'jobid',   type: 'category', values: []},
+    color:   {name: 'color',   type: 'category', values: [0, 1, 2, 3]}
   };
 
   var options = ['', 'opt 1', 'opt 2'];
@@ -115,76 +115,155 @@ define(function(require) {
   }
 
   function select() {
+    var config;
     var opt = d3.select(this).property('value');
     if (opt == 'opt 1') {
-      compute();
+      config = {rows: [fields.config, fields.sim], cols: [fields.color, fields.jobid]};
+      //config = {rows: [fields.config], cols: [fields.jobid]};
+      var tree = compute(config);
+      var mat = collect(config, tree);
+      render(mat);
     }
     else if (opt == 'opt 2') {
 
     }
   }
 
-  function compute() {
-    var active = data.filter(function (d) { return d.config == 'default' && d.dataset == '4jobs-1' });
+  function compute(config) {
+    var active = data.filter(function (d) { return d.dataset == '4jobs-1'});
 
-    var rows = d3.nest()
-      .key(function(d) { return d.sim;})
-      .key(function(d) { return d.jobid;})
-      .key(function(d) { return d.color;})
-      .rollup(function(leaves) { return d3.max(leaves, function(d) { return d.max; }); })
+    var nest = d3.nest();
+    config.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
+    config.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
+
+    return nest.rollup(function(leaves) { return d3.max(leaves, function(d) { return d.max; }); })
       .entries(active);
-
-    render(rows);
   }
 
   var x0 = 100, y0 = 100;
   var dx = 2, dy = 2;
-  var w0 = 5, h0 = 5;
-  var x, y, w, h;
+  var w = 10, h = 10;
+  var fontSize = 15;
+  var x, y;
 
-  function collect(nrows, ncols, rows) {
+  function collect(config, nodes) {
     x = x0;
     y = y0;
-    w = 0;
-    h = 0;
+    var mat = {header: {rows:[], cols:[]}, values:[]};
+    var collect_col_headers = true;
 
-    visit(nrows, ncols, rows);
+    visit(config.rows.length, config.cols.length, nodes);
+    return mat;
 
-    function visit(nrows, ncols, node) {
-      var i = 0;
-      node.x = x; node.y = y;
+    function visit(nrows, ncols, nodes) {
+      var i, n, node, nr = config.rows.length, nc = config.cols.length;
       if (nrows > 0) {
-        x += w0;
-        for (i=0, n=node.values.length; i<n; i++) {
-          visit(nrows-1, ncols, node.values[i]);
-          x = x0;
+        for (i=0, n=nodes.length; i<n; i++) {
+          node = nodes[i];
+          node.label = node.key;
+          node.x = x;
+          node.y = y;
+          x += fontSize+dx;
+          visit(nrows-1, ncols, node.values);
+          collect_col_headers = false;
+          if (nrows == 1) y += h;
+          node.w = fontSize;
+          node.h = y - node.y - dy;
+          x = node.x;
           y += dy;
+          node.color = 'red';
+          mat.header.rows.push(node);
         }
-        node.w = w0; node.h = y - dy - node.y;
       }
       else {
-        if (ncols == 0) {
-          x += dx;
-
-          node.w = w0;
-          node.h = h0;
-          x += w0 + dy;
-        } else {
-          for (i=0, n=node.values.length; i<n; i++) {
-            visit(0, ncols-1, node.values[i]);
+        for (i=0, n=nodes.length; i<n; i++) {
+          node = nodes[i];
+          node.x = x;
+          node.y = y;
+          if (ncols == 1) {
+            node.w = w;
+            node.h = h;
+            x += w;
+            node.color = 'steelblue';
+            mat.values.push(node);
+            if (collect_col_headers) {
+              mat.header.cols.push( {x: node.x, y: y0 - ncols*(fontSize + dy), w: node.w, h: fontSize, label: node.key});
+            }
+          } else {
+            node.color = 'lightgreen';
+            visit(nrows, ncols-1, node.values);
+            node.w = x - dx - node.x;
+            node.h = h;
+            if (collect_col_headers) {
+              node.y = y0 - ncols*(fontSize + dy);
+              node.label = node.key;
+              mat.header.cols.push(node);
+            }
           }
+          x += dx;
         }
       }
     }
   }
 
-  function render(rows) {
-    console.log(rows);
-    //var items = d3.select(root).select('#results').selectAll('li')
-    //  .data(rows);
-    //
-    //items.enter().append('li');
-    //items.
+  function render(mat) {
+
+    var rows = d3.select(root).select('#results').selectAll('.row')
+      .data(mat.header.rows);
+
+    rows.enter()
+      .append('div')
+      .attr('class', 'row');
+
+    rows
+      .style('left', function(d) { return d.x;})
+      .style('top', function(d) { return d.y+ d.h;})
+      .style('width', function(d) { return d.h;})
+      .style('height', function(d) { return d.w;})
+      .style('overflow', 'hidden')
+      .text(function(d) { return d.label;})
+      //.style('transform', 'rotate(-90deg)')
+      //.style('transform-origin', 'left 0px')
+     //.style('background-color', function(d) { return d.color;})
+    ;
+
+    rows.exit().remove();
+
+    var cols = d3.select(root).select('#results').selectAll('.col')
+      .data(mat.header.cols);
+
+    cols.enter()
+      .append('div')
+      .attr('class', 'col');
+
+    cols
+      .style('left', function(d) { return d.x;})
+      .style('top', function(d) { return d.y;})
+      .style('width', function(d) { return d.w;})
+      .style('height', function(d) { return d.h;})
+      .style('overflow', 'hidden')
+      .text(function(d) { return d.label;})
+      //.style('background-color', function(d) { return d.color;})
+    ;
+
+    cols.exit().remove();
+
+    var d3nodes = d3.select(root).select('#results').selectAll('.value')
+      .data(mat.values);
+
+    d3nodes.enter()
+      .append('div')
+      .attr('class', 'value');
+
+    d3nodes
+      .style('left', function(d) { return d.x;})
+      .style('top', function(d) { return d.y;})
+      .style('width', function(d) { return d.w;})
+      .style('height', function(d) { return d.h;})
+      //.style('background-color', function(d) { return d.color;})
+    ;
+
+    d3nodes.exit().remove();
   }
 
   return {

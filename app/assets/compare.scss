@@ -22,3 +22,26 @@
   //background-color: lightgrey;
   border: solid lightblue 1px;
 }
+
+#results {
+  font-size: 10px;
+
+  .value {
+    position: absolute;
+    background-color: lightgray;
+  }
+
+  .row {
+    position: absolute;
+    background-color: paleturquoise;
+    transform: rotate(-90deg);
+    transform-origin: left 0px;
+    text-align: center;
+  }
+
+  .col {
+    position: absolute;
+    background-color: palegreen;
+    text-align: center;
+  }
+}
