@@ -1,7 +1,18 @@
-.controls .values {
-  max-height: 100px;
-  overflow: auto; }
-.controls .value {
-  margin-top: 0; }
+.controls {
+  width: 140px; }
+  .controls .values {
+    max-height: 100px;
+    overflow: auto; }
+  .controls .value {
+    margin-top: 0;
+    padding-top: 0; }
+
+#compare {
+  position: fixed;
+  top: 50px;
+  bottom: 0;
+  left: 160px;
+  right: 0;
+  border: solid lightblue 1px; }
 
 /*# sourceMappingURL=compare.css.map */

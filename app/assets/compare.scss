@@ -1,11 +1,24 @@
 
 .controls {
+  width: 140px;
+
   .values {
     max-height: 100px;
     overflow: auto;
   }
+
   .value {
     margin-top: 0;
-    //margin-left: 5px;
+    padding-top: 0;
   }
+}
+
+#compare {
+  position: fixed;
+  top: 50px;
+  bottom: 0;
+  left: 160px;
+  right: 0;
+  //background-color: lightgrey;
+  border: solid lightblue 1px;
 }
