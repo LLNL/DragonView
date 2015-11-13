@@ -5,10 +5,13 @@
 define(function(require) {
 
   var d3 = require('d3');
+  var config = require('config');
 
   var localWindow = null;
   var root = null;
   var data = null;
+  var mat;
+  var valueSelector = 'min';
   var fields = {
     config:  {name: 'config',  type: 'category', values: []},
     dataset: {name: 'dataset', type: 'category', values: []},
@@ -17,7 +20,7 @@ define(function(require) {
     color:   {name: 'color',   type: 'category', values: [0, 1, 2, 3]}
   };
 
-  var options = ['', 'config,dataset,sim / color,jobid / max', 'config,sim / dataset,color,jobid / max'];
+  var options = ['', 'config,dataset,sim / color,jobid', 'config,sim / dataset,color,jobid'];
 
   d3.select('#show-compare')
     .on('click', function() {
@@ -35,7 +38,7 @@ define(function(require) {
     d3.select(root).select('#show')
       .on('click', compute);
 
-    d3.select(root).select('#compare-options')
+    d3.select(root).select('#select-options')
       .on('change', select)
       .selectAll('option')
       .data(options)
@@ -58,6 +61,25 @@ define(function(require) {
         else {
           data = rows;
           d3.select(root).select('#size').text(rows.length);
+
+          var keys = Object.keys(rows[0]);
+          while(keys[0]  != 'min') keys.shift();
+          rows.forEach(function(row) {
+            keys.forEach(
+              function(key) { row[key] = +row[key]; })
+          });
+
+          d3.select(root).select('#select-values')
+            .on('change', function() {
+              valueSelector = d3.select(this).property('value');
+              render(mat);})
+            .selectAll('option')
+            .data(keys)
+            .enter()
+              .append('option')
+
+              .attr('value', function(d) {return d;})
+              .text(function(d) { return d;});
 
           setupFields();
         }
@@ -114,17 +136,17 @@ define(function(require) {
 
   }
 
-  function select() {
+  function select(d) {
     var config;
     var opt = d3.select(this).property('value');
-    if (opt == 'config,dataset,sim / color,jobid / max') {
+    if (opt == 'config,dataset,sim / color,jobid') {
       config = {
         rows: [fields.config, fields.dataset, fields.sim],
         cols: [fields.color, fields.jobid],
         filter: function(d) { return d.dataset == '4jobs-1' || d.dataset == '4jobs-2'}
       };
     }
-    else if (opt == 'config,sim / dataset,color,jobid / max') {
+    else if (opt == 'config,sim / dataset,color,jobid') {
       config = {
         rows: [fields.config, fields.sim],
         cols: [fields.dataset, fields.color, fields.jobid],
@@ -132,7 +154,7 @@ define(function(require) {
       };
     }
     var tree = compute(config);
-    var mat = collect(config, tree);
+    mat = collect(config, tree);
     render(mat);
   }
 
@@ -143,7 +165,13 @@ define(function(require) {
     config.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
     config.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
 
-    return nest.rollup(function(leaves) { return d3.max(leaves, function(d) { return d.max; }); })
+    return nest.rollup(function(leaves) { return {
+        min: d3.min(leaves, function(d) { return d.min; }),
+        avg: d3.sum(leaves, function(d) { return d.avg; })/leaves.length,
+        max: d3.max(leaves, function(d) { return d.max; }),
+        nonzero: d3.max(leaves, function(d) { return d.nonzero; }),
+        nzavg: d3.sum(leaves, function(d) { return d.nzavg; })/leaves.length
+      }})
       .entries(active);
   }
 
@@ -265,7 +293,8 @@ define(function(require) {
       .style('top', function(d) { return d.y;})
       .style('width', function(d) { return d.w;})
       .style('height', function(d) { return d.h;})
-      //.style('background-color', function(d) { return d.color;})
+      .style('background-color', function(d) {
+        return config.color(d.values[valueSelector]);})
     ;
 
     d3nodes.exit().remove();

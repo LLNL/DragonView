@@ -18,8 +18,7 @@
 #results {
   font-size: 10px; }
   #results .value {
-    position: absolute;
-    background-color: lightgray; }
+    position: absolute; }
   #results .row {
     position: absolute;
     background-color: paleturquoise;
