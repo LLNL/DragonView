@@ -72,7 +72,9 @@ define(function(require) {
     .on('mousedown', function() {
       d3.event.preventDefault();
       d3.select(this)
-        .on('mousemove', function() { updateCmap(1-d3.mouse(this)[1]/135); })
+        .on('mousemove', function() { d3.select('#data-reset').property('disabled', false);
+          updateCmap(1-d3.mouse(this)[1]/135);
+        })
         .on('mouseup', function() {
           d3.select(this)
             .on('mousemove', null)
@@ -99,6 +101,7 @@ define(function(require) {
       var min = +d3.select('#data-from').property('value');
       var max = +d3.select('#data-to').property('value');
       var f = (+this.value - min)/(max - min);
+      d3.select('#data-reset').property('disabled', false);
       updateCmap(f);
     });
 
