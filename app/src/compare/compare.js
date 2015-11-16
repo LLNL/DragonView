@@ -20,7 +20,14 @@ define(function(require) {
     color:   {name: 'color',   type: 'category', values: [0, 1, 2, 3]}
   };
 
-  var options = ['', 'config,dataset,sim / color,jobid', 'config,sim / dataset,color,jobid'];
+  var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
+  var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]);
+  var scale = d3.scale.quantize().range(VALUES_COLORMAP);
+  function color(v) { return scale(value_scale(v)); }
+
+  var options = ['config / jobid', 'sim / dataset,jobid', 'config,dataset,sim / color,jobid'];
+
+  var colorname = ['r', 'g', 'k', 'b'];
 
   d3.select('#show-compare')
     .on('click', function() {
@@ -35,11 +42,9 @@ define(function(require) {
 
   function init() {
     root = localWindow.document.body;
-    d3.select(root).select('#show')
-      .on('click', compute);
 
     d3.select(root).select('#select-options')
-      .on('change', select)
+      .on('change', function (d) { select(d3.select(this).property('selectedIndex')); })
       .selectAll('option')
       .data(options)
       .enter()
@@ -51,6 +56,16 @@ define(function(require) {
     console.log('Compare: loading data');
 
     d3.csv('data/alldata.csv')
+      .row(function(d) {
+        d.jobid = +d.jobid;
+        d.color = colorname[d.color];
+        d.min = +d.min;
+        d.avg = +d.avg;
+        d.max = +d.max;
+        d.nonzero = +d.nonzero;
+        d.navg = +d.navg;
+        return d;
+      })
       .get(function(error, rows) {
         if (error) {
           console.err(error);
@@ -62,17 +77,10 @@ define(function(require) {
           data = rows;
           d3.select(root).select('#size').text(rows.length);
 
-          var keys = Object.keys(rows[0]);
-          while(keys[0]  != 'min') keys.shift();
-          rows.forEach(function(row) {
-            keys.forEach(
-              function(key) { row[key] = +row[key]; })
-          });
+          var keys = ['min', 'avg', 'max', 'nzavg'];
 
           d3.select(root).select('#select-values')
-            .on('change', function() {
-              valueSelector = d3.select(this).property('value');
-              render(mat);})
+            .on('change', selectValue)
             .selectAll('option')
             .data(keys)
             .enter()
@@ -81,9 +89,25 @@ define(function(require) {
               .attr('value', function(d) {return d;})
               .text(function(d) { return d;});
 
+          valueSelector = 'max';
+          d3.select(root).select('#select-values')
+            .property('value', valueSelector);
+
           setupFields();
+          select(0);
         }
       });
+  }
+
+  function selectValue() {
+    valueSelector = d3.select(this).property('value');
+    adjustColormap();
+    render(mat);
+  }
+
+  function adjustColormap() {
+    var max = d3.max(mat.values, function (d) { return d.values[valueSelector]; });
+    value_scale.domain([0, max/2, max]);
   }
 
   function setupFields() {
@@ -136,29 +160,36 @@ define(function(require) {
 
   }
 
-  function select(d) {
+  function select(opt) {
     var config;
-    var opt = d3.select(this).property('value');
-    if (opt == 'config,dataset,sim / color,jobid') {
+    if (opt == 0) {
+      config = {
+        rows: [fields.config],
+        cols: [fields.jobid],
+        filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default' && d.sim == 'sim1'}
+      };
+    }
+    else if (opt == 1) {
+      config = {
+        rows: [fields.config, fields.sim],
+        cols: [fields.dataset, fields.jobid],
+        filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default'; }
+      };
+    }
+    else if (opt == 2) {
       config = {
         rows: [fields.config, fields.dataset, fields.sim],
         cols: [fields.color, fields.jobid],
         filter: function(d) { return d.dataset == '4jobs-1' || d.dataset == '4jobs-2'}
       };
     }
-    else if (opt == 'config,sim / dataset,color,jobid') {
-      config = {
-        rows: [fields.config, fields.sim],
-        cols: [fields.dataset, fields.color, fields.jobid],
-        filter: function(d) { return d.dataset == '8jobs-1'; }
-      };
-    }
-    var tree = compute(config);
-    mat = collect(config, tree);
+
+    mat = collect(config,  aggregate(config));
+    adjustColormap();
     render(mat);
   }
 
-  function compute(config) {
+  function aggregate(config) {
     var active = config.filter && data.filter(config.filter) || data;
 
     var nest = d3.nest();
@@ -175,10 +206,11 @@ define(function(require) {
       .entries(active);
   }
 
-  var x0 = 100, y0 = 100;
-  var dx = 2, dy = 2;
-  var w = 10, h = 10;
+  var x0 = 20, y0 = 40;
+  var dx = 1, dy = 1;
+  var w = 15, h = 15;
   var fontSize = 15;
+  var lastRowWidth = 30;
   var x, y;
 
   function collect(config, nodes) {
@@ -186,6 +218,7 @@ define(function(require) {
     y = y0;
     var mat = {header: {rows:[], cols:[]}, values:[]};
     var collect_col_headers = true;
+    var max_value = 0;
 
     visit(config.rows.length, config.cols.length, nodes);
     return mat;
@@ -198,15 +231,20 @@ define(function(require) {
           node.label = node.key;
           node.x = x;
           node.y = y;
-          x += fontSize+dx;
+          x += +dx + (nrows == 1 ? lastRowWidth+5 : fontSize);
+          node.last = nrows == 1;
           visit(nrows-1, ncols, node.values);
           collect_col_headers = false;
-          if (nrows == 1) y += h;
-          node.w = fontSize;
-          node.h = y - node.y - dy;
+          if (nrows == 1) {
+            y += h;
+            node.w = lastRowWidth ;
+            node.h = y - node.y - dy+1;
+          } else {
+            node.h = fontSize;
+            node.w = y - node.y - dy;
+          }
           x = node.x;
           y += dy;
-          node.color = 'red';
           mat.header.rows.push(node);
         }
       }
@@ -243,21 +281,23 @@ define(function(require) {
 
   function render(mat) {
 
+    d3.select(root).select('#results').attr('height', y);
+
     var rows = d3.select(root).select('#results').selectAll('.row')
       .data(mat.header.rows);
 
     rows.enter()
       .append('div')
-      .attr('class', 'row');
+      .attr('class', 'row')
+      .classed('rotate', function(d) { return !d.last; });
 
     rows
       .style('left', function(d) { return d.x;})
-      .style('top', function(d) { return d.y+ d.h;})
-      .style('width', function(d) { return d.h;})
-      .style('height', function(d) { return d.w;})
+      .style('top', function(d) { return d.y+ (d.last ? 0 : d.w);})
+      .style('width', function(d) { return d.w;})
+      .style('height', function(d) { return d.h;})
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
-     //.style('background-color', function(d) { return d.color;})
     ;
 
     rows.exit().remove();
@@ -276,7 +316,6 @@ define(function(require) {
       .style('height', function(d) { return d.h;})
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
-      //.style('background-color', function(d) { return d.color;})
     ;
 
     cols.exit().remove();
@@ -293,8 +332,7 @@ define(function(require) {
       .style('top', function(d) { return d.y;})
       .style('width', function(d) { return d.w;})
       .style('height', function(d) { return d.h;})
-      .style('background-color', function(d) {
-        return config.color(d.values[valueSelector]);})
+      .style('background-color', function(d) { return color(d.values[valueSelector]); })
     ;
 
     d3nodes.exit().remove();

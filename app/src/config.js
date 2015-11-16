@@ -2,16 +2,15 @@
  * Created by yarden on 4/2/15.
  */
 
-var newcolormaps = {BuYlRd: {
-9: ["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"]
-}};
+
 
 define(function(require) {
 
   var d3 = require('d3');
 
+
   var value_band = d3.scale.linear().rangeRound([8, 0]);
-  var VALUES_COLORMAP = newcolormaps.BuYlRd[9];
+  var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
   var JOBS_COLORMAP = colorbrewer.Set2[8];
   var value_color = d3.scale.ordinal().domain([0, 8]).range(VALUES_COLORMAP);
   var scale = d3.scale.quantize().range(VALUES_COLORMAP);

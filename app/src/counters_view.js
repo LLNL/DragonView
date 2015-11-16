@@ -150,7 +150,7 @@ define(function(require) {
     var min = +d3.select('#data-from').property('value');
     var max = +d3.select('#data-to').property('value');
     d3.select('#data-mid').property('value', format(min+f*(max-min)));
-    config.value_scale.domain([0, 1-f, 1 ]);
+    config. value_scale.domain([0, 1-f, 1 ]);
     run.links.forEach(function(link) {
       link.vis_color = config.color(link.value);
     });

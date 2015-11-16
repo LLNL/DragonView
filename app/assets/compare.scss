@@ -19,20 +19,29 @@
   bottom: 0;
   left: 160px;
   right: 0;
-  //background-color: lightgrey;
-  border: solid lightblue 1px;
+  //border: solid lightblue 1px;
+}
+
+#frame {
+  overflow: auto;
+  height: 90%;
 }
 
 #results {
   font-size: 10px;
-
+  position: relative;
+  //height: 500px;
   .value {
     position: absolute;
+    //border: lightgrey solid 1px;
   }
 
   .row {
     position: absolute;
     background-color: paleturquoise;
+  }
+
+  .rotate {
     transform: rotate(-90deg);
     transform-origin: left 0px;
     text-align: center;
