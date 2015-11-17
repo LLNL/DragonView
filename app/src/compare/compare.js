@@ -5,20 +5,25 @@
 define(function(require) {
 
   var d3 = require('d3');
-  var config = require('config');
+  var spec = require('config');
 
   var localWindow = null;
   var root = null;
   var data = null;
+  var active = [];
   var mat;
   var valueSelector = 'min';
+  var spec;
+
   var fields = {
-    config:  {name: 'config',  type: 'category', values: []},
-    dataset: {name: 'dataset', type: 'category', values: []},
-    sim:     {name: 'sim',     type: 'category', values: []},
-    jobid:   {name: 'jobid',   type: 'category', values: []},
-    color:   {name: 'color',   type: 'category', values: [0, 1, 2, 3]}
+    config:  {name: 'config',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
+    dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
+    sim:     {name: 'sim',     type: 'category', values: [], sort: simSort, selected: new Set()},
+    jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set()},
+    color:   {name: 'color',   type: 'fixed', values: ['r', 'g', 'k', 'b'], selected: new Set(['r', 'g', 'k', 'b'])}
   };
+
+  var filterValues = {};
 
   var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
   var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]);
@@ -29,6 +34,13 @@ define(function(require) {
 
   var colorname = ['r', 'g', 'k', 'b'];
 
+  function simSort(a,b) {
+    a = +a.slice(3);
+    b = +b.slice(3);
+    return a -b;
+  }
+
+  // launch button on the main page
   d3.select('#show-compare')
     .on('click', function() {
       if (localWindow == null || localWindow.closed) {
@@ -40,6 +52,8 @@ define(function(require) {
       }
     });
 
+
+  // init module only it is actually called
   function init() {
     root = localWindow.document.body;
 
@@ -51,9 +65,6 @@ define(function(require) {
         .append('option')
         .attr('value', function(d) {return d;})
         .text(function(d) { return d;});
-
-
-    console.log('Compare: loading data');
 
     d3.csv('data/alldata.csv')
       .row(function(d) {
@@ -68,15 +79,19 @@ define(function(require) {
       })
       .get(function(error, rows) {
         if (error) {
+          // TODO: better error message notification
           console.err(error);
         }
-        else if (rows.length == 0) {
-          console.log('empty dataset');
-        }
         else {
-          data = rows;
           d3.select(root).select('#size').text(rows.length);
+          if (rows.length == 0) {
+            // TODO: better message notification
+            console.log('empty dataset');
+            return;
+          }
+          data = rows;
 
+          // TODO: use keys based on data. Issue: how to determine which fields are values
           var keys = ['min', 'avg', 'max', 'nzavg'];
 
           d3.select(root).select('#select-values')
@@ -86,32 +101,23 @@ define(function(require) {
             .enter()
               .append('option')
 
-              .attr('value', function(d) {return d;})
-              .text(function(d) { return d;});
+            .attr('value', function(d) {return d;})
+            .text(function(d) { return d;});
 
+          // init selection and render
           valueSelector = 'max';
           d3.select(root).select('#select-values')
             .property('value', valueSelector);
 
           setupFields();
           select(0);
+          filter();
         }
       });
   }
 
-  function selectValue() {
-    valueSelector = d3.select(this).property('value');
-    adjustColormap();
-    render(mat);
-  }
-
-  function adjustColormap() {
-    var max = d3.max(mat.values, function (d) { return d.values[valueSelector]; });
-    value_scale.domain([0, max/2, max]);
-  }
-
   function setupFields() {
-    findValues(data);
+    collectValues(data);
 
     var li = d3.select(root).select('#info #fields').selectAll('li')
       .data(Object.keys(fields))
@@ -125,83 +131,112 @@ define(function(require) {
     var entry = li.append('ul')
       .attr('class', 'values')
       .selectAll('li')
-      .data(function(d) { return fields[d].values})
+      .data(function(d) { return fields[d].values.map(function(v) { return [fields[d].name, v];});})
       .enter()
-      .append('li')
-      .attr('class', 'value');
+        .append('li')
+        .attr('class', 'value');
+
 
     entry
       .append('input')
       .attr('type', 'checkbox')
-      .property('value', function(d) { return d});
+      .property('name', function(d) {return d[0];})
+      .property('value', function(d) { return d[1]; })
+      .property('checked', true)
+      .on('change', function(d) {
+        var set = fields[d3.select(this).property('name')].selected;
+        if (d3.select(this).property('checked')) set.add(d[1]);
+        else set.delete(d[1]);
+        filter();
+      });
 
     entry
       .append('text')
-      .text(function(d) { return d});
+      .text(function(d) { return d[1]});
   }
 
-  function findValues(rows) {
-    var config = new Set();
-    var dataset = new Set();
-    var sim = new Set();
-    var jobid = new Set();
-
-    rows.forEach(function(row) {
-      config.add(row.config);
-      dataset.add(row.dataset);
-      sim.add(row.sim);
-      jobid.add(row.jobid);
+  function collectValues(rows) {
+    var field;
+    Object.keys(fields).forEach(function(field) {
+      if (fields[field].type == 'category') {
+        var set = new Set();
+        rows.forEach(function(row) {
+          set.add(row[field]);
+        });
+        fields[field].values = Array.from(set).sort(fields[field].sort);
+        fields[field].selected = new Set(fields[field].values);
+      }
     });
-
-   fields.config.values = Array.from(config).sort();
-   fields.dataset.values = Array.from(dataset).sort();
-   fields.sim.values = Array.from(sim).sort();
-   fields.jobid.values = Array.from(jobid).sort();
-
   }
 
-  function select(opt) {
-    var config;
-    if (opt == 0) {
-      config = {
-        rows: [fields.config],
-        cols: [fields.jobid],
-        filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default' && d.sim == 'sim1'}
-      };
-    }
-    else if (opt == 1) {
-      config = {
-        rows: [fields.config, fields.sim],
-        cols: [fields.dataset, fields.jobid],
-        filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default'; }
-      };
-    }
-    else if (opt == 2) {
-      config = {
-        rows: [fields.config, fields.dataset, fields.sim],
-        cols: [fields.color, fields.jobid],
-        filter: function(d) { return d.dataset == '4jobs-1' || d.dataset == '4jobs-2'}
-      };
-    }
+  function adjustColormap() {
+    var max = d3.max(mat.values, function (d) { return d.values[valueSelector]; });
+    value_scale.domain([0, max/2, max]);
+  }
 
-    mat = collect(config,  aggregate(config));
+  function filter() {
+    var keys = Object.keys(fields);
+    var i, n = keys.length, key;
+    active = data.filter(function(row) {
+      for (i=0; i<n; i++) {
+        key = keys[i];
+        if (!fields[key].selected.has(row[key])) return false;
+      }
+      return true;
+    });
+    recompute();
+  }
+
+  function selectValue() {
+    valueSelector = d3.select(this).property('value');
     adjustColormap();
     render(mat);
   }
 
-  function aggregate(config) {
-    var active = config.filter && data.filter(config.filter) || data;
+  function select(opt) {
+    if (opt == 0) {
+      spec = {
+        rows: [fields.config],
+        cols: [fields.jobid]
+        //filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default' && d.sim == 'sim1'}
+      };
+    }
+    else if (opt == 1) {
+      spec = {
+        rows: [fields.config, fields.sim],
+        cols: [fields.dataset, fields.jobid]
+        //filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default'; }
+      };
+    }
+    else if (opt == 2) {
+      spec = {
+        rows: [fields.config, fields.dataset, fields.sim],
+        cols: [fields.color, fields.jobid]
+        //filter: function(d) { return d.dataset == '4jobs-1' || d.dataset == '4jobs-2'}
+      };
+    }
+    recompute();
+  }
+
+  function recompute() {
+    mat = collect(spec,  aggregate(spec));
+    adjustColormap();
+    render(mat);
+  }
+
+  function aggregate(spec) {
+    //var active = spec.filter && data.filter(spec.filter) || data;
 
     var nest = d3.nest();
-    config.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
-    config.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
+    spec.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
+    spec.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
 
     return nest.rollup(function(leaves) { return {
         min: d3.min(leaves, function(d) { return d.min; }),
-        avg: d3.sum(leaves, function(d) { return d.avg; })/leaves.length,
+        avg: d3.mean(leaves, function(d) { return d.avg; }),
         max: d3.max(leaves, function(d) { return d.max; }),
         nonzero: d3.max(leaves, function(d) { return d.nonzero; }),
-        nzavg: d3.sum(leaves, function(d) { return d.nzavg; })/leaves.length
+        nzavg: d3.sum(leaves, function(d) { return d.nzavg * d.nonzero; })/ d3.sum(leaves, function(d) { return d.nonzero; })
       }})
       .entries(active);
   }
@@ -213,18 +248,18 @@ define(function(require) {
   var lastRowWidth = 30;
   var x, y;
 
-  function collect(config, nodes) {
+  function collect(spec, nodes) {
     x = x0;
     y = y0;
     var mat = {header: {rows:[], cols:[]}, values:[]};
     var collect_col_headers = true;
     var max_value = 0;
 
-    visit(config.rows.length, config.cols.length, nodes);
+    visit(spec.rows.length, spec.cols.length, nodes);
     return mat;
 
     function visit(nrows, ncols, nodes) {
-      var i, n, node, nr = config.rows.length, nc = config.cols.length;
+      var i, n, node, nr = spec.rows.length, nc = spec.cols.length;
       if (nrows > 0) {
         for (i=0, n=nodes.length; i<n; i++) {
           node = nodes[i];
@@ -288,10 +323,10 @@ define(function(require) {
 
     rows.enter()
       .append('div')
-      .attr('class', 'row')
-      .classed('rotate', function(d) { return !d.last; });
+      .attr('class', 'row');
 
     rows
+      .classed('rotate', function(d) { return !d.last; })
       .style('left', function(d) { return d.x;})
       .style('top', function(d) { return d.y+ (d.last ? 0 : d.w);})
       .style('width', function(d) { return d.w;})
