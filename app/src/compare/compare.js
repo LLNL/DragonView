@@ -23,14 +23,30 @@ define(function(require) {
     color:   {name: 'color',   type: 'fixed', values: ['r', 'g', 'k', 'b'], selected: new Set(['r', 'g', 'k', 'b'])}
   };
 
+  var specs = [
+    {
+      name: 'config/jobid',
+      rows: [fields.config],
+      cols: [fields.jobid]
+    },
+    {
+      name: 'config,sim/dataset,jobid',
+      rows: [fields.config, fields.sim],
+      cols: [fields.dataset, fields.jobid]
+    },
+    {
+      name: 'config,dataset,sim/color,jobid',
+      rows: [fields.config, fields.dataset, fields.sim],
+      cols: [fields.color, fields.jobid]
+    }
+  ];
+
   var filterValues = {};
 
   var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
   var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]);
   var scale = d3.scale.quantize().range(VALUES_COLORMAP);
   function color(v) { return scale(value_scale(v)); }
-
-  var options = ['config / jobid', 'sim / dataset,jobid', 'config,dataset,sim / color,jobid'];
 
   var colorname = ['r', 'g', 'k', 'b'];
 
@@ -58,13 +74,13 @@ define(function(require) {
     root = localWindow.document.body;
 
     d3.select(root).select('#select-options')
-      .on('change', function (d) { select(d3.select(this).property('selectedIndex')); })
+      .on('change', function (d) { spec = specs[d3.select(this).property('selectedIndex')]; recompute(); })
       .selectAll('option')
-      .data(options)
+      .data(specs)
       .enter()
         .append('option')
-        .attr('value', function(d) {return d;})
-        .text(function(d) { return d;});
+        .attr('value', function(d) {return d.name;})
+        .text(function(d) { return d.name;});
 
     d3.csv('data/alldata.csv')
       .row(function(d) {
@@ -110,7 +126,7 @@ define(function(require) {
             .property('value', valueSelector);
 
           setupFields();
-          select(0);
+          spec = specs[0];
           filter();
         }
       });
@@ -193,31 +209,6 @@ define(function(require) {
     render(mat);
   }
 
-  function select(opt) {
-    if (opt == 0) {
-      spec = {
-        rows: [fields.config],
-        cols: [fields.jobid]
-        //filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default' && d.sim == 'sim1'}
-      };
-    }
-    else if (opt == 1) {
-      spec = {
-        rows: [fields.config, fields.sim],
-        cols: [fields.dataset, fields.jobid]
-        //filter: function(d) { return d.dataset == '8jobs-1' && d.config == 'default'; }
-      };
-    }
-    else if (opt == 2) {
-      spec = {
-        rows: [fields.config, fields.dataset, fields.sim],
-        cols: [fields.color, fields.jobid]
-        //filter: function(d) { return d.dataset == '4jobs-1' || d.dataset == '4jobs-2'}
-      };
-    }
-    recompute();
-  }
-
   function recompute() {
     mat = collect(spec,  aggregate(spec));
     adjustColormap();
@@ -225,8 +216,6 @@ define(function(require) {
   }
 
   function aggregate(spec) {
-    //var active = spec.filter && data.filter(spec.filter) || data;
-
     var nest = d3.nest();
     spec.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
     spec.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
