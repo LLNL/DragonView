@@ -172,7 +172,6 @@ define(function(require) {
   }
 
   function collectValues(rows) {
-    var field;
     Object.keys(fields).forEach(function(field) {
       if (fields[field].type == 'category') {
         var set = new Set();
@@ -217,14 +216,14 @@ define(function(require) {
 
   function aggregate(spec) {
     var nest = d3.nest();
-    spec.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
-    spec.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}); } );
+    spec.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}).sortKeys(field.sort); } );
+    spec.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}).sortKeys(field.sort); } );
 
     return nest.rollup(function(leaves) { return {
         min: d3.min(leaves, function(d) { return d.min; }),
         avg: d3.mean(leaves, function(d) { return d.avg; }),
         max: d3.max(leaves, function(d) { return d.max; }),
-        nonzero: d3.max(leaves, function(d) { return d.nonzero; }),
+        //nonzero: d3.max(leaves, function(d) { return d.nonzero; }),
         nzavg: d3.sum(leaves, function(d) { return d.nzavg * d.nonzero; })/ d3.sum(leaves, function(d) { return d.nonzero; })
       }})
       .entries(active);
