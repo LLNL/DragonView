@@ -34,5 +34,7 @@
     position: absolute;
     background-color: palegreen;
     text-align: center; }
+  #results .colText {
+    position: absolute; }
 
 /*# sourceMappingURL=compare.css.map */

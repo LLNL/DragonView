@@ -84,7 +84,7 @@ define(function(require) {
 
     d3.csv('data/alldata.csv')
       .row(function(d) {
-        d.jobid = +d.jobid;
+        //d.jobid = +d.jobid;
         d.color = colorname[d.color];
         d.min = +d.min;
         d.avg = +d.avg;
@@ -209,7 +209,7 @@ define(function(require) {
   }
 
   function recompute() {
-    header(spec);
+    buildHeader(spec);
     mat = collect(spec,  aggregate(spec));
     adjustColormap();
     render(mat);
@@ -230,51 +230,69 @@ define(function(require) {
       .entries(active);
   }
 
-  function header(spec) {
-    var map = new Map(), cols, entry, value, field;
-    active.forEach(function(row) {
-      cols = map;
-      for (var i= 0, n=spec.cols.length; i<n; i++) {
-        field = spec.cols[i];
-        value = row[field.name];
-        entry = cols.get(value);
-        if (!entry) {
-          entry =  i < n-1 && new Map() || null;
-          cols.set(value, entry);
-        }
-        cols = entry;
-      }
-    });
-
-    visit(map, 0);
-
-    function visit(map, l) {
-      map.forEach(function(value, key) {
-        console.log(l, key, value);
-        if (value instanceof Map)
-          visit(value, l+1);
-      });
-    }
-  }
-
-  var x0 = 20, y0 = 40;
+  var header;
+  var x0 = 20, y0 = 80;
   var dx = 1, dy = 1;
   var w = 15, h = 15;
   var fontSize = 15;
+  var colHeight = 15;
   var lastRowWidth = 30;
   var x, y;
 
+  function buildHeader(spec) {
+    var root, entry, value, field;
+
+    // collect
+    header = {field: spec.cols[0], label: "", values: new Map()};
+    active.forEach(function(row) {
+      root = header;
+      for (var i= 0, n=spec.cols.length; i<n; i++) {
+        field = spec.cols[i];
+        value = row[field.name];
+        entry = root.values.get(value);
+        if (!entry) {
+          entry =  i<n-1 && {field: spec.cols[i+1], label: value, values: new Map()} || {label: value};
+          root.values.set(value, entry);
+        }
+        root = entry;
+      }
+    });
+
+    // assign location and size
+    visit(header, x0+spec.rows.length*(w+dx)+lastRowWidth-w+5, y0);
+
+    function visit(root, x, y) {
+      root.x = x;
+      root.y = y;
+      if (root.values) {
+        y += colHeight + dy;
+        var keys = Array.from(root.values.keys()).sort(root.field.sort);
+        keys.forEach(function (key) {
+          x = visit(root.values.get(key), x, y)+dx;
+        });
+      } else {
+        x += w+dx;
+      }
+      x -= dx;
+      root.w = x - root.x;
+      root.h = h;
+      return x;
+    }
+
+  }
+
+
+
   function collect(spec, nodes) {
     x = x0;
-    y = y0;
+    y = y0 + (spec.cols.length+1)*(colHeight+dy);
     var mat = {header: {rows:[], cols:[]}, values:[]};
-    var collect_col_headers = true;
     var max_value = 0;
 
-    visit(spec.rows.length, spec.cols.length, nodes);
+    visit(spec.rows.length, spec.cols.length, nodes, header);
     return mat;
 
-    function visit(nrows, ncols, nodes) {
+    function visit(nrows, ncols, nodes, header) {
       var i, n, node, nr = spec.rows.length, nc = spec.cols.length;
       if (nrows > 0) {
         for (i=0, n=nodes.length; i<n; i++) {
@@ -284,8 +302,7 @@ define(function(require) {
           node.y = y;
           x += +dx + (nrows == 1 ? lastRowWidth+5 : fontSize);
           node.last = nrows == 1;
-          visit(nrows-1, ncols, node.values);
-          collect_col_headers = false;
+          visit(nrows-1, ncols, node.values, header);
           if (nrows == 1) {
             y += h;
             node.w = lastRowWidth ;
@@ -302,27 +319,16 @@ define(function(require) {
       else {
         for (i=0, n=nodes.length; i<n; i++) {
           node = nodes[i];
-          node.x = x;
-          node.y = y;
+          var pos = header.values.get(node.key);
           if (ncols == 1) {
+            node.x = pos.x;
+            node.y = y;
             node.w = w;
             node.h = h;
             x += w;
-            node.color = 'steelblue';
             mat.values.push(node);
-            if (collect_col_headers) {
-              mat.header.cols.push( {x: node.x, y: y0 - ncols*(fontSize + dy), w: node.w, h: fontSize, label: node.key});
-            }
           } else {
-            node.color = 'lightgreen';
-            visit(nrows, ncols-1, node.values);
-            node.w = x - dx - node.x;
-            node.h = h;
-            if (collect_col_headers) {
-              node.y = y0 - ncols*(fontSize + dy);
-              node.label = node.key;
-              mat.header.cols.push(node);
-            }
+            visit(nrows, ncols-1, node.values, pos);
           }
           x += dx;
         }
@@ -330,9 +336,63 @@ define(function(require) {
     }
   }
 
+  function flatten(node) {
+    var list = [];
+    visit(node);
+    list.shift();
+    return list;
+
+    function visit(node) {
+      if (node) {
+        list.push(node);
+        if (node.values)
+          node.values.forEach(function (node) { visit(node); });
+      }
+    }
+  }
+
   function render(mat) {
 
     d3.select(root).select('#results').attr('height', y);
+
+    var cols = d3.select(root).select('#results').selectAll('.col')
+      .data(flatten(header));
+
+    cols.enter()
+      .append('div')
+      .attr('class', 'col');
+
+    cols
+      .style('left', function(d) { return d.x;})
+      .style('top', function(d) { return d.y;})
+      .style('width', function(d) { return d.w;})
+      .style('height', function(d) { return d.h;})
+      .style('overflow', 'hidden')
+      .text(function(d) { return d.label;})
+    ;
+
+    cols.exit().remove();
+
+    var list = [];
+    for (var i= 0, n=spec.cols.length; i<n; i++) {
+      list.push({x: header.x+header.w+dx+5, y: header.y+(i+1)*(colHeight+dy), w:40, h: fontSize, label: spec.cols[i].name });
+    }
+
+    var colText = d3.select(root).select('#results').selectAll('.colText')
+      .data(list);
+
+    colText.enter()
+      .append('div')
+      .attr('class', 'colText');
+
+    colText
+      .style('left', function(d) { return d.x;})
+      .style('top', function(d) { return d.y; })
+      .style('width', function(d) { return d.w;})
+      .style('height', function(d) { return d.h;})
+      .text(function(d) { return d.label; });
+
+    colText.exit().remove();
 
     var rows = d3.select(root).select('#results').selectAll('.row')
       .data(mat.header.rows);
@@ -353,23 +413,6 @@ define(function(require) {
 
     rows.exit().remove();
 
-    var cols = d3.select(root).select('#results').selectAll('.col')
-      .data(mat.header.cols);
-
-    cols.enter()
-      .append('div')
-      .attr('class', 'col');
-
-    cols
-      .style('left', function(d) { return d.x;})
-      .style('top', function(d) { return d.y;})
-      .style('width', function(d) { return d.w;})
-      .style('height', function(d) { return d.h;})
-      .style('overflow', 'hidden')
-      .text(function(d) { return d.label;})
-    ;
-
-    cols.exit().remove();
 
     var d3nodes = d3.select(root).select('#results').selectAll('.value')
       .data(mat.values);
