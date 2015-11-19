@@ -17,9 +17,9 @@ define(function(require) {
   var fields = {
     config:  {name: 'config',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
     dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    sim:     {name: 'sim',     type: 'category', values: [], sort: simSort, selected: new Set()},
+    sim:     {name: 'sim',     type: 'category', values: [], sort: simSort,      selected: new Set()},
     jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    color:   {name: 'color',   type: 'fixed', values: ['r', 'g', 'k', 'b'], selected: new Set(['r', 'g', 'k', 'b'])}
+    color:   {name: 'color',   type: 'fixed',    values: ['*', 'g', 'k', 'b'],   selected: new Set(['*', 'g', 'k', 'b'])}
   };
 
   var specs = [
@@ -43,11 +43,9 @@ define(function(require) {
   var filterValues = {};
 
   var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
-  var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]);
-  var scale = d3.scale.quantize().range(VALUES_COLORMAP);
-  function color(v) { return scale(value_scale(v)); }
+  var color = d3.scale.quantize().range(VALUES_COLORMAP);
 
-  var colorname = ['r', 'g', 'k', 'b'];
+  var colorname = ['*', 'g', 'k', 'b'];
 
   function simSort(a,b) {
     a = +a.slice(3);
