@@ -5,17 +5,18 @@ define(function(require) {
 
   var d3 = require('d3');
   var config = require('config');
+  var model = require('model');
 
   return function () {
     var margin = {left: 20, top: 40, right: 10, bottom: 10};
     var w = 2, h = 2, dx = 4, dy = 4;
-    var GROUP_X_OFFSET = margin.left; GROUP_Y_OFFSET = margin.top;
-    var GREEN_X_OFFSET = margin.left+20, GREEN_Y_OFFSET = margin.top, GREEN_BOX_SIZE = 16*w + dx;
-    var BLACK_X_OFFSET = GREEN_X_OFFSET + 6 * GREEN_BOX_SIZE + dx, BLACK_Y_OFFSET = GREEN_Y_OFFSET, BLACK_BOX_SIZE = 6*w + dx;
-    var GROUP_HEIGHT = 16*h + dy;
-    var width = bx({r:5, c:16}) + margin.right;
-    var height = gy({g:15, c:16}) + margin.bottom;
-    var groups = new Array(16), greenBoxes= new Array(16), blackBoxes=new Array(16), greenHeader=new Array(6), blackHeader=new Array(16);
+    var GROUP_X_OFFSET = margin.left, GROUP_Y_OFFSET = margin.top;
+    var GREEN_X_OFFSET = margin.left+20, GREEN_Y_OFFSET = margin.top, GREEN_BOX_SIZE = model.N_COLS*w + dx;
+    var BLACK_X_OFFSET = GREEN_X_OFFSET +model.N_ROWS * GREEN_BOX_SIZE + dx, BLACK_Y_OFFSET = GREEN_Y_OFFSET, BLACK_BOX_SIZE = model.N_ROWS*w + dx;
+    var GROUP_HEIGHT = model.N_COLS*h + dy;
+    var width = bx({r:model.N_ROWS-1, c:model.N_COLS}) + margin.right;
+    var height = gy({g:model.N_GROUPS-1, c:model.N_COLS}) + margin.bottom;
+    var groups = new Array(model.N_GROUPS), greenBoxes= new Array(model.N_GROUPS), blackBoxes=new Array(model.N_GROUPS), greenHeader=new Array(model.N_ROWS), blackHeader=new Array(model.N_COLS);
     var el, canvas;
 
     function gx(idx) {
@@ -38,8 +39,8 @@ define(function(require) {
       var ctx = canvas.getContext('2d');
       var x, y;
       var g, r, c, i, j;
-      var gw = 6 * GREEN_BOX_SIZE;
-      var bh = 6 * h;
+      var gw = model.N_ROWS * GREEN_BOX_SIZE;
+      var bh = model.N_ROWS * h;
 
       /* clear canvas */
       ctx.fillStyle = '#fff';
@@ -49,14 +50,14 @@ define(function(require) {
         return;
 
       // init
-      for (j=0; j<6; j++) greenHeader[j] = false;
-      for (j=0; j<16; j++) blackHeader[j] = false;
-      for (i=0; i<16; i++) {
+      for (j=0; j<model.N_ROWS; j++) greenHeader[j] = false;
+      for (j=0; j<model.N_COLS; j++) blackHeader[j] = false;
+      for (i=0; i<model.N_GROUPS; i++) {
         groups[i] = false;
-        for (j=0; j<6; j++) {
+        for (j=0; j<model.N_ROWS; j++) {
           greenBoxes[i][j] = false;
         }
-        for (j=0; j<16; j++) {
+        for (j=0; j<model.N_COLS; j++) {
           blackBoxes[i][j] = false;
         }
       }
@@ -70,35 +71,39 @@ define(function(require) {
       });
 
       var value;
-      for (j=0; j<6; j++) {
+      for (j=0; j<model.N_ROWS; j++) {
         i=-1;
-        while (++i<16 && !greenBoxes[i][j]) {}
-        greenHeader[j] = i<16;
+        while (++i<model.N_GROUPS && !greenBoxes[i][j]) {}
+        greenHeader[j] = i<model.N_COLS;
       }
-      for (j=0; j<16; j++) {
+      for (j=0; j<model.N_COLS; j++) {
         i=-1;
-        while (++i<16 && !blackBoxes[i][j]) {}
-        blackHeader[j] = i<16;
+        while (++i<model.N_GROUPS && !blackBoxes[i][j]) {}
+        blackHeader[j] = i<model.N_COLS;
       }
-      for (i=0; i<16; i++) {
+      for (i=0; i<model.N_GROUPS; i++) {
         j = -1;
-        while (++j < 6 && !greenBoxes[i][j] && !blackBoxes[i][j]) {}
-        if (j == 6) {
-          while (j < 16 && !blackBoxes[i][j]) {j++;}
+        while (++j < model.N_ROWS && !greenBoxes[i][j] && !blackBoxes[i][j]) {}
+        if (j == model.N_ROWS) {
+          while (j < model.N_COLS && !blackBoxes[i][j]) {j++;}
         }
-        groups[i] = j < 16;
+        groups[i] = j < model.N_GROUPS;
       }
 
 
       /* header */
-      ctx.font = "14px sans-serif";
+      ctx.font = "12px sans-serif";
       ctx.fillStyle = '#000';
-      ctx.fillText('Row All-to-all (Green) links: '+greenLinks.length,
-        GREEN_X_OFFSET + 3*GREEN_BOX_SIZE - ctx.measureText("Row All-to-all (Green) links").width/2 - 30,
+      //var text = 'Row All-to-all (Green) links: '+greenLinks.length;
+      var text = 'Green: '+greenLinks.length;
+      ctx.fillText(text,
+        GREEN_X_OFFSET + (model.N_ROWS*GREEN_BOX_SIZE - ctx.measureText(text).width)/2,
         GREEN_Y_OFFSET - 20);
 
-      ctx.fillText('Column All-to-all (Black) links: '+blackLinks.length,
-        BLACK_X_OFFSET + 8*BLACK_BOX_SIZE - ctx.measureText("Column All-to-all (Black) links").width/2 - 25,
+      //text = 'Column All-to-all (Black) links: '+blackLinks.length;
+      text = 'Black: '+blackLinks.length;
+      ctx.fillText(text,
+        BLACK_X_OFFSET + (model.N_COLS*BLACK_BOX_SIZE - ctx.measureText(text).width)/2,
         BLACK_Y_OFFSET - 20);
 
       ctx.font = "12px sans-serif";
@@ -109,17 +114,17 @@ define(function(require) {
       ctx.fillText('Group', 0, 7);
       ctx.restore();
 
-      for (i=0; i<6; i++) {
+      for (i=0; i<model.N_ROWS; i++) {
         ctx.fillStyle = greenHeader[i] ? '#008000' : '#a0a0a0';
         ctx.fillText(i, GREEN_X_OFFSET + i*GREEN_BOX_SIZE + GREEN_BOX_SIZE/2 - 8, GREEN_Y_OFFSET - 3);
       }
 
-      for (i=0; i<16; i++) {
+      for (i=0; i<model.N_COLS; i++) {
         ctx.fillStyle = blackHeader[i] ? '#000' : '#a0a0a0';
         ctx.fillText(i, BLACK_X_OFFSET + i*BLACK_BOX_SIZE + BLACK_BOX_SIZE/2 - 8, BLACK_Y_OFFSET - 3);
       }
 
-      for (g=0; g<16; g++) {
+      for (g=0; g<model.N_GROUPS; g++) {
         //if (groups[g]) {
           ctx.fillText(g, GROUP_X_OFFSET, GROUP_Y_OFFSET + g * GROUP_HEIGHT + 9*h);
         //}
@@ -128,18 +133,18 @@ define(function(require) {
       y = GREEN_Y_OFFSET;
       ctx.fillStyle = '#ccc'; //'#93c4df';
 
-      for (g=0; g<16; g++) {
+      for (g=0; g<model.N_GROUPS; g++) {
         if (groups[g]) {
-          for(r = 0; r < 6; r++) {
+          for(r = 0; r < model.N_ROWS; r++) {
             ctx.beginPath();
             ctx.fillStyle = greenBoxes[g][r] ? '#ccc' : '#f0f0f0';
-            ctx.rect(GREEN_X_OFFSET + r * GREEN_BOX_SIZE, y, 16 * w, 16 * h);
+            ctx.rect(GREEN_X_OFFSET + r * GREEN_BOX_SIZE, y, model.N_COLS * w, model.N_COLS * h);
             ctx.fill();
           }
-          for(c = 0; c < 16; c++) {
+          for(c = 0; c < model.N_COLS; c++) {
             ctx.beginPath();
             ctx.fillStyle = blackBoxes[g][c] ? '#ccc' : '#f0f0f0';
-            ctx.rect(BLACK_X_OFFSET + c * BLACK_BOX_SIZE, y, 6 * w, 6 * h);
+            ctx.rect(BLACK_X_OFFSET + c * BLACK_BOX_SIZE, y, model.N_ROWS * w, model.N_ROWS * h);
             ctx.fill();
           }
         }
@@ -180,9 +185,9 @@ define(function(require) {
         [0][0];
 
       var i, j;
-      for (i=0; i<16; i++) {
-        greenBoxes[i] = new Array(6);
-        blackBoxes[i] = new Array(16);
+      for (i=0; i<model.N_GROUPS; i++) {
+        greenBoxes[i] = new Array(model.N_ROWS);
+        blackBoxes[i] = new Array(model.N_COLS);
       }
       return this;
     };

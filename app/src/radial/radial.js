@@ -188,7 +188,7 @@ define(function(require) {
       connectors
         .enter()
         .append('circle')
-        .attr('r', 1)
+        .attr('r', config.ROUTER_RADIUS)
         .attr('fill', '#888');
 
       connectors
@@ -198,7 +198,7 @@ define(function(require) {
       connectors.exit().remove();
 
       var arcs = layout_gb.root().children.map(function(node) {
-        return {startAngle:node.children[0].angle, endAngle:node.children[15].angle};
+        return {startAngle:node.children[0].angle, endAngle:node.children[node.children.length-1].angle};
       });
 
       var size = layout_gb.size();
@@ -224,7 +224,7 @@ define(function(require) {
       var d3routers = svg.select('.routers').selectAll('.router')
         .data(list, function(d) { return d.id;});
 
-      r = r || 2;
+      r = r || config.ROUTER_RADIUS;
 
       d3routers.enter().call(Router);
 
@@ -234,7 +234,7 @@ define(function(require) {
         .attr('fill', function(d) {return d.color; })
         .attr('r', r);
 
-      d3routers.exit().attr('r', 1);
+      d3routers.exit().attr('r', config.ROUTER_RADIUS);
 
 
       /* render bands */
@@ -256,6 +256,7 @@ define(function(require) {
       var group, start, end, total;
       var n = data.groups.length;
       var i, j;
+      var nrouters = model.N_ROWS * model.N_COLS;
       for (i=0; i<n; i++) {
         group = fraction[i];
         total = 0;
@@ -264,8 +265,8 @@ define(function(require) {
         for (j=0; j<nj+1; j++) {
           if (group[j] > 0) {
             bands.push( {color:colors[j],
-              startAngle: start+(end-start)*(total)/96,
-              endAngle: start+(end-start)*(total+group[j])/96} );
+              startAngle: start+(end-start)*(total)/nrouters,
+              endAngle: start+(end-start)*(total+group[j])/nrouters} );
             total += group[j];
           }
         }
@@ -307,7 +308,7 @@ define(function(require) {
         .attr('y', function(d) { return -(opt.outerRadius+20)*Math.cos((d.startAngle + d.endAngle)/2) +6;});
 
       svg.select('.routers').selectAll('.router').remove();
-      renderRouters(data.routers, 1);
+      renderRouters(data.routers, config.ROUTER_RADIUS);
     }
 
     /*
@@ -366,7 +367,7 @@ define(function(require) {
         .attr('class', 'connector');
 
       c.append('circle')
-        .attr('r', 2)
+        .attr('r', config.ROUTER_RADIUS)
         .attr('cx', function(d) { return d.r * Math.cos(d.angle-Math.PI/2); })
         .attr('cy', function(d) { return d.r * Math.sin(d.angle-Math.PI/2);});
     }
@@ -389,12 +390,10 @@ define(function(require) {
 
     function highlight_router(router, r, on) {
       if (on) {
-        //d3.select(router).attr('r', 5);
         svg.select('.connections').selectAll('.connection')
           .classed('highlight', function(d) { return d.source.router == r || d.target.router == r;} );
       }
       else {
-        //d3.select(router).attr('r', 2);
         svg.select('.connections').selectAll('.connection')
           .classed('highlight', false);
       }
@@ -429,7 +428,6 @@ define(function(require) {
     };
 
     radial.resize = function(w, h) {
-      //console.log('radial resize:', w, h);
       var offset = 10;
 
       var size = bg_overview.size();
@@ -442,9 +440,6 @@ define(function(require) {
 
       layout.size(r);
       layout_gb.size([opt.innerRadius*0.1, opt.innerRadius*0.75]);
-
-      //d3.select(bg_canvas.el())
-      //  .attr('x', w-size[0]).attr('y', 0);
 
       if (data) {
         layout(data);
@@ -474,15 +469,12 @@ define(function(require) {
     radial.range = function(_) {
       if (!arguments.length) return range;
       range = _;
-      //console.log('range:',range);
       return this;
     };
 
 
     radial.filter = function() {
-      if (data && range) {
-        filter();
-      }
+      if (data && range) filter();
       return this;
     };
 

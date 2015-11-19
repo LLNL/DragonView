@@ -55,7 +55,7 @@ define(function(require) {
 
       total = 0;
       groups.forEach(function(g) {
-        g.len = 16;
+        g.len = model.N_COLS;
         total += g.len;
       });
 

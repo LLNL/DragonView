@@ -92,7 +92,8 @@ define(function(require) {
         if (item.jobid == undefined)
           console.log('undefined jobid for core:',item);
 
-        //run.nodes.set(item.id, item);
+        // TEMP: ignore data outside of config params
+        if (item.g >= model.N_GROUPS || item.r >= model.N_ROWS || item.c >= model.N_COLS || item.n >= model.N_NODES) return;
 
         job = run.jobs.get(item.jobid);
         if (!job) {
@@ -128,6 +129,10 @@ define(function(require) {
       dg = +values.shift();
       dr = +values.shift();
       dc = +values.shift();
+
+      // TEMP: ignore data outside of config parameters
+      if (sg >= model.N_GROUPS || sr >= model.N_ROWS || sc >= model.N_COLS || dg >= model.N_GROUPS || dr >= model.N_ROWS || dc >= model.N_COLS) continue;
+
       color = values.shift();
       nc = values.length;
       for (j = 0; j < nc; j++) {
