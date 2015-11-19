@@ -209,6 +209,7 @@ define(function(require) {
   }
 
   function recompute() {
+    header(spec);
     mat = collect(spec,  aggregate(spec));
     adjustColormap();
     render(mat);
@@ -227,6 +228,33 @@ define(function(require) {
         nzavg: d3.sum(leaves, function(d) { return d.nzavg * d.nonzero; })/ d3.sum(leaves, function(d) { return d.nonzero; })
       }})
       .entries(active);
+  }
+
+  function header(spec) {
+    var map = new Map(), cols, entry, value, field;
+    active.forEach(function(row) {
+      cols = map;
+      for (var i= 0, n=spec.cols.length; i<n; i++) {
+        field = spec.cols[i];
+        value = row[field.name];
+        entry = cols.get(value);
+        if (!entry) {
+          entry =  i < n-1 && new Map() || null;
+          cols.set(value, entry);
+        }
+        cols = entry;
+      }
+    });
+
+    visit(map, 0);
+
+    function visit(map, l) {
+      map.forEach(function(value, key) {
+        console.log(l, key, value);
+        if (value instanceof Map)
+          visit(value, l+1);
+      });
+    }
   }
 
   var x0 = 20, y0 = 40;
