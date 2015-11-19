@@ -231,7 +231,7 @@ define(function(require) {
   }
 
   var header;
-  var x0 = 20, y0 = 80;
+  var x0 = 20, y0 = 20;
   var dx = 1, dy = 1;
   var w = 15, h = 15;
   var fontSize = 15;
