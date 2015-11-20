@@ -182,7 +182,7 @@ define(function(require) {
   }
 
   function adjustColormap() {
-    var max = d3.max(mat.values, function (d) { return d.vgit alues[valueSelector]; });
+    var max = d3.max(mat.values, function (d) { return d.values[valueSelector]; });
     color.domain([0, max/2, max]);
   }
 
