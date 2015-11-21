@@ -59,18 +59,6 @@ define(function(require) {
     return a -b;
   }
 
-  // launch button on the main page
-  //d3.select('#show-compare')
-  //  .on('click', function() {
-  //    if (localWindow == null || localWindow.closed) {
-  //      localWindow = window.open('compare.html', 'compare');
-  //      d3.select(localWindow).on('load', init);
-  //    }
-  //    else {
-  //      localWindow.focus();
-  //    }
-  //  });
-
     //function loadTemplate(tid, eid) {
     //  var t = importDoc.querySelector(tid);
     //  var clone = document.importNode(t.content, true);
@@ -476,12 +464,10 @@ d3.csv('data/alldata.csv')
 
     li.enter().append('li')
       .on('click', function(d) {
-
+        dispatch.selected(d);
       });
     li.text(function(d) { return d;});
     li.exit().remove();
-
-    //sims.forEach(function(item) { console.log(item)});
 
     function visit(node) {
       if (Array.isArray(node.values)) {
