@@ -15,30 +15,42 @@
   right: 0; }
 
 #matrix {
-  position: static;
+  position: fixed;
   top: 100px;
   bottom: 10px;
-  left: 150px;
+  left: 180px;
   right: 250px; }
 
 #columns {
-  position: absolute; }
+  position: absolute;
+  overflow-x: hidden; }
+  #columns .col {
+    position: absolute;
+    background-color: palegreen;
+    text-align: center; }
 
 #rows {
-  position: absolute; }
+  position: absolute;
+  overflow-y: hidden; }
+  #rows .row {
+    position: absolute;
+    background-color: paleturquoise; }
+  #rows .rotate {
+    transform: rotate(-90deg);
+    transform-origin: left 0px;
+    text-align: center; }
 
 #values {
   position: absolute;
-  overflow: auto; }
+  box-sizing: border-box; }
+  #values .value {
+    position: absolute; }
 
 #frame {
   overflow: auto;
   position: fixed;
-  top: 100px;
   bottom: 10px;
-  left: 150px;
-  right: 250px;
-  display: inline-block; }
+  right: 250px; }
 
 #results {
   font-size: 10px;
@@ -46,9 +58,6 @@
   height: 500px; }
   #results .value {
     position: absolute; }
-  #results .row {
-    position: absolute;
-    background-color: paleturquoise; }
   #results .rotate {
     transform: rotate(-90deg);
     transform-origin: left 0px;

@@ -6,11 +6,14 @@ define(function(require) {
 
   var d3 = require('d3');
 
+  var width = 200, height = 200;
+
   var data = null;
   var active = [];
   var mat;
   var valueSelector = 'min';
   var spec;
+  var dispatch = d3.dispatch('selected');
 
   var fields = {
     config:  {name: 'config',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
@@ -84,6 +87,12 @@ d3.select('#select-options')
     .append('option')
     .attr('value', function(d) {return d.name;})
     .text(function(d) { return d.name;});
+
+
+  d3.select("#frame").on('scroll', function(d) {
+    d3.select('#rows')[0][0].scrollTop = this.scrollTop;
+    d3.select('#columns')[0][0].scrollLeft = this.scrollLeft;
+  });
 
 d3.csv('data/alldata.csv')
   .row(function(d) {
@@ -211,7 +220,7 @@ d3.csv('data/alldata.csv')
   }
 
   function recompute() {
-    buildHeader(spec);
+    buildColsHeader(spec);
     mat = collect(spec,  aggregate(spec));
     adjustColormap();
     render(mat);
@@ -234,7 +243,7 @@ d3.csv('data/alldata.csv')
   }
 
   var header;
-  var x0 = 20, y0 = 20;
+  var x0 = 0, y0 = 0;
   var dx = 1, dy = 1;
   var w = 15, h = 15;
   var fontSize = 15;
@@ -242,7 +251,7 @@ d3.csv('data/alldata.csv')
   var lastRowWidth = 30;
   var x, y;
 
-  function buildHeader(spec) {
+  function buildColsHeader(spec) {
     var root, entry, value, field;
 
     // collect
@@ -263,7 +272,7 @@ d3.csv('data/alldata.csv')
     });
 
     // assign location and size
-    visit(header, x0+spec.rows.length*(w+dx)+lastRowWidth-w+5, y0);
+    visit(header, 0, 0); //x0+spec.rows.length*(w+dx)+lastRowWidth-w+5, y0);
 
     function visit(root, x, y) {
       root.x = x;
@@ -286,9 +295,8 @@ d3.csv('data/alldata.csv')
 
 
   function collect(spec, nodes) {
-    console.log('collect', nodes);
-    x = x0;
-    y = y0 + (spec.cols.length+1)*(colHeight+dy);
+    x = 0;
+    y = 0; //  + (spec.cols.length+1)*(colHeight+dy);
     var mat = {header: {rows:[], cols:[]}, values:[]};
     var max_value = 0;
 
@@ -305,6 +313,7 @@ d3.csv('data/alldata.csv')
           node.y = y;
           x += +dx + (nrows == 1 ? lastRowWidth+5 : fontSize);
           node.last = nrows == 1;
+
           visit(nrows-1, ncols, node.values, header);
           if (nrows == 1) {
             y += h;
@@ -355,10 +364,16 @@ d3.csv('data/alldata.csv')
   }
 
   function render(mat) {
+    var rowsWidth = spec.rows.length*(w+dx)+lastRowWidth-w+5;
+    var rowsHeight = y;
+    var colsHeight = (spec.cols.length+1)*(colHeight+dy);
+    var colsWidth = header.x+header.w+dx;
 
-    d3.select('#results').attr('height', y);
-
-    var cols = d3.select('#results').selectAll('.col')
+    var cols = d3.select('#columns')
+      .style('left', rowsWidth+'px')
+      .style('width', width-rowsWidth+'px')
+      .style('height', colsHeight+'px')
+      .selectAll('.col')
       .data(flatten(header));
 
     cols.enter()
@@ -382,7 +397,7 @@ d3.csv('data/alldata.csv')
       list.push({x: header.x+header.w+dx+5, y: header.y+(i+1)*(colHeight+dy), w:40, h: fontSize, label: spec.cols[i].name });
     }
 
-    var colText = d3.select('#results').selectAll('.colText')
+    var colText = d3.select('#colums').selectAll('.colText')
       .data(list);
 
     colText.enter()
@@ -398,7 +413,11 @@ d3.csv('data/alldata.csv')
 
     colText.exit().remove();
 
-    var rows = d3.select('#results').selectAll('.row')
+    var rows = d3.select('#rows')
+      .style('top', colsHeight+'px')
+      .style('width', rowsWidth+'px')
+      .style('height', height-colsHeight+'px')
+      .selectAll('.row')
       .data(mat.header.rows);
 
     rows.enter()
@@ -419,7 +438,17 @@ d3.csv('data/alldata.csv')
     rows.exit().remove();
 
 
-    var d3nodes = d3.select('#results').selectAll('.value')
+    d3.select('#frame')
+      .style('top', 100+(spec.cols.length+1)*(colHeight+dy)+'px')
+      .style('left', 180+rowsWidth+'px')
+      .style('width', Math.min(colsWidth, (width-180-rowsWidth)+'px'))
+      .style('height', Math.min(rowsHeight, (height-100-(spec.cols.length+1)*(colHeight+dy)))+'px');
+
+
+    var d3nodes = d3.select('#values')
+      .style('width', colsWidth+'px')
+      .style('height', rowsHeight+'px')
+      .selectAll('.value')
       .data(mat.values);
 
     d3nodes.enter()
@@ -445,7 +474,10 @@ d3.csv('data/alldata.csv')
     var li = d3.select('#selection-list').selectAll('li')
       .data(Array.from(sims));
 
-    li.enter().append('li');
+    li.enter().append('li')
+      .on('click', function(d) {
+
+      });
     li.text(function(d) { return d;});
     li.exit().remove();
 
@@ -455,10 +487,22 @@ d3.csv('data/alldata.csv')
       if (Array.isArray(node.values)) {
         node.values.forEach(function(d) { visit(d); });
       } else  {
-        //Array.prototype.push.apply(list, node.values.leaves);
-        node.values.leaves.forEach(function(row) { sims.add(row.config+','+row.dataset+'/'+row.sim); });
+        node.values.leaves.forEach(function(row) { sims.add(row.config+','+row.dataset+','+row.sim); });
       }
     }
   }
 
+  return {
+    on : function(type, cb) {
+      dispatch.on(type, cb);
+      return this;
+    },
+
+    resize: function(size) {
+      width = size[0];
+      height = size[1];
+      render(mat);
+      return this;
+    }
+  }
 });

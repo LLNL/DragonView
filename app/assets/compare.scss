@@ -23,34 +23,53 @@
 }
 
 #matrix {
-  position: static;
+  position: fixed;
   top: 100px;
   bottom: 10px;
-  left: 150px;
+  left: 180px;
   right: 250px;
 }
 
 #columns {
   position: absolute;
+  overflow-x: hidden;
+
+  .col {
+    position: absolute;
+    background-color: palegreen;
+    text-align: center;
+  }
 }
 
 #rows {
   position: absolute;
+  overflow-y: hidden;
+
+  .row {
+    position: absolute;
+    background-color: paleturquoise;
+  }
+
+  .rotate {
+    transform: rotate(-90deg);
+    transform-origin: left 0px;
+    text-align: center;
+  }
 }
 
 #values {
   position: absolute;
-  overflow: auto;
+  box-sizing: border-box;
+  .value {
+    position: absolute;
+  }
 }
 
 #frame {
   overflow: auto;
   position: fixed;
-  top: 100px;
   bottom: 10px;
-  left: 150px;
   right: 250px;
-  display: inline-block;
 }
 
 #results {
@@ -62,10 +81,7 @@
     //border: lightgrey solid 1px;
   }
 
-  .row {
-    position: absolute;
-    background-color: paleturquoise;
-  }
+
 
   .rotate {
     transform: rotate(-90deg);
