@@ -5,28 +5,39 @@
 define(function(require) {
   'use strict';
 
-  var DataService = require('data');
-  var ControlsView = require('views');
-  var CountersView = require('counters_view');
-  var JobsView = require('jobs_view');
-  var Radio = require('radio');
-  var Compare = require('compare/compare');
+  //var DataService = require('data');
+  //var ControlsView = require('views');
+  //var CountersView = require('counters_view');
+  //var JobsView = require('jobs_view');
+  var radio = require('radio');
 
-  return function() {
-    var radialView, countersView, controlsView, jobsView;
-    var dataService = DataService;
+  require('compare/compare');
 
-    var app = function() {};
+  var runs = new Map();
 
-    app.start = function() {
-      countersView = CountersView();
-      controlsView = ControlsView();
-      jobsView = JobsView();
+  radio.channel('app').on('show.run', showRun);
 
-      Radio.channel('app').trigger('ready');
-      return app;
-    };
 
-    return app;
-  };
+  function showRun() {
+
+  }
+
+  //
+  //return function() {
+  //  var radialView, countersView, controlsView, jobsView;
+  //  var dataService = DataService;
+  //
+  //  var app = function() {};
+  //
+  //  app.start = function() {
+  //    countersView = CountersView();
+  //    controlsView = ControlsView();
+  //    jobsView = JobsView();
+  //
+  //    Radio.channel('app').trigger('ready');
+  //    return app;
+  //  };
+  //
+  //  return app;
+  //};
 });

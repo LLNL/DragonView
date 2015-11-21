@@ -1,33 +1,53 @@
 <!-- Compare.html -->
 
-<head>
-    <meta charset="utf-8">
-    <title>Radial Dragonfly</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="lib/fontawesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="assets/app.css" rel="stylesheet">
-    <link href="assets/compare.css" rel="stylesheet">
+<link href="assets/compare.css" rel="stylesheet">
 
-</head>
+<template id="compare-template">
 
-<body class="page">
-<div class="title">DragonView: Compare</div>
+  <h3>Simulation Runs</h3>
 
-<div id="info" class="controls">
-    <div>Size: <span id="size"></span> rows</div>
-    <ul id="fields">
-    </ul>
-</div>
-
-
-<div id="compare">
-  <div>
-    View:  <select id="select-options"></select><br>
-    Value: <select id="select-values"></select>
+  <div id="info" class="controls">
+      <div><span id="size"></span> runs</div>
+      <ul id="fields">
+      </ul>
   </div>
-  <div id="frame">
-     <div id="results"></div>
-  </div>
-</div>
 
-</body>
+  <div id="compare">
+    <div>
+      Config: <select id="select-options"></select><br>
+      Field : <select id="select-values"></select>
+      Function: <select id="select-function"></select>
+    </div>
+
+    <div id="matrix">
+      <div id="columns"></div>
+      <div id="rows"></div>
+      <div id="values"></div>
+    </div>
+    <div id="frame">
+       <div id="results"></div>
+    </div>
+    <div id="selection">
+      <h3>Simulations</h3>
+      <ul id="selection-list"></ul>
+    </div>
+  </div>
+
+</template>
+
+
+<script>
+  (function() {
+    var importDoc = document.currentScript.ownerDocument;
+
+    var proto = Object.create(HTMLElement.prototype);
+
+    proto.createdCallback = function() {
+      var template = importDoc.querySelector('#compare-template');
+      var clone = document.importNode(template.content, true);
+      this.appendChild(clone);
+    };
+
+    document.registerElement('compare-runs', {prototype: proto});
+  })();
+</script>

@@ -14,13 +14,36 @@
   left: 160px;
   right: 0; }
 
+#matrix {
+  position: static;
+  top: 100px;
+  bottom: 10px;
+  left: 150px;
+  right: 250px; }
+
+#columns {
+  position: absolute; }
+
+#rows {
+  position: absolute; }
+
+#values {
+  position: absolute;
+  overflow: auto; }
+
 #frame {
   overflow: auto;
-  height: 90%; }
+  position: fixed;
+  top: 100px;
+  bottom: 10px;
+  left: 150px;
+  right: 250px;
+  display: inline-block; }
 
 #results {
   font-size: 10px;
-  position: relative; }
+  position: relative;
+  height: 500px; }
   #results .value {
     position: absolute; }
   #results .row {
@@ -36,5 +59,11 @@
     text-align: center; }
   #results .colText {
     position: absolute; }
+
+#selection {
+  position: fixed;
+  top: 100px;
+  right: 10px;
+  width: 200px; }
 
 /*# sourceMappingURL=compare.css.map */

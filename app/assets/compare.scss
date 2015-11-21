@@ -22,15 +22,41 @@
   //border: solid lightblue 1px;
 }
 
+#matrix {
+  position: static;
+  top: 100px;
+  bottom: 10px;
+  left: 150px;
+  right: 250px;
+}
+
+#columns {
+  position: absolute;
+}
+
+#rows {
+  position: absolute;
+}
+
+#values {
+  position: absolute;
+  overflow: auto;
+}
+
 #frame {
   overflow: auto;
-  height: 90%;
+  position: fixed;
+  top: 100px;
+  bottom: 10px;
+  left: 150px;
+  right: 250px;
+  display: inline-block;
 }
 
 #results {
   font-size: 10px;
   position: relative;
-  //height: 500px;
+  height: 500px;
   .value {
     position: absolute;
     //border: lightgrey solid 1px;
@@ -57,4 +83,11 @@
     position: absolute;
     //background-color: lightblue;
   }
+}
+
+#selection {
+  position: fixed;
+  top: 100px;
+  right: 10px;
+  width: 200px;
 }

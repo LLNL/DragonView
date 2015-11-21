@@ -6,8 +6,6 @@ define(function(require) {
 
   var d3 = require('d3');
 
-  var localWindow = null;
-  var root = null;
   var data = null;
   var active = [];
   var mat;
@@ -24,19 +22,24 @@ define(function(require) {
 
   var specs = [
     {
-      name: 'config/jobid',
+      name: 'config / sim',
       rows: [fields.config],
-      cols: [fields.jobid]
+      cols: [fields.sim]
     },
     {
-      name: 'config,sim/dataset,jobid',
+      name: 'config,sim / dataset,jobid',
       rows: [fields.config, fields.sim],
       cols: [fields.dataset, fields.jobid]
     },
     {
-      name: 'config,dataset,sim/color,jobid',
+      name: 'config,dataset,sim / color,jobid',
       rows: [fields.config, fields.dataset, fields.sim],
       cols: [fields.color, fields.jobid]
+    },
+    {
+      name: 'dataset,sim/ config',
+      rows: [fields.dataset, fields.sim],
+      cols: [fields.config]
     }
   ];
 
@@ -54,85 +57,87 @@ define(function(require) {
   }
 
   // launch button on the main page
-  d3.select('#show-compare')
-    .on('click', function() {
-      if (localWindow == null || localWindow.closed) {
-        localWindow = window.open('compare.html', 'compare');
-        d3.select(localWindow).on('load', init);
+  //d3.select('#show-compare')
+  //  .on('click', function() {
+  //    if (localWindow == null || localWindow.closed) {
+  //      localWindow = window.open('compare.html', 'compare');
+  //      d3.select(localWindow).on('load', init);
+  //    }
+  //    else {
+  //      localWindow.focus();
+  //    }
+  //  });
+
+    //function loadTemplate(tid, eid) {
+    //  var t = importDoc.querySelector(tid);
+    //  var clone = document.importNode(t.content, true);
+    //  var d = document.getElementsByTagName(eid);
+    //  d[0].appendChild(clone);
+    //}
+    //loadTemplate('#compare-template', name);
+
+d3.select('#select-options')
+  .on('change', function (d) { spec = specs[d3.select(this).property('selectedIndex')]; recompute(); })
+  .selectAll('option')
+  .data(specs)
+  .enter()
+    .append('option')
+    .attr('value', function(d) {return d.name;})
+    .text(function(d) { return d.name;});
+
+d3.csv('data/alldata.csv')
+  .row(function(d) {
+    //d.jobid = +d.jobid;
+    d.color = colorname[d.color];
+    d.min = +d.min;
+    d.avg = +d.avg;
+    d.max = +d.max;
+    d.nonzero = +d.nonzero;
+    d.navg = +d.navg;
+    return d;
+  })
+  .get(function(error, rows) {
+    if (error) {
+      // TODO: better error message notification
+      console.err(error);
+    }
+    else {
+      d3.select('#size').text(rows.length);
+      if (rows.length == 0) {
+        // TODO: better message notification
+        console.log('empty dataset');
+        return;
       }
-      else {
-        localWindow.focus();
-      }
-    });
+      data = rows;
 
+      // TODO: use keys based on data. Issue: how to determine which fields are values
+      var keys = ['min', 'avg', 'max', 'nzavg'];
 
-  // init module only it is actually called
-  function init() {
-    root = localWindow.document.body;
+      d3.select('#select-values')
+        .on('change', selectValue)
+        .selectAll('option')
+        .data(keys)
+        .enter()
+          .append('option')
 
-    d3.select(root).select('#select-options')
-      .on('change', function (d) { spec = specs[d3.select(this).property('selectedIndex')]; recompute(); })
-      .selectAll('option')
-      .data(specs)
-      .enter()
-        .append('option')
-        .attr('value', function(d) {return d.name;})
-        .text(function(d) { return d.name;});
+        .attr('value', function(d) {return d;})
+        .text(function(d) { return d;});
 
-    d3.csv('data/alldata.csv')
-      .row(function(d) {
-        //d.jobid = +d.jobid;
-        d.color = colorname[d.color];
-        d.min = +d.min;
-        d.avg = +d.avg;
-        d.max = +d.max;
-        d.nonzero = +d.nonzero;
-        d.navg = +d.navg;
-        return d;
-      })
-      .get(function(error, rows) {
-        if (error) {
-          // TODO: better error message notification
-          console.err(error);
-        }
-        else {
-          d3.select(root).select('#size').text(rows.length);
-          if (rows.length == 0) {
-            // TODO: better message notification
-            console.log('empty dataset');
-            return;
-          }
-          data = rows;
+      // init selection and render
+      valueSelector = 'max';
+      d3.select('#select-values')
+        .property('value', valueSelector);
 
-          // TODO: use keys based on data. Issue: how to determine which fields are values
-          var keys = ['min', 'avg', 'max', 'nzavg'];
-
-          d3.select(root).select('#select-values')
-            .on('change', selectValue)
-            .selectAll('option')
-            .data(keys)
-            .enter()
-              .append('option')
-
-            .attr('value', function(d) {return d;})
-            .text(function(d) { return d;});
-
-          // init selection and render
-          valueSelector = 'max';
-          d3.select(root).select('#select-values')
-            .property('value', valueSelector);
-
-          setupFields();
-          spec = specs[0];
-          filter();
-        }
-      });
-  }
+      setupFields();
+      spec = specs[0];
+      filter();
+    }
+  });
 
   function setupFields() {
     collectValues(data);
 
-    var li = d3.select(root).select('#info #fields').selectAll('li')
+    var li = d3.select('#info #fields').selectAll('li')
       .data(Object.keys(fields))
       .enter()
       .append('li');
@@ -218,6 +223,7 @@ define(function(require) {
     spec.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}).sortKeys(field.sort); } );
 
     return nest.rollup(function(leaves) { return {
+        leaves: leaves,
         min: d3.min(leaves, function(d) { return d.min; }),
         avg: d3.mean(leaves, function(d) { return d.avg; }),
         max: d3.max(leaves, function(d) { return d.max; }),
@@ -248,9 +254,10 @@ define(function(require) {
         value = row[field.name];
         entry = root.values.get(value);
         if (!entry) {
-          entry =  i<n-1 && {field: spec.cols[i+1], label: value, values: new Map()} || {label: value};
+          entry =  i<n-1 && {field: spec.cols[i+1], label: value, values: new Map()} || {label: value, leaves:[]};
           root.values.set(value, entry);
         }
+        if (i == n-1) entry.leaves.push(row);
         root = entry;
       }
     });
@@ -275,12 +282,11 @@ define(function(require) {
       root.h = h;
       return x;
     }
-
   }
 
 
-
   function collect(spec, nodes) {
+    console.log('collect', nodes);
     x = x0;
     y = y0 + (spec.cols.length+1)*(colHeight+dy);
     var mat = {header: {rows:[], cols:[]}, values:[]};
@@ -350,20 +356,21 @@ define(function(require) {
 
   function render(mat) {
 
-    d3.select(root).select('#results').attr('height', y);
+    d3.select('#results').attr('height', y);
 
-    var cols = d3.select(root).select('#results').selectAll('.col')
+    var cols = d3.select('#results').selectAll('.col')
       .data(flatten(header));
 
     cols.enter()
       .append('div')
-      .attr('class', 'col');
+      .attr('class', 'col')
+      .on('click', select);
 
     cols
-      .style('left', function(d) { return d.x;})
-      .style('top', function(d) { return d.y;})
-      .style('width', function(d) { return d.w;})
-      .style('height', function(d) { return d.h;})
+      .style('left', function(d) { return d.x+"px";})
+      .style('top', function(d) { return d.y+"px";})
+      .style('width', function(d) { return d.w+"px";})
+      .style('height', function(d) { return d.h+"px";})
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
     ;
@@ -375,7 +382,7 @@ define(function(require) {
       list.push({x: header.x+header.w+dx+5, y: header.y+(i+1)*(colHeight+dy), w:40, h: fontSize, label: spec.cols[i].name });
     }
 
-    var colText = d3.select(root).select('#results').selectAll('.colText')
+    var colText = d3.select('#results').selectAll('.colText')
       .data(list);
 
     colText.enter()
@@ -383,27 +390,28 @@ define(function(require) {
       .attr('class', 'colText');
 
     colText
-      .style('left', function(d) { return d.x;})
-      .style('top', function(d) { return d.y; })
-      .style('width', function(d) { return d.w;})
-      .style('height', function(d) { return d.h;})
+      .style('left', function(d) { return d.x+"px";})
+      .style('top', function(d) { return d.y+"px"; })
+      .style('width', function(d) { return d.w+"px";})
+      .style('height', function(d) { return d.h+"px";})
       .text(function(d) { return d.label; });
 
     colText.exit().remove();
 
-    var rows = d3.select(root).select('#results').selectAll('.row')
+    var rows = d3.select('#results').selectAll('.row')
       .data(mat.header.rows);
 
     rows.enter()
       .append('div')
-      .attr('class', 'row');
+      .attr('class', 'row')
+      .on('click', select);
 
     rows
       .classed('rotate', function(d) { return !d.last; })
-      .style('left', function(d) { return d.x;})
-      .style('top', function(d) { return d.y+ (d.last ? 0 : d.w);})
-      .style('width', function(d) { return d.w;})
-      .style('height', function(d) { return d.h;})
+      .style('left', function(d) { return d.x+"px";})
+      .style('top', function(d) { return (d.y+ (d.last ? 0 : d.w)+"px");})
+      .style('width', function(d) { return d.w+"px";})
+      .style('height', function(d) { return d.h+"px";})
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
     ;
@@ -411,25 +419,46 @@ define(function(require) {
     rows.exit().remove();
 
 
-    var d3nodes = d3.select(root).select('#results').selectAll('.value')
+    var d3nodes = d3.select('#results').selectAll('.value')
       .data(mat.values);
 
     d3nodes.enter()
       .append('div')
-      .attr('class', 'value');
+      .attr('class', 'value')
+      .on('click', select);
 
     d3nodes
-      .style('left', function(d) { return d.x;})
-      .style('top', function(d) { return d.y;})
-      .style('width', function(d) { return d.w;})
-      .style('height', function(d) { return d.h;})
+      .style('left', function(d) { return d.x+"px";})
+      .style('top', function(d) { return d.y+"px";})
+      .style('width', function(d) { return d.w+"px";})
+      .style('height', function(d) { return d.h+"px";})
       .style('background-color', function(d) { return color(d.values[valueSelector]); })
     ;
 
     d3nodes.exit().remove();
   }
 
-  return {
-  };
+  function select(node) {
+    var sims = new Set();
+    visit(node);
+
+    var li = d3.select('#selection-list').selectAll('li')
+      .data(Array.from(sims));
+
+    li.enter().append('li');
+    li.text(function(d) { return d;});
+    li.exit().remove();
+
+    //sims.forEach(function(item) { console.log(item)});
+
+    function visit(node) {
+      if (Array.isArray(node.values)) {
+        node.values.forEach(function(d) { visit(d); });
+      } else  {
+        //Array.prototype.push.apply(list, node.values.leaves);
+        node.values.leaves.forEach(function(row) { sims.add(row.config+','+row.dataset+'/'+row.sim); });
+      }
+    }
+  }
 
 });

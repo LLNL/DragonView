@@ -20,8 +20,5 @@ require.config({
   }
 });
 
-
 // bootstrap the application
-require(['app'], function(app) {
-  app().start();
-});
+require(['app'], function() {});
