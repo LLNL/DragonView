@@ -45,6 +45,10 @@ div {
   height: 15px;
 }
 
+#data-table {
+  font-size:  10pt;
+}
+
 .controls {
 //  position: fixed;
   top: 10px;
@@ -63,6 +67,7 @@ div {
     padding-top: 5px;
     margin-top: 10px;
     background-color: #f0f0f0;
+
   }
 
   .li-title {
@@ -88,6 +93,7 @@ div {
     height: 10px;
 
   }
+
   .jobs {
     //  background-color: #f0f0f0;
     border-collapse: collapse;

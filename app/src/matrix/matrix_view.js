@@ -8,21 +8,22 @@ define(function(require) {
   var _ = require('underscore');
   //var Resize = require('resize');
 
-  return function() {
+  return function(id_) {
+    var id = id_;
     var component, el;
     var active = false, _data, _range, _counter;
 
-    Radio.channel('data').on('run', function (data) {
+    Radio.channel(id).on('data.run', function (data) {
       if (active) component.data(data).update();
       else _data = data;
     });
 
-    Radio.channel('counter').on('range', function (range) {
+    Radio.channel(id).on('counter.range', function (range) {
       if (active) component.range(range).update();
       else _range = range;
     });
 
-    Radio.channel('counter').on('change', function (index) {
+    Radio.channel(id).on('counter.change', function (index) {
       if (active) component.counter(index).update();
       else _counter = index;
     });

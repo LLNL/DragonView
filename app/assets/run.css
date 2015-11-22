@@ -66,6 +66,9 @@ div {
   width: 20px;
   height: 15px; }
 
+#data-table {
+  font-size: 10pt; }
+
 .controls {
   top: 10px;
   left: 5px;
@@ -236,4 +239,4 @@ div {
   stroke: green;
   shape-rendering: crispEdges; }
 
-/*# sourceMappingURL=app.css.map */
+/*# sourceMappingURL=run.css.map */

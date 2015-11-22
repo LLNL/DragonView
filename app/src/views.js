@@ -7,14 +7,19 @@ define(function(require) {
   var MatrixFactory = require('matrix/matrix_view');
   var GraphFactory = require('graph/graph_view');
 
-  var views = [
-    {id:'radial', factory: RadialFactory, view:undefined},
-    {id:'matrix', factory: MatrixFactory, view:undefined},
-    {id:'graph',  factory: GraphFactory, view:undefined }
-  ];
+  return function(id_, doc) {
+    var localDocument = doc;
+    var root = d3.select(localDocument);
+    var id = id_;
 
-  var view = function() {
-    d3.select('.views').select(".tab-links").selectAll("li")
+    var views = [
+      {id:'radial', factory: RadialFactory, view:undefined},
+      {id:'matrix', factory: MatrixFactory, view:undefined},
+      {id:'graph',  factory: GraphFactory, view:undefined }
+    ];
+
+
+    root.select('.views').select(".tab-links").selectAll("li")
       .data(views)
       .enter()
         .append('li')
@@ -23,28 +28,26 @@ define(function(require) {
           .attr('href', function(d) {return '#'+d.id;})
           .text(function(d) { return d.id;})
           .on('click', function(d) {
-              d3.select('.views').select('.tab-links').selectAll('li')
+              root.select('.views').select('.tab-links').selectAll('li')
                 .data(views)
                 .classed('active', function(tab) { return tab.id == d.id; });
 
-              d3.select('.views').selectAll('.tab')
+              root.select('.views').selectAll('.tab')
                 .data(views)
                 .classed('active', function(tab) { return tab.id == d.id; })
                 .each(function(tab) { tab.view.active(tab.id == d.id); });
               d3.event.preventDefault();
           });
 
-    d3.select('.views').select('.tab-content').selectAll("div")
+    root.select('.views').select('.tab-content').selectAll("div")
       .data(views)
       .enter()
         .append('div')
         .attr('id', function(d) { return d.id;})
         .attr('class', function(d, i) { return 'tab'+(i==0? ' active' : ''); })
         .each(function(d, i) {
-          d.view = d.factory();
+          d.view = d.factory(id);
           var a = d.view(this);
           d.view.active(i==0);});
   };
-
-  return view;
 });

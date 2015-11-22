@@ -427,12 +427,12 @@ define(function(require) {
       return this;
     };
 
-    radial.resize = function(w, h) {
+    radial.resize = function(size) {
       var offset = 10;
 
-      var size = bg_overview.size();
+      var bg = bg_overview.size();
 
-      var s = w-size[0]; //Math.min(w-size[0], h);
+      var s = size[0]-bg[0];
       svgContainer.attr("width", s).attr("height", s);
 
       var r = s/2 - offset;

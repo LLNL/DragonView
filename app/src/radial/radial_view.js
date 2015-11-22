@@ -8,43 +8,54 @@ define(function(require) {
   var Resize = require('resize');
   var Radio = require('radio');
 
-  return function() {
+  return function(id_) {
+    var id = id_;
     var radial, el, group;
     var active = false, _data, _range, _counter;
 
-    Radio.channel('data').on('run', function (data) {
+    Radio.channel(id).on('data.run', function (data) {
       _data = data;
       if (active) radial.data(data).filter();
     });
 
-    Radio.channel('data').on('update', function(data) {
+    Radio.channel(id).on('data.update', function(data) {
       _data = data;
       if (active) radial.data(data).filter();
     });
 
-    Radio.channel('counter').on('range', function (range) {
+    Radio.channel(id).on('counter.range', function (range) {
       _range = range;
       if (active) radial.range(range).filter();
     });
 
-    Radio.channel('counter').on('change', function (index) {
+    Radio.channel(id).on('counter.change', function (index) {
       _counter = index;
       if (active) radial.counter(index).filter();
     });
 
-    Radio.channel('cmap').on('changed', function() {
+    Radio.channel(id).on('cmap.changed', function() {
       if (active) radial.renderLinks();
     });
+
     function onResize() {
       //console.log('w:',el.width(), 'h:', el.height());
       radial.resize(el.width(), el.height());
     }
 
-    var view = function(elem) {
-      el = $(elem);
-      radial = Radial().el(elem).counter(0).resize(600, 600);
+    function getSize(el) {
+      var d3el = d3.select(el);
+      return [parseInt(d3el.style('width')), parseInt(d3el.style('height'))];
+    }
 
-      el.detectResizing({onResize: onResize});
+    var view = function(elem) {
+      radial = Radial().el(elem).counter(0).resize([600, 600]);
+
+      var win = elem.ownerDocument.defaultView || elem.ownerDocument.parentWindow;
+      win.addEventListener('resize', function() {
+        radial.resize(getSize(elem));
+      });
+      win.dispatchEvent(new Event('resize'));
+
       return view;
     };
 

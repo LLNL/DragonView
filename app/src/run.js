@@ -4,6 +4,7 @@
 define(function(require) {
 
   var d3 = require('d3');
+  var radio = require('radio');
 
   var DataService = require('data');
   var ControlsView = require('views');
@@ -11,21 +12,23 @@ define(function(require) {
   var JobsView = require('jobs_view');
 
   return function() {
+    var id;
+    var localWindow;
     var radialView, countersView, controlsView, jobsView;
     var dataService = DataService;
 
-    var run = function() {};
+    return {
+      init: function (_id, _win) {
+        id = _id;
+        localWindow = _win;
 
-    run.init = function() {
-      countersView = CountersView();
-      controlsView = ControlsView();
-      jobsView = JobsView();
+        countersView = CountersView(id, localWindow.document);
+        controlsView = ControlsView(id, localWindow.document);
+        jobsView = JobsView(id, localWindow.document);
 
-      Radio.channel('app').trigger('ready');
-      return run;
+        radio.channel(id).trigger('app.ready');
+        return this;
+      }
     };
-
-    return run;
   };
-
 });

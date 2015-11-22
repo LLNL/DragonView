@@ -59,7 +59,7 @@ define(function(require) {
     });
   };
 
-  function loadRun(name) {
+  function loadRun(channel, name) {
     var info = runsInfo.get(name);
     queue()
       .defer(d3.csv, info.jobs)
@@ -74,7 +74,7 @@ define(function(require) {
           //runs.set(name, run);
           loadPlacement(placement, run);
           loadCounters(counters, run);
-          Backbone.Radio.channel('data').trigger('run', run);
+          Backbone.Radio.channel(channel).trigger('data.run', run);
         }
       });
   }
@@ -169,30 +169,25 @@ define(function(require) {
 
   var service = {};
 
-  service.loadCatalog = function (file) {
+  service.loadCatalog = function (channel, file) {
     d3.csv(file, function(list) {
-      //list.sort(function(a,b) {
-      //  if (a.name < b.name) return -1;
-      //  else if (a.name > b.name) return 1;
-      //  return 0;
-      //});
       list.forEach(function(item) {
         item.counters = '/data/'+item.counters;
         item.jobs = '/data/'+item.jobs;
         item.comm = item.comm && '/data/'+item.comm;
       });
       runsInfo = d3.map(list,  function(d) { return d.name;});
-      Backbone.Radio.channel('data').trigger('runsList', list);
+      Backbone.Radio.channel(channel).trigger('data.runsList', list);
     });
     return this;
   };
 
-  service.load = function (name) {
+  service.load = function (channel, name) {
     var run = runs.get(name);
     if (!run) {
-      loadRun(name);
+      loadRun(channel, name);
     } else {
-      Backbone.Radio.channel('data').trigger('run', run);
+      Backbone.Radio.channel(channel).trigger('data.run', run);
     }
     return this;
   };

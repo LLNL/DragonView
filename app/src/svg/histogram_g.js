@@ -6,7 +6,6 @@ define(function(require) {
   var
     d3 = require('d3');
 
-
   return function() {
     var
         margin = {top: 20, right:10, bottom: 10, left: 40},
@@ -73,8 +72,8 @@ define(function(require) {
         var values = _series.map(valueAccessor).sort(d3.ascending);
         var l = values.length;
         percentile = [values[l/4], values[l/2], values[l*3/4]];
-        console.log('percentile:', percentile);
       }
+
       svg.select('.x')
         .call(xAxis);
 
@@ -106,8 +105,9 @@ define(function(require) {
       bar
         .attr('x', function (d) { return x(d.x); })
         .attr('width', dx)
-        .transition()
-        .duration(duration)
+        // CHECK: transition doesn't work on a secondary window
+        //.transition()
+        //.duration(duration)
           .attr('y', function (d) { return y(d.y1); })
           .attr('height', function (d) { return y(d.y0) - y(d.y1) ; });
 

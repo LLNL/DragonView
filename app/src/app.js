@@ -8,7 +8,7 @@ define(function(require) {
 
   var radio = require('radio');
   var compare = require('./compare');
-  var Ran = require('./ran');
+  var Run = require('./run');
 
   var tabs = new Map();
 
@@ -23,8 +23,8 @@ define(function(require) {
       tabs.set(key, tab);
     }
     if (!tab.window || tab.window.closed) {
-      tab.window = window.open('tab.html', 'tab');
-      d3.select(tab.window).on('load', run.init);
+      tab.window = window.open('run.html', key);
+      d3.select(tab.window).on('load', function() { tab.run.init(key, tab.window); });
     } else {
       tab.window.focus();
     }
