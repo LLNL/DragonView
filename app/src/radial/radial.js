@@ -17,14 +17,16 @@ define(function(require) {
     var UNKNOWN_JOB_COLOR = '#d0d0d0';
 
     var minimum, maximum, valid = false;
-    var layout = Layout().size([WIDTH, HEIGHT]),
+    var size = [WIDTH, HEIGHT],
+        layout = Layout().size([WIDTH, HEIGHT]),
         layout_gb = LayoutGB(),
         bg_overview = BlackGreen(),
         opt = layout.parms(),
         mode = 'blue',
         selectedGroup = undefined,
         blueLinks, greenLinks, blackLinks,
-        svgContainer, svg;
+        svgContainer, svg,
+        bg_overview_closed = false;
 
     var d3groupView, d3groupView2, d3bgView;
 
@@ -422,17 +424,29 @@ define(function(require) {
       svg.append('g').attr('class', 'green-blue');
       svg.append('g').attr('class', 'internal');
 
-      bg_overview.el(d3el); //.append('div'));
+      var div = d3el.append('div').attr('id', 'bg-div');
+      div.append('button')
+        .attr('id', 'bg-button')
+        .text('>>')
+        .on('click', function() {
+          bg_overview_closed = !bg_overview_closed;
+          div.classed('closed', bg_overview_closed);
+          div.select('bg-button').text(bg_overview_closed && '<<' || '>>');
+          radial.resize(size);
+        });
+
+      bg_overview.el(div);
 
       return this;
     };
 
-    radial.resize = function(size) {
+    radial.resize = function(_) {
+      size = _;
       var offset = 10;
 
-      var bg = bg_overview.size();
+      var bg = bg_overview_closed ? [0, 0] : bg_overview.size();
 
-      var s = size[0]-bg[0];
+      var s = Math.min(size[0]-bg[0], size[1]);
       svgContainer.attr("width", s).attr("height", s);
 
       var r = s/2 - offset;

@@ -3,9 +3,6 @@
  */
 define(function(require) {
   var Radial = require('radial/radial');
-  var _ = require('underscore');
-  var $ = require('jquery');
-  var Resize = require('resize');
   var Radio = require('radio');
 
   return function(id_) {
@@ -36,11 +33,6 @@ define(function(require) {
     Radio.channel(id).on('cmap.changed', function() {
       if (active) radial.renderLinks();
     });
-
-    function onResize() {
-      //console.log('w:',el.width(), 'h:', el.height());
-      radial.resize(el.width(), el.height());
-    }
 
     function getSize(el) {
       var d3el = d3.select(el);

@@ -50,142 +50,139 @@ define(function(require) {
 
     var inout = true;
 
-    //init();
-
-    //function init() {
-      //root.select('body')
-      root
-        .on('keydown', function () {
-          var options = root.select('#run');
-          var value = +options.property('value');
-          if (d3.event.keyCode == 38) {
-            if (value > 0 && knownRuns[value - 1].name) {
-              options.property('value', value - 1);
-              selectRun(value - 1);
-            } else {
-              localDocument.getElementById('play').play();
-            }
-          } else if (d3.event.keyCode == 40) {
-            if (value < knownRuns.length - 1 && knownRuns[value + 1].name) {
-              options.property('value', value + 1);
-              selectRun(value + 1);
-            } else {
-              localDocument.getElementById('play').play();
-            }
+    root
+      .on('keydown', function () {
+        var options = root.select('#run');
+        var value = +options.property('value');
+        if (d3.event.keyCode == 38) {
+          if (value > 0 && knownRuns[value - 1].name) {
+            options.property('value', value - 1);
+            selectRun(value - 1);
+          } else {
+            localDocument.getElementById('play').play();
+          }
+        } else if (d3.event.keyCode == 40) {
+          if (value < knownRuns.length - 1 && knownRuns[value + 1].name) {
+            options.property('value', value + 1);
+            selectRun(value + 1);
+          } else {
+            localDocument.getElementById('play').play();
           }
         }
-      );
-
-      root.select('#cmap')
-        .style("width", "20px")
-        .style("height", "135px")
-        .style("position", "absolute")
-        .style("left", "0px")
-        .style('background-image', "linear-gradient(" + createColormap(cmap_yellow_pos) + ")")
-        .on('mousedown', function () {
-          d3.event.preventDefault();
-          var self = this;
-          root.select('#cmap')
-            .on('mousemove', function () {
-              updateCmap(1 - d3.mouse(this)[1] / 135); })
-            .on('mouseup', function () {
-              root.select('#cmap')
-                .on('mousemove', null)
-                .on('mouseup', null);
-            }
-          );
-          updateCmap(cmap_yellow_pos / 100);
-        }
-      );
-
-
-      root.select('#data-from')
-        .style('left', '30px')
-        .style('bottom', 0)
-        .on('change', function () {
-          updateCmap(1 - cmap_yellow_pos / 100);
-          updateRange([+this.value, +root.select('#data-to').property('value')]);
-          root.select('#data-reset').property('disabled', false);
-
-        }
-      );
-
-      root.select('#data-mid')
-        .style('left', '30px')
-        .style('top', (135 / 2 - 10) + 'px')
-        .on('change', function () {
-          var min = +root.select('#data-from').property('value');
-          var max = +root.select('#data-to').property('value');
-          var f = (+this.value - min) / (max - min);
-          updateCmap(f);
-        }
-      );
-
-      root.select('#data-to')
-        .style('left', '30px')
-        .style('top', 0)
-        .on('change', function () {
-          updateCmap(1 - cmap_yellow_pos / 100);
-          updateRange([+root.select('#data-from').property('value'), +this.value]);
-          root.select('#data-reset').property('disabled', false);
-        }
-      );
-
-      root.select('#data-reset').on('click', function () {
-        root.select('#data-from').property('value', format(dataRange[0]));
-        root.select('#data-to').property('value', format(dataRange[1]));
-        updateCmap(0.5);
-        updateRange(dataRange);
-      }
-      );
-
-      root.select('#range-frozen').on('change', function () {
-          frozen = this.checked;
-          root.select('#data-reset').property('disabled', frozen);
-        }
-      );
-
-      root.select('#inout').on('click', function () {
-        inout = !inout;
-        root.select('#inout').text(inout ? 'in' : 'out');
-        histogram.mode(inout);
       }
     );
 
-      Radio.channel(id).on('data.runsList', updateRunList);
-      Radio.channel(id).on('data.run', newData);
-      Radio.channel(id).on('app.ready', function () {
-        root.select('#catalog').text(DEFAULT_COLLECTION);
-        dataService.loadCatalog(id, DEFAULT_COLLECTION);
+    root.select('#cmap')
+      .style("width", "20px")
+      .style("height", "135px")
+      .style("position", "absolute")
+      .style("left", "0px")
+      .style('background-image', "linear-gradient(" + createColormap(cmap_yellow_pos) + ")")
+      .on('mousedown', function () {
+        d3.event.preventDefault();
+        var self = this;
+        root.select('#cmap')
+          .on('mousemove', function () {
+            updateCmap(1 - d3.mouse(this)[1] / 135); })
+          .on('mouseup', function () {
+            root.select('#cmap')
+              .on('mousemove', null)
+              .on('mouseup', null);
+          }
+        );
+        updateCmap(cmap_yellow_pos / 100);
       }
-      );
+    );
 
-      root.select('#load')
-        .on('click', function () {
-          localDocument.getElementById('file').click();
-        }
-      );
 
-      localDocument.getElementById('file').addEventListener("change", loadFile, false);
+    root.select('#data-from')
+      .style('left', '30px')
+      .style('bottom', 0)
+      .on('change', function () {
+        updateCmap(1 - cmap_yellow_pos / 100);
+        updateRange([+this.value, +root.select('#data-to').property('value')]);
+        root.select('#data-reset').property('disabled', false);
 
-      var g = root.select('#info').append('g')
-        .attr('class', 'info');
+      }
+    );
 
-      g.call(histogram
-          .width(width)
-          .height(110)
-      );
+    root.select('#data-mid')
+      .style('left', '30px')
+      .style('top', (135 / 2 - 10) + 'px')
+      .on('change', function () {
+        var min = +root.select('#data-from').property('value');
+        var max = +root.select('#data-to').property('value');
+        var f = (+this.value - min) / (max - min);
+        updateCmap(f);
+      }
+    );
 
-      histogram.on('brushed', onHighlight);
+    root.select('#data-to')
+      .style('left', '30px')
+      .style('top', 0)
+      .on('change', function () {
+        updateCmap(1 - cmap_yellow_pos / 100);
+        updateRange([+root.select('#data-from').property('value'), +this.value]);
+        root.select('#data-reset').property('disabled', false);
+      }
+    );
 
-      var margin = histogram.margin();
+    root.select('#data-reset').on('click', function () {
+      root.select('#data-from').property('value', format(dataRange[0]));
+      root.select('#data-to').property('value', format(dataRange[1]));
+      updateCmap(0.5);
+      updateRange(dataRange);
+    }
+    );
 
-      g.call(slider.width(width - margin.left - margin.right).extent([0, 1]))
-        .select('.slider')
-        .attr('transform', 'translate(' + (margin.left) + ',' + (histogram.height() + 5) + ')');
+    root.select('#range-frozen').on('change', function () {
+        frozen = this.checked;
+        root.select('#data-reset').property('disabled', frozen);
+      }
+    );
 
-      slider.on('move', onZoom);
-    //}
+    root.select('#inout').on('click', function () {
+      inout = !inout;
+      root.select('#inout').text(inout ? 'in' : 'out');
+      histogram.mode(inout);
+    }
+  );
+
+    Radio.channel(id).on('data.runsList', updateRunList);
+    Radio.channel(id).on('data.run', newData);
+    Radio.channel(id).on('app.ready', function () {
+      root.select('#catalog').text(DEFAULT_COLLECTION);
+      dataService.loadCatalog(id, DEFAULT_COLLECTION);
+    }
+    );
+
+    root.select('#load')
+      .on('click', function () {
+        localDocument.getElementById('file').click();
+      }
+    );
+
+    localDocument.getElementById('file').addEventListener("change", loadFile, false);
+
+    var g = root.select('#info').append('g')
+      .attr('class', 'info');
+
+    g.call(histogram
+        .width(width)
+        .height(110)
+    );
+
+    histogram.on('brushed', onHighlight);
+
+    var margin = histogram.margin();
+
+    g.call(slider.width(width - margin.left - margin.right).extent([0, 1]))
+      .select('.slider')
+      .attr('transform', 'translate(' + (margin.left) + ',' + (histogram.height() + 5) + ')');
+
+    slider.on('move', onZoom);
+
+    // >> end of initialization
 
     function createColormap(pos) {
       return config.VALUES_COLORMAP.concat().reverse().map(function (v, i) { return i == 4 ? v + " " + pos + "%" : v }).toString();

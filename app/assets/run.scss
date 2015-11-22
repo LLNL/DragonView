@@ -270,6 +270,24 @@ div {
 
 }
 
+#bg-div {
+  display: inline-block;
+
+  #bg-button {
+    position: absolute;
+    right: 10px;
+  }
+
+  &.closed {
+    canvas {
+      display: none;
+    }
+
+  }
+}
+
+
+
 .canvas {
 //  position: absolute;
 //  right: 0px;

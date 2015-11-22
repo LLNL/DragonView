@@ -173,10 +173,6 @@ define(function(require) {
 
     layout.el = function(selection) {
       if (!arguments.length) return canvas;
-      //selection
-      //  .attr('width', width+margin.left+margin.right)
-      //  .attr('height', height+margin.top+margin.bottom)
-      //  .style('display', 'inline-block');
 
       canvas = selection.append('canvas')
         .attr('class', 'canvas')

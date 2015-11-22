@@ -207,6 +207,14 @@ div {
     .radial circle:active {
       r: 4px; }
 
+#bg-div {
+  display: inline-block; }
+  #bg-div #bg-button {
+    position: absolute;
+    right: 10px; }
+  #bg-div.closed canvas {
+    display: none; }
+
 .matrix line {
   fill: none;
   stroke: lightgray;

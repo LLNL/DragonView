@@ -67,20 +67,6 @@ define(function(require) {
         .attr('height', height-margin.top-margin.bottom)
         .attr('transform', 'translate('+margin.left+','+margin.top+')');
 
-      //svg.append('rect')
-      //  .attr('x', -5)
-      //  .attr('y', -5)
-      //  .attr('width', 6*(16*dx+5) + 5)
-      //  .attr('height', 16*dy+10)
-      //  .attr('fill', '#f0f0f0');
-      //
-      //svg.append('rect')
-      //  .attr('x', -5)
-      //  .attr('y', blackOffset-5)
-      //  .attr('width', 16*(6*dx + 5) + 5)
-      //  .attr('height', 6*dy + 10)
-      //  .attr('fill', '#f0f0f0');
-
       return this;
     };
 
