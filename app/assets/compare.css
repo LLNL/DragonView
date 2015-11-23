@@ -7,6 +7,11 @@
     margin-top: 0;
     padding-top: 0; }
 
+.selected {
+  box-sizing: border-box;
+  border: solid black 2px;
+  z-index: 1; }
+
 #compare {
   position: fixed;
   top: 50px;
@@ -30,10 +35,15 @@
 
 #columns {
   position: absolute;
-  overflow-x: hidden; }
+  overflow: hidden; }
   #columns .col {
     position: absolute;
     background-color: palegreen;
+    text-align: center;
+    overflow: hidden; }
+  #columns .rotate {
+    transform: rotate(-90deg);
+    transform-origin: left 0px;
     text-align: center; }
 
 #rows {
@@ -42,6 +52,10 @@
   #rows .row {
     position: absolute;
     background-color: paleturquoise; }
+    #rows .row:hover {
+      box-sizing: border-box;
+      border: solid darkgrey 2px;
+      z-index: 1; }
   #rows .rotate {
     transform: rotate(-90deg);
     transform-origin: left 0px;
@@ -52,9 +66,13 @@
   box-sizing: border-box; }
   #values .value {
     position: absolute; }
+    #values .value:hover {
+      box-sizing: border-box;
+      border: solid darkgrey 2px;
+      z-index: 1; }
 
 #frame {
-  overflow: auto;
+  overflow: scroll;
   position: fixed;
   bottom: 10px;
   right: 250px; }
@@ -77,6 +95,18 @@
     position: absolute; }
 
 #selection {
-  width: 200px; }
+  position: relative;
+  width: 180px; }
+  #selection ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    overflow: auto; }
+  #selection ul li {
+    border-radius: 5px;
+    padding-left: 5px;
+    padding-top: 2px; }
+    #selection ul li:hover {
+      background-color: lightgrey; }
 
 /*# sourceMappingURL=compare.css.map */

@@ -13,6 +13,12 @@
   }
 }
 
+.selected {
+  box-sizing: border-box;
+  border: solid black 2px;
+  z-index: 1;
+}
+
 #compare {
   position: fixed;
   top: 50px;
@@ -41,14 +47,22 @@
 
 #columns {
   position: absolute;
-  overflow-x: hidden;
+  overflow: hidden;
 
   .col {
     position: absolute;
     background-color: palegreen;
     text-align: center;
+    overflow: hidden;
+  }
+
+  .rotate {
+    transform: rotate(-90deg);
+    transform-origin: left 0px;
+    text-align: center;
   }
 }
+
 
 #rows {
   position: absolute;
@@ -57,6 +71,12 @@
   .row {
     position: absolute;
     background-color: paleturquoise;
+
+    &:hover {
+      box-sizing: border-box;
+      border: solid darkgrey 2px;
+      z-index: 1;
+    }
   }
 
   .rotate {
@@ -71,11 +91,16 @@
   box-sizing: border-box;
   .value {
     position: absolute;
+    &:hover {
+      box-sizing: border-box;
+      border: solid darkgrey 2px;
+      z-index: 1;
+    }
   }
 }
 
 #frame {
-  overflow: auto;
+  overflow: scroll;
   position: fixed;
   bottom: 10px;
   right: 250px;
@@ -111,8 +136,34 @@
 }
 
 #selection {
-  //position: fixed;
-  //top: 100px;
-  //right: 10px;
-  width: 200px;
+  position: relative;
+  width: 180px;
+
+  ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    overflow: auto;
+  }
+
+  ul li {
+    border-radius: 5px;
+    padding-left: 5px;
+    padding-top: 2px;
+
+    &:hover {
+      background-color: lightgrey;
+    }
+
+  }
+
+  //.li-title {
+  //  //    font-style: italic;
+  //  margin-left: -10px;
+  //  font-weight: bold;
+  //}
+  //
+  //.li-body {
+  //  margin-left: 10px;
+  //}
 }

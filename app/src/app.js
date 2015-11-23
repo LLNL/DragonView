@@ -13,10 +13,15 @@ define(function(require) {
   var tabs = new Map();
 
   compare.on('selected', onSelect);
-  compare.resize(getSize('#matrix'));
+  window.addEventListener('resize', function() {
+    var s = getSize('#outer');
+    compare.resize([s[0]-200, s[1]]);
+  });
+
+
+  window.dispatchEvent(new Event('resize'))
 
   function onSelect(key) {
-    console.log('app:', key);
     var tab = tabs.get(key);
     if (!tab) {
       tab = {window: null, run: Run() };
@@ -30,11 +35,7 @@ define(function(require) {
     }
   }
 
-  window.addEventListener('resize', function() {
-    var s = getSize('#outer');
-    console.log('outer size:', s[0], s[1]);
-    compare.resize([s[0]-200, s[1]]);
-  });
+
 
   function getSize(el) {
     var d3el = d3.select(el);

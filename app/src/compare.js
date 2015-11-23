@@ -40,6 +40,11 @@ define(function(require) {
       cols: [fields.color, fields.jobid]
     },
     {
+      name: 'config,dataset / sim, color,jobid',
+      rows: [fields.config, fields.dataset],
+      cols: [fields.sim, fields.color, fields.jobid]
+    },
+    {
       name: 'dataset,sim/ config',
       rows: [fields.dataset, fields.sim],
       cols: [fields.config]
@@ -208,6 +213,7 @@ d3.csv('data/alldata.csv')
   }
 
   function recompute() {
+    d3.select('#selection-list').selectAll('li').remove();
     buildColsHeader(spec);
     mat = collect(spec,  aggregate(spec));
     adjustColormap();
@@ -232,11 +238,12 @@ d3.csv('data/alldata.csv')
 
   var header;
   var x0 = 0, y0 = 0;
-  var dx = 1, dy = 1;
+  var dx = 2, dy = 2;
   var w = 15, h = 15;
   var fontSize = 15;
   var colHeight = 15;
-  var lastRowWidth = 30;
+  var lastRowWidth = 40;
+  var lastColHeight = 40;
   var x, y;
 
   function buildColsHeader(spec) {
@@ -260,7 +267,7 @@ d3.csv('data/alldata.csv')
     });
 
     // assign location and size
-    visit(header, 0, 0); //x0+spec.rows.length*(w+dx)+lastRowWidth-w+5, y0);
+    visit(header, 0, 0);
 
     function visit(root, x, y) {
       root.x = x;
@@ -275,8 +282,10 @@ d3.csv('data/alldata.csv')
         x += w+dx;
       }
       x -= dx;
-      root.w = x - root.x;
+      if (!root.values) root.y += lastColHeight;
+      root.w = root.values ? x - root.x : lastColHeight;
       root.h = h;
+      root.last = !root.values;
       return x;
     }
   }
@@ -354,16 +363,24 @@ d3.csv('data/alldata.csv')
   function render(mat) {
     var rowsWidth = spec.rows.length*(w+dx)+lastRowWidth-w+5;
     var rowsHeight = y;
-    var colsHeight = (spec.cols.length+1)*(colHeight+dy);
+    var colsHeight = (spec.cols.length+1)*(colHeight+dy)+lastColHeight-colHeight;
     var colsWidth = header.x+header.w+dx;
 
-    console.log(width, colsWidth, rowsWidth, (width-180-rowsWidth));
-
     var cw = Math.min(15+colsWidth, (width-rowsWidth));
-    var rh = Math.min(15+rowsHeight, (height-(spec.cols.length+1)*(colHeight+dy)));
+    var rh = Math.min(15+rowsHeight, (height-colsHeight));
+
+    d3.select('#matrix')
+      .style('width', rowsWidth+cw+'px')
+      .style('height', colsHeight+rh+'px');
+
+    d3.select('#selection')
+      .style('left', rowsWidth+cw+40+'px');
+
+    d3.select('#selection-list')
+      .style('max-height', height-65+'px');
 
     d3.select('#frame')
-      .style('top', 100+(spec.cols.length+1)*(colHeight+dy)+'px')
+      .style('top', 100+colsHeight+'px')
       .style('left', 180+rowsWidth+'px')
       .style('width',  cw+'px')
       .style('height',rh+'px');
@@ -371,13 +388,15 @@ d3.csv('data/alldata.csv')
     d3.select('#columns')
       .style('left', rowsWidth+'px')
       //.style('width', width-rowsWidth+'px')
-      .style('width', (cw-15)+'px')
+      .style('width', colsWidth+'px')
       .style('height', colsHeight+'px')
+      .style('max-width', Math.min(cw-15, colsWidth)+'px');
 
     d3.select('#rows')
       .style('top', colsHeight+'px')
       .style('width', rowsWidth+'px')
-      .style('height', (rh-15)+'px'); //Math.min(rowsHeight, height-colsHeight)+'px')
+      .style('height', rowsHeight+'px') //Math.min(rowsHeight, height-colsHeight)+'px')
+      .style('max-height', Math.min(rh-15, rowsHeight)+'px');
 
     var cols =d3.select('#columns')
       .selectAll('.col')
@@ -385,14 +404,16 @@ d3.csv('data/alldata.csv')
 
     cols.enter()
       .append('div')
-      .attr('class', 'col')
-      .on('click', select);
+      .attr('class', 'col');
+      //.on('click', select);
 
     cols
       .style('left', function(d) { return d.x+"px";})
       .style('top', function(d) { return d.y+"px";})
+      //.style('top', function(d) { return (d.y+ (d.last ? 0 : d.w)+"px");})
       .style('width', function(d) { return d.w+"px";})
       .style('height', function(d) { return d.h+"px";})
+      .classed('rotate', function(d) { return d.last; })
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
     ;
@@ -430,6 +451,7 @@ d3.csv('data/alldata.csv')
       .on('click', select);
 
     rows
+      .classed('selected', false)
       .classed('rotate', function(d) { return !d.last; })
       .style('left', function(d) { return d.x+"px";})
       .style('top', function(d) { return (d.y+ (d.last ? 0 : d.w)+"px");})
@@ -437,17 +459,10 @@ d3.csv('data/alldata.csv')
       .style('height', function(d) { return d.h+"px";})
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
+      //.style('z-index', -1)
     ;
 
     rows.exit().remove();
-
-
-    //d3.select('#frame')
-    //  .style('top', 100+(spec.cols.length+1)*(colHeight+dy)+'px')
-    //  .style('left', 180+rowsWidth+'px')
-    //  .style('width', Math.min(colsWidth, (width-180-rowsWidth)+'px'))
-    //  .style('height', Math.min(rowsHeight, (height-100-(spec.cols.length+1)*(colHeight+dy)))+'px');
-
 
     var d3nodes = d3.select('#values')
       .style('width', colsWidth+'px')
@@ -466,12 +481,19 @@ d3.csv('data/alldata.csv')
       .style('width', function(d) { return d.w+"px";})
       .style('height', function(d) { return d.h+"px";})
       .style('background-color', function(d) { return color(d.values[valueSelector]); })
+      .classed('selected', false)
+      //.style('z-index', -1)
     ;
 
     d3nodes.exit().remove();
   }
 
+  var selected;
   function select(node) {
+    if (selected) d3.select(selected).classed('selected', false);
+    selected = this;
+    d3.select(this).classed('selected', true);
+
     var sims = new Set();
     visit(node);
 
