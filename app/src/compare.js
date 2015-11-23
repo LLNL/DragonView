@@ -357,10 +357,29 @@ d3.csv('data/alldata.csv')
     var colsHeight = (spec.cols.length+1)*(colHeight+dy);
     var colsWidth = header.x+header.w+dx;
 
-    var cols = d3.select('#columns')
+    console.log(width, colsWidth, rowsWidth, (width-180-rowsWidth));
+
+    var cw = Math.min(15+colsWidth, (width-rowsWidth));
+    var rh = Math.min(15+rowsHeight, (height-(spec.cols.length+1)*(colHeight+dy)));
+
+    d3.select('#frame')
+      .style('top', 100+(spec.cols.length+1)*(colHeight+dy)+'px')
+      .style('left', 180+rowsWidth+'px')
+      .style('width',  cw+'px')
+      .style('height',rh+'px');
+
+    d3.select('#columns')
       .style('left', rowsWidth+'px')
-      .style('width', width-rowsWidth+'px')
+      //.style('width', width-rowsWidth+'px')
+      .style('width', (cw-15)+'px')
       .style('height', colsHeight+'px')
+
+    d3.select('#rows')
+      .style('top', colsHeight+'px')
+      .style('width', rowsWidth+'px')
+      .style('height', (rh-15)+'px'); //Math.min(rowsHeight, height-colsHeight)+'px')
+
+    var cols =d3.select('#columns')
       .selectAll('.col')
       .data(flatten(header));
 
@@ -402,9 +421,6 @@ d3.csv('data/alldata.csv')
     colText.exit().remove();
 
     var rows = d3.select('#rows')
-      .style('top', colsHeight+'px')
-      .style('width', rowsWidth+'px')
-      .style('height', height-colsHeight+'px')
       .selectAll('.row')
       .data(mat.header.rows);
 
@@ -426,11 +442,11 @@ d3.csv('data/alldata.csv')
     rows.exit().remove();
 
 
-    d3.select('#frame')
-      .style('top', 100+(spec.cols.length+1)*(colHeight+dy)+'px')
-      .style('left', 180+rowsWidth+'px')
-      .style('width', Math.min(colsWidth, (width-180-rowsWidth)+'px'))
-      .style('height', Math.min(rowsHeight, (height-100-(spec.cols.length+1)*(colHeight+dy)))+'px');
+    //d3.select('#frame')
+    //  .style('top', 100+(spec.cols.length+1)*(colHeight+dy)+'px')
+    //  .style('left', 180+rowsWidth+'px')
+    //  .style('width', Math.min(colsWidth, (width-180-rowsWidth)+'px'))
+    //  .style('height', Math.min(rowsHeight, (height-100-(spec.cols.length+1)*(colHeight+dy)))+'px');
 
 
     var d3nodes = d3.select('#values')

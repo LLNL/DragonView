@@ -31,7 +31,9 @@ define(function(require) {
   }
 
   window.addEventListener('resize', function() {
-    compare.resize(getSize('#matrix'));
+    var s = getSize('#outer');
+    console.log('outer size:', s[0], s[1]);
+    compare.resize([s[0]-200, s[1]]);
   });
 
   function getSize(el) {

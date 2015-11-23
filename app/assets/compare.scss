@@ -22,6 +22,15 @@
   //border: solid lightblue 1px;
 }
 
+#outer {
+  position: fixed;
+  top: 100px;
+  bottom: 10px;
+  left: 160px;
+  right:10px;
+  //background-color: lightgrey;
+}
+
 #matrix {
   position: fixed;
   top: 100px;
@@ -102,8 +111,8 @@
 }
 
 #selection {
-  position: fixed;
-  top: 100px;
-  right: 10px;
+  //position: fixed;
+  //top: 100px;
+  //right: 10px;
   width: 200px;
 }

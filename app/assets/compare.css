@@ -14,6 +14,13 @@
   left: 160px;
   right: 0; }
 
+#outer {
+  position: fixed;
+  top: 100px;
+  bottom: 10px;
+  left: 160px;
+  right: 10px; }
+
 #matrix {
   position: fixed;
   top: 100px;
@@ -70,9 +77,6 @@
     position: absolute; }
 
 #selection {
-  position: fixed;
-  top: 100px;
-  right: 10px;
   width: 200px; }
 
 /*# sourceMappingURL=compare.css.map */
