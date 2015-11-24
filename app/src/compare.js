@@ -305,12 +305,12 @@ d3.csv('data/alldata.csv')
     }
   }
 
-
   function collect(spec, nodes) {
     x = 0;
     y = 0;
     var mat = {header: {rows:[], cols:[]}, values:[]};
     var max_value = 0;
+    var path = [];
 
     visit(spec.rows.length, spec.cols.length, nodes, header);
     return mat;
@@ -325,8 +325,9 @@ d3.csv('data/alldata.csv')
           node.y = y;
           x += +dx + (nrows == 1 ? lastRowWidth+5 : fontSize);
           node.last = nrows == 1;
-
+          path.push(node.key);
           visit(nrows-1, ncols, node.values, header);
+          path.pop();
           if (nrows == 1) {
             y += h;
             node.w = lastRowWidth ;
@@ -344,17 +345,20 @@ d3.csv('data/alldata.csv')
         for (i=0, n=nodes.length; i<n; i++) {
           node = nodes[i];
           var pos = header.values.get(node.key);
+          path.push(node.key);
           if (ncols == 1) {
             node.x = pos.x;
             node.y = y;
             node.w = w;
             node.h = h;
             x += w;
+            node.path = path.concat();
             mat.values.push(node);
           } else {
             visit(nrows, ncols-1, node.values, pos);
           }
           x += dx;
+          path.pop();
         }
       }
     }
@@ -503,22 +507,48 @@ d3.csv('data/alldata.csv')
     d3nodes.exit().remove();
   }
 
-  var selected;
-  function select(node) {
-    if (selected) d3.select(selected).classed('selected', false);
-    selected = this;
-    d3.select(this).classed('selected', true);
+  //var selected;
+  //function select(node) {
+  //  if (selected) d3.select(selected).classed('selected', false);
+  //  selected = this;
+  //  d3.select(this).classed('selected', true);
+  //
+  //  var sims = new Set();
+  //  visit(node);
+  //
+  //  var li = d3.select('#selection-list').selectAll('li')
+  //    .data(Array.from(sims));
+  //
+  //  li.enter().append('li')
+  //    .on('click', function(d) {
+  //      dispatch.selected(d);
+  //    });
+  //  li.text(function(d) { return d;});
+  //  li.exit().remove();
+  //
+  //  function visit(node) {
+  //    if (Array.isArray(node.values)) {
+  //      node.values.forEach(function(d) { visit(d); });
+  //    } else  {
+  //      node.values.leaves.forEach(function(row) { sims.add(row.config+','+row.dataset+','+row.sim); });
+  //    }
+  //  }
+  //}
+
+  var currentSims;
+
+  function report(node) {
+    console.log('path', node.path, 'min', node.values.min, 'max', node.values.max, 'avg', node.values.avg, 'nzavg', node.values.nzavg);
 
     var sims = new Set();
     visit(node);
 
-    var li = d3.select('#selection-list').selectAll('li')
-      .data(Array.from(sims));
+    currentSims = {key: node.path.join(), sims: Array.from(sims)};
 
-    li.enter().append('li')
-      .on('click', function(d) {
-        dispatch.selected(d);
-      });
+    var li = d3.select('#selection-list').selectAll('li')
+      .data(currentSims.sims);
+
+    li.enter().append('li');
     li.text(function(d) { return d;});
     li.exit().remove();
 
@@ -531,8 +561,8 @@ d3.csv('data/alldata.csv')
     }
   }
 
-  function report(node) {
-    console.log('min', node.values.min, 'max', node.values.max, 'avg', node.values.avg, 'nzavg', node.values.nzavg);
+  function select() {
+    dispatch.selected(currentSims);
   }
 
   return {

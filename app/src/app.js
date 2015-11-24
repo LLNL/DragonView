@@ -21,15 +21,15 @@ define(function(require) {
 
   window.dispatchEvent(new Event('resize'))
 
-  function onSelect(key) {
-    var tab = tabs.get(key);
+  function onSelect(selection) {
+    var tab = tabs.get(selection.key);
     if (!tab) {
       tab = {window: null, run: Run() };
-      tabs.set(key, tab);
+      tabs.set(selection.key, tab);
     }
     if (!tab.window || tab.window.closed) {
-      tab.window = window.open('run.html', key);
-      d3.select(tab.window).on('load', function() { tab.run.init(key, tab.window); });
+      tab.window = window.open('run.html', selection.key);
+      d3.select(tab.window).on('load', function() { tab.run.init(selection, tab.window); });
     } else {
       tab.window.focus();
     }

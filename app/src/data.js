@@ -182,6 +182,12 @@ define(function(require) {
     return this;
   };
 
+  service.createCatalog = function(channel, sims) {
+    console.log(sims);
+
+
+  };
+
   service.load = function (channel, name) {
     var run = runs.get(name);
     if (!run) {

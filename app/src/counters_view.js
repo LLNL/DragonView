@@ -13,12 +13,13 @@ define(function(require) {
     dataService = require('data'),
     config = require('config');
 
-  var DEFAULT_COLLECTION = 'data/runs-hypo.csv'; //'data/runs-4jobs-1.csv';
+  var DEFAULT_COLLECTION = 'data/runs-4jobs-1.csv';
 
-  return function(id_, doc) {
-    var localDocument = doc;
+  return function(id_, doc, sims_) {
+    var localDocument = doc || document;
     var root = d3.select(localDocument.body);
-    var id = id_;
+    var id = id_ || 'default';
+    var sims = sims_;
 
     var width          = 220, height,
         svg,
@@ -151,10 +152,14 @@ define(function(require) {
     Radio.channel(id).on('data.runsList', updateRunList);
     Radio.channel(id).on('data.run', newData);
     Radio.channel(id).on('app.ready', function () {
-      root.select('#catalog').text(DEFAULT_COLLECTION);
-      dataService.loadCatalog(id, DEFAULT_COLLECTION);
-    }
-    );
+        if (!sims) {
+          root.select('#catalog').text(DEFAULT_COLLECTION);
+          dataService.loadCatalog(id, DEFAULT_COLLECTION);
+        } else {
+          root.select('#catalog').text(id);
+          dataService.createCatalog(id, sims);
+        }
+      });
 
     root.select('#load')
       .on('click', function () {

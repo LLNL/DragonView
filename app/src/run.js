@@ -18,11 +18,11 @@ define(function(require) {
     var dataService = DataService;
 
     return {
-      init: function (_id, _win) {
-        id = _id;
+      init: function (selection, _win) {
+        id = selection.key;
         localWindow = _win;
 
-        countersView = CountersView(id, localWindow.document);
+        countersView = CountersView(id, localWindow.document, selection.sims);
         controlsView = ControlsView(id, localWindow.document);
         jobsView = JobsView(id, localWindow.document);
 
