@@ -8,19 +8,21 @@ define(function(require) {
 
   var width = 200, height = 200;
 
-  var data = null;
-  var active = [];
-  var mat;
-  var valueSelector = 'min';
-  var spec;
-  var dispatch = d3.dispatch('selected');
-
   var fields = {
     config:  {name: 'config',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
     dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
     sim:     {name: 'sim',     type: 'category', values: [], sort: simSort,      selected: new Set()},
     jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    color:   {name: 'color',   type: 'fixed',    values: ['*', 'g', 'k', 'b'],   selected: new Set(['*', 'g', 'k', 'b'])}
+    color:   {name: 'color',   type: 'fixed',    values: ['All', 'g', 'k', 'b'],   selected: new Set(['All', 'g', 'k', 'b'])}
+  };
+
+  // TODO: use keys based on data. Issue: how to determine which fields are measure and which are categories/dimensions
+  var measureFields = ['min', 'avg', 'max', 'nzavg'];
+
+  var functions = {
+    min: d3.min,
+    max: d3.max,
+    avg: d3.mean
   };
 
   var specs = [
@@ -51,12 +53,20 @@ define(function(require) {
     }
   ];
 
+
+  var data = null;
+  var active = [];
+  var mat;
+  var valueSelector = 'max';
+  var functionSelector = 'max';
+  var spec;
+  var dispatch = d3.dispatch('selected');
+
   var filterValues = {};
 
   var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
   var color = d3.scale.quantize().range(VALUES_COLORMAP);
 
-  var colorname = ['*', 'g', 'k', 'b'];
 
   function simSort(a,b) {
     a = +a.slice(3);
@@ -64,23 +74,26 @@ define(function(require) {
     return a -b;
   }
 
-    //function loadTemplate(tid, eid) {
-    //  var t = importDoc.querySelector(tid);
-    //  var clone = document.importNode(t.content, true);
-    //  var d = document.getElementsByTagName(eid);
-    //  d[0].appendChild(clone);
-    //}
-    //loadTemplate('#compare-template', name);
+  d3.select('#select-options')
+    .on('change', function (d) { spec = specs[d3.select(this).property('selectedIndex')]; recompute(); })
+    .selectAll('option')
+    .data(specs)
+    .enter()
+      .append('option')
+      .attr('value', function(d) {return d.name;})
+      .text(function(d) { return d.name;});
 
-d3.select('#select-options')
-  .on('change', function (d) { spec = specs[d3.select(this).property('selectedIndex')]; recompute(); })
-  .selectAll('option')
-  .data(specs)
-  .enter()
-    .append('option')
-    .attr('value', function(d) {return d.name;})
-    .text(function(d) { return d.name;});
+  d3.select('#select-function')
+    .on('change', selectFunction)
+    .selectAll('option')
+    .data(Object.keys(functions))
+    .enter()
+      .append('option')
+      .attr('value', function(d) { return d; })
+      .text(function(d) { return d; });
 
+  d3.select('#select-function')
+    .property('value', 'max');
 
   d3.select("#frame").on('scroll', function(d) {
     d3.select('#rows')[0][0].scrollTop = this.scrollTop;
@@ -90,7 +103,7 @@ d3.select('#select-options')
 d3.csv('data/alldata.csv')
   .row(function(d) {
     //d.jobid = +d.jobid;
-    d.color = colorname[d.color];
+    d.color =   fields.color.values[d.color];
     d.min = +d.min;
     d.avg = +d.avg;
     d.max = +d.max;
@@ -112,13 +125,10 @@ d3.csv('data/alldata.csv')
       }
       data = rows;
 
-      // TODO: use keys based on data. Issue: how to determine which fields are values
-      var keys = ['min', 'avg', 'max', 'nzavg'];
-
       d3.select('#select-values')
         .on('change', selectValue)
         .selectAll('option')
-        .data(keys)
+        .data(measureFields)
         .enter()
           .append('option')
 
@@ -128,7 +138,7 @@ d3.csv('data/alldata.csv')
       // init selection and render
       valueSelector = 'max';
       d3.select('#select-values')
-        .property('value', valueSelector);
+        .property('value', 'max');
 
       setupFields();
       spec = specs[0];
@@ -189,7 +199,7 @@ d3.csv('data/alldata.csv')
   }
 
   function adjustColormap() {
-    var max = d3.max(mat.values, function (d) { return d.values[valueSelector]; });
+    var max = Math.max(d3.max(mat.values, function (d) { return d.values[valueSelector]; }), 0.1);
     color.domain([0, max/2, max]);
   }
 
@@ -208,8 +218,12 @@ d3.csv('data/alldata.csv')
 
   function selectValue() {
     valueSelector = d3.select(this).property('value');
-    adjustColormap();
-    render(mat);
+    recompute();
+  }
+
+  function selectFunction() {
+    functionSelector = d3.select(this).property('value');
+    recompute();
   }
 
   function recompute() {
@@ -225,11 +239,12 @@ d3.csv('data/alldata.csv')
     spec.rows.forEach(function(field) { nest.key(function(d) { return d[field.name];}).sortKeys(field.sort); } );
     spec.cols.forEach(function(field) { nest.key(function(d) { return d[field.name];}).sortKeys(field.sort); } );
 
+    var f = functions[functionSelector];
     return nest.rollup(function(leaves) { return {
         leaves: leaves,
-        min: d3.min(leaves, function(d) { return d.min; }),
-        avg: d3.mean(leaves, function(d) { return d.avg; }),
-        max: d3.max(leaves, function(d) { return d.max; }),
+        min: f(leaves, function(d) { return d.min; }),
+        avg: f(leaves, function(d) { return d.avg; }),
+        max: f(leaves, function(d) { return d.max; }),
         //nonzero: d3.max(leaves, function(d) { return d.nonzero; }),
         nzavg: d3.sum(leaves, function(d) { return d.nzavg * d.nonzero; })/ d3.sum(leaves, function(d) { return d.nonzero; })
       }})
@@ -293,7 +308,7 @@ d3.csv('data/alldata.csv')
 
   function collect(spec, nodes) {
     x = 0;
-    y = 0; //  + (spec.cols.length+1)*(colHeight+dy);
+    y = 0;
     var mat = {header: {rows:[], cols:[]}, values:[]};
     var max_value = 0;
 
@@ -459,7 +474,6 @@ d3.csv('data/alldata.csv')
       .style('height', function(d) { return d.h+"px";})
       .style('overflow', 'hidden')
       .text(function(d) { return d.label;})
-      //.style('z-index', -1)
     ;
 
     rows.exit().remove();
@@ -473,7 +487,8 @@ d3.csv('data/alldata.csv')
     d3nodes.enter()
       .append('div')
       .attr('class', 'value')
-      .on('click', select);
+      .on('click', select)
+      .on('mouseenter', report);
 
     d3nodes
       .style('left', function(d) { return d.x+"px";})
@@ -514,6 +529,10 @@ d3.csv('data/alldata.csv')
         node.values.leaves.forEach(function(row) { sims.add(row.config+','+row.dataset+','+row.sim); });
       }
     }
+  }
+
+  function report(node) {
+    console.log('min', node.values.min, 'max', node.values.max, 'avg', node.values.avg, 'nzavg', node.values.nzavg);
   }
 
   return {

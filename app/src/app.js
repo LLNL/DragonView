@@ -42,3 +42,11 @@ define(function(require) {
     return [parseInt(d3el.style('width')), parseInt(d3el.style('height'))];
   }
 });
+
+//function loadTemplate(tid, eid) {
+//  var t = importDoc.querySelector(tid);
+//  var clone = document.importNode(t.content, true);
+//  var d = document.getElementsByTagName(eid);
+//  d[0].appendChild(clone);
+//}
+//loadTemplate('#compare-template', name);

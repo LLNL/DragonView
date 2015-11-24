@@ -54,6 +54,7 @@
     background-color: palegreen;
     text-align: center;
     overflow: hidden;
+    font-size: 10px;
   }
 
   .rotate {
@@ -71,6 +72,7 @@
   .row {
     position: absolute;
     background-color: paleturquoise;
+    font-size: 10px;
 
     &:hover {
       box-sizing: border-box;

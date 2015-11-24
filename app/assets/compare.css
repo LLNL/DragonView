@@ -40,7 +40,8 @@
     position: absolute;
     background-color: palegreen;
     text-align: center;
-    overflow: hidden; }
+    overflow: hidden;
+    font-size: 10px; }
   #columns .rotate {
     transform: rotate(-90deg);
     transform-origin: left 0px;
@@ -51,7 +52,8 @@
   overflow-y: hidden; }
   #rows .row {
     position: absolute;
-    background-color: paleturquoise; }
+    background-color: paleturquoise;
+    font-size: 10px; }
     #rows .row:hover {
       box-sizing: border-box;
       border: solid darkgrey 2px;
