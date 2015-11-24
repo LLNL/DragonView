@@ -3,7 +3,10 @@
  */
 define(function(require) {
 
-  var N_GROUPS = 16, N_ROWS = 6, N_COLS = 16, N_PORTS = 40, N_NODES = 4, N_CORES = 24;
+  //var N_GROUPS = 16, N_ROWS = 6, N_COLS = 16, N_PORTS = 40, N_NODES = 4, N_CORES = 24;
+
+  // Hypothetical configuration
+  var N_GROUPS = 16, N_ROWS = 4, N_COLS = 16, N_PORTS = 40, N_NODES = 4, N_CORES = 32;
   return {
     N_GROUPS: N_GROUPS,
     N_ROWS: N_ROWS,

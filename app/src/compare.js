@@ -532,7 +532,7 @@ d3.csv('data/alldata.csv')
   }
 
   function report(node) {
-    console.log('min', node.values.min, 'max', node.values.max, 'avg', node.values.avg, 'nzavg', node.values.nzavg);
+    //console.log('min', node.values.min, 'max', node.values.max, 'avg', node.values.avg, 'nzavg', node.values.nzavg);
   }
 
   return {
