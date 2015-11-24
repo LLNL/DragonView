@@ -13,7 +13,7 @@ define(function(require) {
     dataService = require('data'),
     config = require('config');
 
-  var DEFAULT_COLLECTION = 'data/runs-4jobs-1.csv';
+  var DEFAULT_COLLECTION = 'data/runs-hypo.csv'; //'data/runs-4jobs-1.csv';
 
   return function(id_, doc) {
     var localDocument = doc;

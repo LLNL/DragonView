@@ -446,7 +446,7 @@ define(function(require) {
 
       var bg = bg_overview_closed ? [0, 0] : bg_overview.size();
 
-      var s = Math.min(size[0]-bg[0], size[1]);
+      var s = Math.max(0, Math.min(size[0]-bg[0], size[1]));
       svgContainer.attr("width", s).attr("height", s);
 
       var r = s/2 - offset;
