@@ -184,8 +184,20 @@ define(function(require) {
 
   service.createCatalog = function(channel, sims) {
     console.log(sims);
-
-
+    var keys, s;
+    var re = /(\w+)\-/;
+    var list = sims.map(function(sim) {
+      var keys = sim.split(',');
+      var s = re.exec(keys[1])[1];
+      return {
+        name:     sim,
+        counters: '/data/links/linkdata/' + keys[0] + '/' + keys[1] + '/' + keys[2] + '/links-' + s + '.csv',
+        jobs:     '/data/links/placements/' + keys[1] + '/' + '/' + s + '.csv',
+        comm:     undefined
+      };
+    });
+    runsInfo = d3.map(list,  function(d) { return d.name;});
+    Backbone.Radio.channel(channel).trigger('data.runsList', list);
   };
 
   service.load = function (channel, name) {
