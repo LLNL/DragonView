@@ -8,7 +8,7 @@ define(function(require) {
 
   return function() {
     var
-        margin = {top: 20, right:10, bottom: 10, left: 40},
+        margin = {top: 10, right:10, bottom: 10, left: 40},
 
         width = 250-margin.left-margin.right,
         height = 150 - margin.top - margin.bottom,
@@ -16,6 +16,8 @@ define(function(require) {
         svg, histogram, _series, handle,
         counterId = undefined,
         percentile = undefined,
+        percentileX = undefined;
+        highlightPercentile = [false, false, false],
         dispatch = d3.dispatch('brushed');
 
     var insideMode = true;
@@ -53,11 +55,23 @@ define(function(require) {
 
     function brushed() {
       var e = brush.extent();
+      var ex = [Math.round(x(e[0])), Math.round(x(e[1]))];
+
       if (!insideMode) {
-        leftHandle.attr('width', x(e[0]));
-        var r = x(e[1]);
-        rightHandle.attr('x', r).attr('width', width-r);
+        leftHandle.attr('width', ex[0]);
+        rightHandle.attr('x', ex[1]);
+        rightHandle.attr('width', width-ex[1]);
       }
+      var i, j, prev = highlightPercentile.concat();
+      for (i=0; i<3; i++) {
+        highlightPercentile[i] = false;
+        for (j=0; j<2; j++) {
+          if (ex[j] == percentileX[i]) highlightPercentile[i] = true;
+        }
+      }
+      var change = false;
+      for (i=0; i<3; i++) change |= prev[i] != highlightPercentile[i];
+      if (change) draw();
       dispatch.brushed([e[0], e[1], insideMode]);
     }
 
@@ -72,6 +86,7 @@ define(function(require) {
         var values = _series.map(valueAccessor).sort(d3.ascending);
         var l = values.length;
         percentile = [values[l/4], values[l/2], values[l*3/4]];
+        percentileX = [Math.round(x(percentile[0])), Math.round(x(percentile[1])),Math.round(x(percentile[2]))];
       }
 
       svg.select('.x')
@@ -114,16 +129,18 @@ define(function(require) {
       bar.exit()
         .remove();
 
-      //svg.select('.percentile rect')
-      //  .attr('x', x(percentile[0]))
-      //  .attr('width', x(percentile[2])-x(percentile[0]));
-
       var lx = percentile.map(x);
       var lines = [
-        {x1: lx[0], x2: lx[0], y1: 0, y2: -6, visible: lx[0] > 0 && lx[0] < width},
-        {x1: lx[1], x2: lx[1], y1: 0, y2: -6, visible: lx[1] > 0 && lx[1] < width},
-        {x1: lx[2], x2: lx[2], y1: 0, y2: -6, visible: lx[2] > 0 && lx[2] < width},
-        {x1: lx[0], x2: lx[2], y1: -2.5, y2: -2.5, visible: true}
+        {x1: lx[0], x2: lx[0], y1: 0, y2: -6, visible: lx[0] > 0 && lx[0] < width,
+          color: highlightPercentile[0] && 'blue' || 'lighgray',
+          width: highlightPercentile[0] && 4 || 1},
+        {x1: lx[1], x2: lx[1], y1: 0, y2: -6, visible: lx[1] > 0 && lx[1] < width,
+          color: highlightPercentile[1] && 'blue' || 'lightgray',
+          width: highlightPercentile[1] && 4 || 1},
+        {x1: lx[2], x2: lx[2], y1: 0, y2: -6, visible: lx[2] > 0 && lx[2] < width,
+          color: highlightPercentile[2] && 'blue' || 'lightgray',
+          width: highlightPercentile[2] && 4 || 1},
+        {x1: lx[0], x2: lx[2], y1: -2.5, y2: -2.5, visible: true, color:'gray', width: 1}
       ];
 
       var line = svg.select('.percentile').selectAll('line')
@@ -140,6 +157,8 @@ define(function(require) {
         .attr('x2', function(d) { return d.x2; })
         .attr('y1', function(d) { return d.y1; })
         .attr('y2', function(d) { return d.y2; })
+        .style('stroke', function(d) { return d.color;})
+        .style('stroke-width', function(d) { return d.width; })
         .attr('visibility', function(d) { return d.visible && 'visible' || 'hidden'; });
 
     }
