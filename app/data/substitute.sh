@@ -1,5 +1,5 @@
 #!/bin/bash
-find . -name "*.csv" | sed \
+find . -name "links/*.csv" | sed \
   -e 's/\(.*\/\)\([^\/]*\)/pushd \1; ln -s \2 \2Z; popd/'  \
   -e 's/links-\([^\.]*\)[^ ]*\(\-.\)\.csvZ/links-\1\2.csv/' \
   -e 's/links-\([^\.]*\)[^ ]*\.csvZ/links-\1.csv/' \

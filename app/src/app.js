@@ -19,7 +19,7 @@ define(function(require) {
   });
 
 
-  window.dispatchEvent(new Event('resize'))
+  window.dispatchEvent(new Event('resize'));
 
   function onSelect(selection) {
     var tab = tabs.get(selection.key);
