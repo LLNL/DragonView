@@ -27,6 +27,11 @@ define(function(require) {
 
   var specs = [
     {
+      name: 'config,dataset / color,sim',
+      rows: [fields.config, fields.dataset],
+      cols: [fields.color, fields.sim]
+    },
+    {
       name: 'config / sim',
       rows: [fields.config],
       cols: [fields.sim]
@@ -42,12 +47,12 @@ define(function(require) {
       cols: [fields.color, fields.jobid]
     },
     {
-      name: 'config,dataset / sim, color,jobid',
+      name: 'config,dataset / sim,color,jobid',
       rows: [fields.config, fields.dataset],
       cols: [fields.sim, fields.color, fields.jobid]
     },
     {
-      name: 'dataset,sim/ config',
+      name: 'dataset,sim / config',
       rows: [fields.dataset, fields.sim],
       cols: [fields.config]
     }
