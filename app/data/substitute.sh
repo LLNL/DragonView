@@ -7,3 +7,4 @@ find links/ -name "*.csv" | sed \
   -e 's/ \([^\.]*\)[^ ]*.csvZ/ \1.csv/'  > l
 
 source l;
+rm l
