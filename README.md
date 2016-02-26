@@ -3,7 +3,7 @@
 Visualizing network performance counters of a dragonfly architecture on a supercomputer
 
 
-### Instalation
+### Installation
 * Download and install [nodejs](https://nodejs.org "Title")
 * Install bower
 
