@@ -48,10 +48,10 @@ define(function(require) {
           router = row[c];
           router.radius = radius;
           router.angle = angle;
-          router.innerRadius = radius;
-          router.outerRadius = radius + dr*0.9;
-          router.startAngle = angle -da/3;
-          router.endAngle = angle + da/3;
+          router.innerRadius = radius - dr*0.45;
+          router.outerRadius = radius + dr*0.45;
+          router.startAngle = angle -da*5/12;
+          router.endAngle = angle + da*5/12;
           angle += da;
         }
       }

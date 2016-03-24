@@ -41,6 +41,7 @@ define(function(require) {
             id: model.router_id(g, r, c),
             g: g,  r:r,  c:c,
             jobs:[],
+            nodes_jobs: [null, null, null, null],
             color: config.UNKNOWN_JOB_COLOR
           };
           row.push(router);
@@ -109,6 +110,7 @@ define(function(require) {
           router.jobs.push(job);
           router.color = router.jobs.length == 1 ? job.color : config.MULTI_JOBS_COLOR;
         }
+        router.nodes_jobs[item.n] =  router.nodes_jobs[item.n] && router.nodes_jobs[item.n] != job.color ? config.MULTI_JOBS_COLOR : job.color;
       }
     });
   }

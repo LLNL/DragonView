@@ -26,7 +26,8 @@ define(function(require) {
         selectedGroup = undefined,
         blueLinks, greenLinks, blackLinks,
         svgContainer, svg,
-        bg_overview_closed = false;
+        bg_overview_closed = false,
+        routersMode = 'routers';
 
     var d3groupView, d3groupView2, d3bgView;
 
@@ -230,15 +231,13 @@ define(function(require) {
 
       d3routers.enter().call(Router);
 
-      if (mode == 'routers') {
-        d3routers
+      if (routersMode == 'routers') {
+        d3routers.selectAll('.single')
           .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
           .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
           .attr('fill', function(d) {return d.color; })
           .attr('r', r);
       } else {
-        d3routers
-          .attr('')
       }
 
       d3routers.exit().attr('r', config.ROUTER_RADIUS);
@@ -283,7 +282,7 @@ define(function(require) {
         .innerRadius(opt.outerRadius+2)
         .outerRadius(opt.outerRadius+7);
 
-      var d3bands = d3.select('.groups').selectAll('.band')
+      var d3bands = svg.select('.groups').selectAll('.band')
         .data(bands);
 
       d3bands.enter()
@@ -358,9 +357,12 @@ define(function(require) {
     }
 
     function Router() {
-      if (mode == 'routers') {
-        this.append('circle')
-          .attr('class', 'router')
+      var g = this.append('g')
+        .attr('class', 'router');
+
+      if (routersMode == 'routers') {
+        g.append('circle')
+          .attr('class', 'single')
           .on('mouseover', function(d) {
             highlight_router(this, d,  true);
           })
@@ -372,9 +374,18 @@ define(function(require) {
         var routerArc = d3.svg.arc();
           //.innerRadius(function(d) { return d.innerRadius; })
           //.outerRadius(function(d) { return d.outerRadius;});
-        var g = this.append('g').attr('class', 'openGroup');
         g.append('path')
-          .attr('d', routerArc);
+          .classed('nodes', true)
+          .attr('d', routerArc)
+          .each(function(d) { console.log(d.jobs);});
+        g.selectAll('circle')
+          .data(function(d) {return d.nodes_jobs.map(function(j) { return {router: d, color:j}; })})
+          .enter()
+          .append('circle')
+            .attr('cx', function(d, i) { return (d.router.innerRadius + 2+ i*4) * Math.cos(d.router.angle-Math.PI/2); })
+            .attr('cy', function(d, i) { return (d.router.innerRadius+ 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
+            .attr('fill', function(d) {return d.color || 'steelblue'; })
+            .attr('r', 1);
       }
     }
 
@@ -428,6 +439,7 @@ define(function(require) {
     }
 
     function set_mode(mode) {
+      routersMode = mode;
       opt.groupHeight = mode == 'routers' ? opt.routersGroupHeight : opt.nodesGroupHeight;
       layout.size(layout.size());
       if (data) {

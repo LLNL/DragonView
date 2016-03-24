@@ -207,6 +207,11 @@ div {
     .radial circle:active {
       r: 4px; }
 
+.router .nodes {
+  fill: #eee;
+  stroke-width: 0.5px;
+  stroke: none; }
+
 #bg-div {
   display: inline-block; }
   #bg-div #bg-button {
@@ -238,10 +243,6 @@ div {
   pointer-events: all; }
 
 /* group view */
-.group-view .router {
-  fill: #aaa;
-  stroke-width: 1px;
-  stroke: #fff; }
 .group-view .green {
   stroke-width: 1px;
   stroke: green;
