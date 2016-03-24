@@ -230,11 +230,16 @@ define(function(require) {
 
       d3routers.enter().call(Router);
 
-      d3routers
-        .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
-        .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
-        .attr('fill', function(d) {return d.color; })
-        .attr('r', r);
+      if (mode == 'routers') {
+        d3routers
+          .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
+          .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
+          .attr('fill', function(d) {return d.color; })
+          .attr('r', r);
+      } else {
+        d3routers
+          .attr('')
+      }
 
       d3routers.exit().attr('r', config.ROUTER_RADIUS);
 
@@ -353,15 +358,24 @@ define(function(require) {
     }
 
     function Router() {
-      var g = this.append('circle')
-        .attr('class', 'router')
-        .on('mouseover', function(d) {
-          highlight_router(this, d,  true);
-        })
-        .on('mouseout', function(d) {
-          highlight_router(this, d,  false);
-        })
-        .each(function(d) { d.node = this;});
+      if (mode == 'routers') {
+        this.append('circle')
+          .attr('class', 'router')
+          .on('mouseover', function(d) {
+            highlight_router(this, d,  true);
+          })
+          .on('mouseout', function(d) {
+            highlight_router(this, d,  false);
+          })
+          .each(function(d) { d.node = this;});
+      } else {
+        var routerArc = d3.svg.arc();
+          //.innerRadius(function(d) { return d.innerRadius; })
+          //.outerRadius(function(d) { return d.outerRadius;});
+        var g = this.append('g').attr('class', 'openGroup');
+        g.append('path')
+          .attr('d', routerArc);
+      }
     }
 
     function Connector(selection) {

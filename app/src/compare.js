@@ -55,8 +55,27 @@ define(function(require) {
       name: 'dataset,sim / config',
       rows: [fields.dataset, fields.sim],
       cols: [fields.config]
-    }
-  ];
+    },
+    {
+      name: 'color,dataset, sim / config',
+      rows: [fields.color, fields.dataset, fields.sim],
+      cols: [fields.config]
+    },
+    {
+      name: 'config / color,dataset,sim',
+      rows: [fields.config],
+      cols: [fields.color, fields.dataset, fields.sim]
+    } ,
+    {
+      name: 'color,config / dataset,sim',
+      rows: [fields.color, fields.config],
+      cols: [fields.dataset, fields.sim]
+    },
+    {
+      name: 'color/ dataset,sim',
+      rows: [fields.color],
+      cols: [fields.dataset, fields.sim]
+    }  ];
 
 
   var data = null;

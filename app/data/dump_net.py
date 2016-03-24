@@ -233,7 +233,7 @@ def parse_net():
         ignore, meta, net = eyaml_load(filename)
         net = net.reshape(len(net)/40, 40)
 
-        header = ['sg', 'sr', 'sg', 'dg', 'dr', 'dc', 'color']
+        header = ['sg', 'sr', 'sc', 'dg', 'dr', 'dc', 'color']
         # header.extend(list(net.dtype.names)[3:])
         header.extend([x[0] for x in counters_mapping])
 
