@@ -412,6 +412,18 @@ define(function(require) {
           .classed('highlight', false);
       }
     }
+
+    function set_mode(mode) {
+      opt.groupHeight = mode == 'routers' ? opt.routersGroupHeight : opt.nodesGroupHeight;
+      layout.size(layout.size());
+      if (data) {
+        layout(data);
+        render();
+        if (range)
+          filter();
+      }
+    }
+
     /*
      * radial
      */
@@ -420,6 +432,25 @@ define(function(require) {
 
     radial.el = function(el) {
       var d3el = d3.select(el);
+      var mode = d3el.append('div');
+      mode.append('label')
+        .attr('class', 'sub-label')
+        .text('Routers')
+        .append('input')
+        .attr('type', 'radio')
+        .attr('name', 'mode')
+        .attr('value', 'routers')
+        .property('checked', true)
+        .on('change', function () { set_mode(this.value); });
+      mode.append('label')
+        .attr('class', 'sub-label')
+        .text('Nodes')
+        .append('input')
+        .attr('type', 'radio')
+        .attr('name', 'mode')
+        .attr('value', 'nodes')
+        .on('change', function () { set_mode(this.value); });
+
       svgContainer = d3el
         .append("svg")
         .attr('width', WIDTH)

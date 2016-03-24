@@ -6,7 +6,10 @@ define(function(require) {
   var model = require('model');
 
   return function() {
+
     var parms = {
+        routersGroupHeight: 35,
+        nodesGroupHeight: 150,
         //width: 600,
         //height: 600,
         outerRadius: 500,
@@ -25,6 +28,7 @@ define(function(require) {
         connectorSpacing: 0
       };
 
+    var radius;
 
     function layoutRouters(group) {
       var nrows = group.routers.length;
@@ -123,6 +127,8 @@ define(function(require) {
     }
 
     layout.size = function(r) {
+      if (!arguments.length) return radius;
+      radius = r;
       parms.outerRadius = r - parms.outerOffset;
       parms.innerRadius = parms.outerRadius - parms.groupHeight;
       parms.connectorsRadius = parms.innerRadius-parms.connectorsOffset;
