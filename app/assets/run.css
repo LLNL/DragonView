@@ -189,7 +189,8 @@ div {
       stroke: #808080;
       stroke-width: 1px; }
     .radial .group.selected {
-      fill: #d8d8d8; }
+      stroke: #bbb;
+      stroke-width: 2px; }
   .radial .connector {
     fill: #a0a0a0;
     stroke: none; }
@@ -247,5 +248,10 @@ div {
   stroke-width: 1px;
   stroke: green;
   shape-rendering: crispEdges; }
+
+.closeup .closeup-group {
+  fill: lightgray; }
+.closeup .canvas {
+  fill: lightblue; }
 
 /*# sourceMappingURL=run.css.map */

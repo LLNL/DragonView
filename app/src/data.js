@@ -185,7 +185,6 @@ define(function(require) {
   };
 
   service.createCatalog = function(channel, sims) {
-    console.log(sims);
     var keys, s;
     var re = /(\w+)\-/;
     var list = sims.map(function(sim) {

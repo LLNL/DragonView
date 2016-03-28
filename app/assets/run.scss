@@ -233,7 +233,9 @@ div {
     }
 
     &.selected {
-      fill: #d8d8d8;
+      //fill: #d8d8d8;
+      stroke: #bbb;
+      stroke-width: 2px;
     }
 
   }
@@ -368,5 +370,17 @@ div {
     stroke-width: 1px;
     stroke: green;
     shape-rendering: crispEdges;
+  }
+}
+
+.closeup {
+  //background-color: #eeff6e;
+
+  .closeup-group {
+    fill: lightgray;
+  }
+
+  .canvas {
+    fill: lightblue;
   }
 }

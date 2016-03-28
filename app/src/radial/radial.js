@@ -9,6 +9,7 @@ define(function(require) {
   var model = require('model');
   var BlackGreen = require('radial/black_green');
   var config = require('config');
+  var Closeup = require('radial/closeup');
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
@@ -27,7 +28,8 @@ define(function(require) {
         blueLinks, greenLinks, blackLinks,
         svgContainer, svg,
         bg_overview_closed = false,
-        routersMode = 'routers';
+        routersMode = 'routers',
+        closeup;
 
     var d3groupView, d3groupView2, d3bgView;
 
@@ -141,6 +143,7 @@ define(function(require) {
       //bg_view(greenLinks, blackLinks);
       renderBlues();
       bg_overview(greenLinks, blackLinks);
+      closeup.links(greenLinks, blackLinks);
     }
 
     function renderBlues() {
@@ -315,6 +318,9 @@ define(function(require) {
 
       svg.select('.routers').selectAll('.router').remove();
       renderRouters(data.routers, config.ROUTER_RADIUS);
+
+      if (selectedGroup)
+        closeup(selectedGroup);
     }
 
     /*
@@ -353,6 +359,10 @@ define(function(require) {
         .data(data.groups, function (g) { return g.id; })
         .classed('selected', function(g) { return g.id == id; });
 
+      if (selectedGroup) {
+        closeup(selectedGroup);
+      }
+
       //renderLinks();
     }
 
@@ -372,19 +382,21 @@ define(function(require) {
           .each(function(d) { d.node = this;});
       } else {
         var routerArc = d3.svg.arc();
-          //.innerRadius(function(d) { return d.innerRadius; })
-          //.outerRadius(function(d) { return d.outerRadius;});
         g.append('path')
           .classed('nodes', true)
-          .attr('d', routerArc)
-          .each(function(d) { console.log(d.jobs);});
+          .attr('d', routerArc);
+          //.each(function(d) { console.log(d.jobs);});
         g.selectAll('circle')
-          .data(function(d) {return d.nodes_jobs.map(function(j) { return {router: d, color:j}; })})
+          .data(function(d) {
+            if (!d.nodes_jobs) {
+              console.log('no nodes jobs for ', d);
+            }
+            return d.nodes_jobs.map(function(j) { return {router: d, color:j}; })})
           .enter()
           .append('circle')
             .attr('cx', function(d, i) { return (d.router.innerRadius + 2+ i*4) * Math.cos(d.router.angle-Math.PI/2); })
             .attr('cy', function(d, i) { return (d.router.innerRadius+ 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
-            .attr('fill', function(d) {return d.color || 'steelblue'; })
+            .attr('fill', function(d) {return d.color || 'none'; })
             .attr('r', 1);
       }
     }
@@ -444,6 +456,7 @@ define(function(require) {
       layout.size(layout.size());
       if (data) {
         layout(data);
+        closeup.mode(mode);
         render();
         if (range)
           filter();
@@ -458,7 +471,9 @@ define(function(require) {
 
     radial.el = function(el) {
       var d3el = d3.select(el);
-      var mode = d3el.append('div');
+      var top = d3el.append('div');
+
+      var mode = top.append('div');
       mode.append('label')
         .attr('class', 'sub-label')
         .text('Routers')
@@ -477,8 +492,7 @@ define(function(require) {
         .attr('value', 'nodes')
         .on('change', function () { set_mode(this.value); });
 
-      svgContainer = d3el
-        .append("svg")
+      svgContainer = top.append("svg")
         .attr('width', WIDTH)
         .attr('height', HEIGHT)
         .classed("radial", true);
@@ -493,7 +507,7 @@ define(function(require) {
       svg.append('g').attr('class', 'green-blue');
       svg.append('g').attr('class', 'internal');
 
-      var div = d3el.append('div').attr('id', 'bg-div');
+      var div = top.append('div').attr('id', 'bg-div');
       div.append('button')
         .attr('id', 'bg-button')
         .text('>>')
@@ -505,6 +519,8 @@ define(function(require) {
         });
 
       bg_overview.el(div);
+
+      closeup = Closeup(d3el);
 
       return this;
     };
@@ -538,6 +554,7 @@ define(function(require) {
       data = _;
       valid = false;
       layout(data);
+      //closeup.data(data);
       render();
       return this;
     };
