@@ -3,6 +3,10 @@
 //  width: 100%;
   display: inline-block;
 
+  .tab-links {
+    padding: 0;
+    margin: 10px 0 0 0;
+  }
   .tab-links:after {
     display: block;
     clear: both;

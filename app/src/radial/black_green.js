@@ -189,7 +189,9 @@ define(function(require) {
     };
 
     layout.size = function() {
-      return [width,  height];
+      //console.log('canvas:',canvas.clientWidth, canvas.clientHeight);
+      return [canvas.clientWidth, canvas.clientHeight];
+      //return [width,  height];
     };
 
     return layout;

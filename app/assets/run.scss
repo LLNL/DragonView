@@ -217,6 +217,7 @@ div {
 .radial {
   display: inline-block;
   vertical-align: top;
+  position: absolute;
 
   .group {
     fill: #fff; /*#f8f8f8;*/
@@ -234,7 +235,7 @@ div {
 
     &.selected {
       //fill: #d8d8d8;
-      stroke: #bbb;
+      stroke: #000;
       stroke-width: 2px;
     }
 
@@ -375,12 +376,16 @@ div {
 
 .closeup {
   //background-color: #eeff6e;
+  padding-bottom: 10px;
 
   .closeup-group {
     fill: lightgray;
   }
 
   .canvas {
+    position: fixed;
+    padding-left: 30px;
+    vertical-align: top;
     fill: lightblue;
   }
 }

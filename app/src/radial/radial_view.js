@@ -36,6 +36,14 @@ define(function(require) {
 
     function getSize(el) {
       var d3el = d3.select(el);
+      console.log(
+        '\toffset: Top:', d3el.property('offsetTop'),
+        'Left:', d3el.property('offsetLeft'),
+        'Width:', d3el.property('offsetWidth'),
+        'Height:', d3el.property('offsetHeight'),
+        'client: Width:', d3el.property('clientWidth'),
+        'height:', d3el.property('clientHeight'));
+      console.log("\telem: ",parseInt(d3el.style('width')), parseInt(d3el.style('height')));
       return [parseInt(d3el.style('width')), parseInt(d3el.style('height'))];
     }
 
@@ -43,8 +51,12 @@ define(function(require) {
       radial = Radial().el(elem).counter(0).resize([600, 600]);
 
       var win = elem.ownerDocument.defaultView || elem.ownerDocument.parentWindow;
-      win.addEventListener('resize', function() {
-        radial.resize(getSize(elem));
+      win.addEventListener('resize', function(event) {
+        var el = d3.select(elem);
+        //var s = [event.target.innerWidth-el.property('offsetLeft'), event.target.innerHeight-el.property('offsetTop')];
+        var s = [event.target.innerWidth-280, event.target.innerHeight-el.property('offsetTop')];
+        //console.log('s = ', s);
+        radial.resize(s);
       });
       win.dispatchEvent(new Event('resize'));
 

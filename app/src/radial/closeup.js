@@ -6,19 +6,25 @@ define(function(require) {
   var d3 = require('d3');
   var config = require('config');
   var model = require('model');
+  var model = require('model');
 
   return function(el) {
-    var SIZE = 32;
+    var SIZE = 32, DS = 4;
     var NODE_SIZE = 6;
-    var WIDTH = 16 * (SIZE + 4);
-    var HEIGHT =  6 * (SIZE + 4);
-    var CANVAS_DH = 4;
-    var CANVAS_WIDTH = 6 * 16 * (CANVAS_DH + 2);
-    var CANVAS_HEIGHT = 16 * (CANVAS_DH + 2) + 10 + 6 * (CANVAS_DH+2);
+    var WIDTH = 16 * (SIZE + DS);
+    var HEIGHT =  6 * (SIZE + DS);
+
+    var BOX_SIZE = 6;
+    var CANVAS_DS  = 4;
+    var GREEN_BOX_SIZE = 16 * BOX_SIZE;
+    var BLACK_BOX_SIZE =  6 * BOX_SIZE;
+    var CANVAS_WIDTH = 6 * (GREEN_BOX_SIZE + CANVAS_DS);
+    var CANVAS_HEIGHT = GREEN_BOX_SIZE + 10 + BLACK_BOX_SIZE + 10;
 
     var div, svg, g, canvas;
     var header;
     var mode = 'routers';
+    var currentGreen = [], currentBlack = [];
 
     setup(el);
 
@@ -28,26 +34,34 @@ define(function(require) {
     }
 
     var closeup = function(group) {
-      header.text("Group: "+group.id);
+      if (!group) {
+        //div.style('visibility', 'hidden');
+        div.style('display', 'none');
+        return;
+      }
+      //div.style('visibility', 'visible');
+      div.style('display', 'block');
+
+      header.text(group.id);
 
       var showNodes = mode == 'nodes';
 
       var routers = [], nodes = [], rect = [];
-      var x= 0, y= 2-SIZE, r, c, n, nr, nc, row, col;
+      var x= 0, y= DS-SIZE, r, c, n, nr, nc, row, col;
 
       for (r=0, nr=group.routers.length; r< nr; r++) {
         row = group.routers[r];
         for (c=0, nc=row.length; c< nc; c++) {
-          rect.push({id: r*nc+c, x: c*(SIZE+4)+2, y: 2+r*(SIZE+4), width: SIZE, height: SIZE, color: showNodes? '#eaeaea' : row[c].color});
+          rect.push({id: r*nc+c, x: DS/2+c*(SIZE+DS), y: r*(SIZE+DS), width: SIZE, height: SIZE, color: showNodes? '#eaeaea' : row[c].color});
         }
       }
 
-      y = -2-SIZE;
+      y = -(DS+SIZE);
       if (mode == 'nodes') {
         for (r = 0, nr = group.routers.length; r < nr; r++) {
           row = group.routers[r];
-          x = 4;
-          y += SIZE + 4;
+          x = DS;
+          y += SIZE + DS;
           for (c = 0, nc = row.length; c < nc; c++) {
             for (n = 0; n < 4; n++) {
               if (row[c].nodes_jobs[n] != null) {
@@ -55,14 +69,13 @@ define(function(require) {
                   id: (r * nc + c) + '-' + n,
                   x: x,
                   y: y + n * (NODE_SIZE+2),
-                  width: SIZE - 4,
+                  width: SIZE - DS,
                   height: NODE_SIZE,
                   color: row[c].nodes_jobs[n]
                 });
-                console.log('id:', (r * nc + c) + '-' + n, 'x:', x, 'y:', y + n * NODE_SIZE, 'width:', SIZE - 4, 'height:', NODE_SIZE, 'color:', row[c].nodes_jobs[n]);
               }
             }
-            x += SIZE + 4;
+            x += SIZE + DS;
           }
         }
       }
@@ -83,7 +96,78 @@ define(function(require) {
       d3routers.exit().remove();
     };
 
-    closeup.links = function(green, black) {
+    closeup.links = function(group, greenLinks, blackLinks) {
+      var r, c, x, y;
+      var ctx = canvas.getContext('2d');
+      var greenBoxes = new Array(model.N_ROWS).fill(false);
+      var blackBoxes = new Array(model.N_COLS).fill(false);
+
+      /* clear canvas */
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+      if (!greenLinks)
+        greenLinks = currentGreen;
+      else
+        currentGreen = greenLinks;
+
+      if (!blackLinks)
+        blackLinks = currentBlack;
+      else
+        currentBlack = blackLinks;
+
+      if (!group || (greenLinks.length == 0 && blackLinks.length == 0))
+        return;
+
+      // check which box has data
+      greenLinks.forEach(function(link) {
+        if (link.srcId.g == group.id)
+          greenBoxes[link.srcId.r] = true;
+      });
+      blackLinks.forEach(function(link) {
+        if (link.srcId.g == group.id)
+          blackBoxes[link.srcId.c] = true;
+      });
+
+
+      // background boxes
+      ctx.fillStyle = '#ccc';
+      y = 0;
+      for(r = 0; r < model.N_ROWS; r++) {
+        ctx.beginPath();
+        ctx.fillStyle = greenBoxes[r] ? '#ccc' : '#f0f0f0';
+        ctx.rect(r * (GREEN_BOX_SIZE+CANVAS_DS), y, GREEN_BOX_SIZE, GREEN_BOX_SIZE);
+        ctx.fill();
+      }
+
+      y = GREEN_BOX_SIZE + 10;
+      for(c = 0; c < model.N_COLS; c++) {
+        ctx.beginPath();
+        ctx.fillStyle = blackBoxes[c] ? '#ccc' : '#f0f0f0';
+        ctx.rect(c * (BLACK_BOX_SIZE+CANVAS_DS), y, BLACK_BOX_SIZE, BLACK_BOX_SIZE);
+        ctx.fill();
+      }
+
+      // green links
+      greenLinks.forEach(function(link) {
+        if (link.srcId.g == group.id) {
+          x = link.destId.r * (GREEN_BOX_SIZE+CANVAS_DS)+ link.destId.c * BOX_SIZE;
+          y = link.srcId.c * BOX_SIZE;
+          ctx.fillStyle = link.vis_color;
+          ctx.fillRect(x, y, BOX_SIZE, BOX_SIZE);
+        }
+      });
+
+      offset = GREEN_BOX_SIZE + 10;
+      /* black links */
+      blackLinks.forEach(function(link) {
+        if (link.srcId.g == group.id) {
+          x = link.destId.c * (BLACK_BOX_SIZE+CANVAS_DS) + link.destId.r * BOX_SIZE;
+          y = offset + link.srcId.r * BOX_SIZE;
+          ctx.fillStyle = link.vis_color;
+          ctx.fillRect(x, y, BOX_SIZE, BOX_SIZE);
+        }
+      });
       return this;
     };
 
@@ -92,15 +176,25 @@ define(function(require) {
       return this;
     };
 
+    closeup.size = function() {
+      if (div) return [div[0][0].clientWidth, div[0][0].clientHeight];
+      return [WIDTH + 30 + CANVAS_WIDTH, HEIGHT + CANVAS_HEIGHT];
+    };
+
     return closeup;
 
     function setup(el) {
-      div = el.append('div')
+      div = el
         .attr('id', 'closeup')
         .classed('closeup', true);
 
-      header = div.append('p')
+      div.append('span')
+        .style('vertical-align', 'top')
         .text('Group:');
+
+      header = div.append('b')
+        .style('vertical-align', 'top')
+        .style('padding-right', 20);
 
       svg = div.append("svg")
         .attr('width', WIDTH)

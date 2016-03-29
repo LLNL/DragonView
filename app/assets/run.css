@@ -1,6 +1,9 @@
 .tabs {
   display: inline-block;
   /*----- Content of Tabs -----*/ }
+  .tabs .tab-links {
+    padding: 0;
+    margin: 10px 0 0 0; }
   .tabs .tab-links:after {
     display: block;
     clear: both;
@@ -177,7 +180,8 @@ div {
 
 .radial {
   display: inline-block;
-  vertical-align: top; }
+  vertical-align: top;
+  position: absolute; }
   .radial .group {
     fill: #fff;
     /*#f8f8f8;*/
@@ -189,7 +193,7 @@ div {
       stroke: #808080;
       stroke-width: 1px; }
     .radial .group.selected {
-      stroke: #bbb;
+      stroke: #000;
       stroke-width: 2px; }
   .radial .connector {
     fill: #a0a0a0;
@@ -249,9 +253,14 @@ div {
   stroke: green;
   shape-rendering: crispEdges; }
 
-.closeup .closeup-group {
-  fill: lightgray; }
-.closeup .canvas {
-  fill: lightblue; }
+.closeup {
+  padding-bottom: 10px; }
+  .closeup .closeup-group {
+    fill: lightgray; }
+  .closeup .canvas {
+    position: fixed;
+    padding-left: 30px;
+    vertical-align: top;
+    fill: lightblue; }
 
 /*# sourceMappingURL=run.css.map */

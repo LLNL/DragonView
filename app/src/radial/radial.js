@@ -30,6 +30,7 @@ define(function(require) {
         bg_overview_closed = false,
         routersMode = 'routers',
         closeup;
+    var bg_div, closeup_div;
 
     var d3groupView, d3groupView2, d3bgView;
 
@@ -143,7 +144,7 @@ define(function(require) {
       //bg_view(greenLinks, blackLinks);
       renderBlues();
       bg_overview(greenLinks, blackLinks);
-      closeup.links(greenLinks, blackLinks);
+      closeup.links(selectedGroup, greenLinks, blackLinks);
     }
 
     function renderBlues() {
@@ -319,8 +320,8 @@ define(function(require) {
       svg.select('.routers').selectAll('.router').remove();
       renderRouters(data.routers, config.ROUTER_RADIUS);
 
-      if (selectedGroup)
-        closeup(selectedGroup);
+      closeup(selectedGroup);
+      closeup.links(selectedGroup);
     }
 
     /*
@@ -343,7 +344,7 @@ define(function(require) {
     }
 
     function selectGroup(d) {
-      var id;
+      var id, prev = selectedGroup;
       if (selectedGroup == d) {
         selectedGroup = id = undefined;
         //svg.select('.green-black').selectAll('.something').remove();
@@ -359,10 +360,12 @@ define(function(require) {
         .data(data.groups, function (g) { return g.id; })
         .classed('selected', function(g) { return g.id == id; });
 
-      if (selectedGroup) {
-        closeup(selectedGroup);
-      }
+      closeup(selectedGroup);
+      closeup.links(selectedGroup);
 
+      if ((!prev && selectedGroup) ||  (prev && !selectedGroup)) {
+        radial.resize(size);
+      }
       //renderLinks();
     }
 
@@ -471,9 +474,24 @@ define(function(require) {
 
     radial.el = function(el) {
       var d3el = d3.select(el);
-      var top = d3el.append('div');
+      //var top = d3el.append('div');
 
-      var mode = top.append('div');
+      svgContainer = d3el.append("svg")
+        .attr('width', WIDTH)
+        .attr('height', HEIGHT)
+        .classed("radial", true);
+
+      svg = svgContainer.append("g");
+        //.attr('transform', 'translate('+WIDTH/2+','+HEIGHT/2+')');
+
+      svg.append('g').attr('class', 'groups');
+      svg.append('g').attr('class', 'routers');
+      svg.append('g').attr('class', 'connectors');
+      svg.append('g').attr('class', 'connections');
+      svg.append('g').attr('class', 'green-blue');
+      svg.append('g').attr('class', 'internal');
+
+      var mode = d3el.append('div').style('position', 'absolute');
       mode.append('label')
         .attr('class', 'sub-label')
         .text('Routers')
@@ -492,50 +510,53 @@ define(function(require) {
         .attr('value', 'nodes')
         .on('change', function () { set_mode(this.value); });
 
-      svgContainer = top.append("svg")
-        .attr('width', WIDTH)
-        .attr('height', HEIGHT)
-        .classed("radial", true);
+      bg_div = d3el.append('div')
+        .attr('id', 'bg-div')
+        .style('position', 'absolute')
+        .style('overflow', 'hidden');
 
-      svg = svgContainer.append("g");
-        //.attr('transform', 'translate('+WIDTH/2+','+HEIGHT/2+')');
-
-      svg.append('g').attr('class', 'groups');
-      svg.append('g').attr('class', 'routers');
-      svg.append('g').attr('class', 'connectors');
-      svg.append('g').attr('class', 'connections');
-      svg.append('g').attr('class', 'green-blue');
-      svg.append('g').attr('class', 'internal');
-
-      var div = top.append('div').attr('id', 'bg-div');
-      div.append('button')
+      d3el.append('button')
         .attr('id', 'bg-button')
+        .style('position', 'fixed')
+        .style('right', 10)
+        .style('top', 30)
         .text('>>')
         .on('click', function() {
           bg_overview_closed = !bg_overview_closed;
-          div.classed('closed', bg_overview_closed);
-          div.select('bg-button').text(bg_overview_closed && '<<' || '>>');
+          bg_div.classed('closed', bg_overview_closed);
+          bg_div.select('bg-button').text(bg_overview_closed && '<<' || '>>');
           radial.resize(size);
         });
 
-      bg_overview.el(div);
+      bg_overview.el(bg_div);
 
-      closeup = Closeup(d3el);
+      closeup_div = d3el.append('div')
+        .style('position', 'absolute');
+
+      closeup = Closeup(closeup_div);
 
       return this;
     };
 
     radial.resize = function(_) {
       size = _;
-      var offset = 10;
+      var offset = 30;
 
-      var bg = bg_overview_closed ? [0, 0] : bg_overview.size();
+      var bg_size = bg_overview.size();
+      var closeup_size = closeup.size();
 
-      var s = Math.max(0, Math.min(size[0]-bg[0], size[1]));
+      var s = Math.max(0, Math.min(size[0]-bg_size[0], size[1]-closeup_size[1]));
+      console.log('radial:', size, bg_size, closeup_size, s);
+      console.log('w:',s,'+',bg_size[0],'=',(s+bg_size[0]),'[',+size[0]+']');
+      console.log('h:',s,'+',closeup_size[1],'=',(s+closeup_size[1]),'[',+size[1]+']');
+
+      bg_div.style('left', s);
+      closeup_div.style('top', offset+Math.max(s, bg_size[1]));
+
       svgContainer.attr("width", s).attr("height", s);
 
-      var r = s/2 - offset;
-      svg.attr('transform', 'translate('+(r+offset)+','+(r+offset)+')');
+      var r = s/2;
+      svg.attr('transform', 'translate('+(r)+','+(r)+')');
 
       layout.size(r);
       layout_gb.size([opt.innerRadius*0.1, opt.innerRadius*0.75]);
@@ -554,7 +575,6 @@ define(function(require) {
       data = _;
       valid = false;
       layout(data);
-      //closeup.data(data);
       render();
       return this;
     };
