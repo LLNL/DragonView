@@ -546,9 +546,9 @@ define(function(require) {
       var closeup_size = closeup.size();
 
       var s = Math.max(0, Math.min(size[0]-bg_size[0], size[1]-closeup_size[1]));
-      console.log('radial:', size, bg_size, closeup_size, s);
-      console.log('w:',s,'+',bg_size[0],'=',(s+bg_size[0]),'[',+size[0]+']');
-      console.log('h:',s,'+',closeup_size[1],'=',(s+closeup_size[1]),'[',+size[1]+']');
+      //console.log('radial:', size, bg_size, closeup_size, s);
+      //console.log('w:',s,'+',bg_size[0],'=',(s+bg_size[0]),'[',+size[0]+']');
+      //console.log('h:',s,'+',closeup_size[1],'=',(s+closeup_size[1]),'[',+size[1]+']');
 
       bg_div.style('left', s);
       closeup_div.style('top', offset+Math.max(s, bg_size[1]));

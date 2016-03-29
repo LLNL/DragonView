@@ -55,7 +55,6 @@ define(function(require) {
         var el = d3.select(elem);
         //var s = [event.target.innerWidth-el.property('offsetLeft'), event.target.innerHeight-el.property('offsetTop')];
         var s = [event.target.innerWidth-280, event.target.innerHeight-el.property('offsetTop')];
-        //console.log('s = ', s);
         radial.resize(s);
       });
       win.dispatchEvent(new Event('resize'));
