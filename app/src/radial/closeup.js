@@ -14,7 +14,7 @@ define(function(require) {
     var WIDTH = 16 * (SIZE + DS);
     var HEIGHT =  6 * (SIZE + DS);
 
-    var BOX_SIZE = 4;
+    var BOX_SIZE = 6;
     var CANVAS_DS  = 4;
     var GREEN_BOX_SIZE = 16 * BOX_SIZE;
     var BLACK_BOX_SIZE =  6 * BOX_SIZE;

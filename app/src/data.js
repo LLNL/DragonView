@@ -41,7 +41,7 @@ define(function(require) {
             id: model.router_id(g, r, c),
             g: g,  r:r,  c:c,
             jobs:[],
-            nodes_jobs: [null, null, null, null],
+            nodes_jobs: [undefined, undefined, undefined, undefined],
             color: config.UNKNOWN_JOB_COLOR
           };
           row.push(router);
@@ -81,7 +81,8 @@ define(function(require) {
   }
 
   function loadPlacement(data, run) {
-    var job, router, idx=0, n;
+    var job, router, idx=0, n, i;
+
     data.forEach(function (item) {
       if (item.core == undefined || item.core == 0) {
         item.g = +item.g;
@@ -98,8 +99,8 @@ define(function(require) {
 
         job = run.jobs.get(item.jobid);
         if (!job) {
-          job = {id: item.jobid, idx: idx, n:0, color:config.jobColor(idx)};
-          run.jobsColor.push(job.color);
+          job = {id: item.jobid, idx: idx, n:0 /*, color:config.jobColor(idx)*/};
+          //run.jobsColor.push(job.color);
           run.jobs.set(item.jobid, job);
           idx++;
         }
@@ -108,9 +109,31 @@ define(function(require) {
         router = run.routers.get(model.router_id(item));
         if (router.jobs.indexOf(job) == -1) {
           router.jobs.push(job);
-          router.color = router.jobs.length == 1 ? job.color : config.MULTI_JOBS_COLOR;
+          //router.color = router.jobs.length == 1 ? job.color : config.MULTI_JOBS_COLOR;
         }
-        router.nodes_jobs[item.n] =  router.nodes_jobs[item.n] && router.nodes_jobs[item.n] != job.color ? config.MULTI_JOBS_COLOR : job.color;
+        if (router.nodes_jobs[item.n] == null) router.nodes_jobs[item.n] = job;
+        else if (router.nodes_jobs[item.n] !== job) router.nodes_jobs[item.n] = -1;
+        //router.nodes_jobs[item.n] =  router.nodes_jobs[item.n] == null || router.nodes_jobs[item.n] != job.id ? config.MULTI_JOBS_COLOR : job.color;
+      }
+    });
+
+    var jobs = run.jobs.values();
+    jobs.sort(function (a,b) { return b.n - a.n;});
+    for (i=0, n=jobs.length; i<n; i++) {
+      jobs[i].color = config.jobColor(i);
+      jobs[i].idx = i;
+    }
+    run.routers.forEach(function(key, router) {
+      if (router.jobs.length == 1) {
+        router.color = router.jobs[0].color;
+        router.idx = router.jobs[0].idx;
+      } else {
+        router.color = config.MULTI_JOBS_COLOR;
+        router.idx = config.JOBS_COLORMAP.length;
+      }
+      for (i=0; i<4; i++) {
+        if (router.nodes_jobs[i])
+          router.nodes_jobs[i] = router.nodes_jobs[i] == -1 ? config.MULTI_JOBS_COLOR : router.nodes_jobs[i].color;
       }
     });
   }

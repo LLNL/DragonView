@@ -1,6 +1,0 @@
-name,counters,jobs
-4jobs/sim1,links/linkdata/4jobs-1/sim1/links-4jobs.32kEach.csv,links/placements/4jobs-1/4jobs.32kEach.csv
-4jobs/sim2,links/linkdata/4jobs-1/sim2/links-4jobs.32kEach.csv,links/placements/4jobs-1/4jobs.32kEach.csv
-4jobs/sim3,links/linkdata/4jobs-1/sim3/links-4jobs.32kEach.csv,links/placements/4jobs-1/4jobs.32kEach.csv
-4jobs/sim4,links/linkdata/4jobs-1/sim4/links-4jobs.32kEach.csv,links/placements/4jobs-1/4jobs.32kEach.csv
-

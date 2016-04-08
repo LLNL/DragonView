@@ -261,7 +261,7 @@ define(function(require) {
         }
       });
 
-      var colors = data.jobsColor.concat('#00ffff');
+      var colors = config.JOBS_COLORMAP/*data.jobsColor*/.concat('#00ffff');
       var bands = [];
       var group, start, end, total;
       var n = data.groups.length;
@@ -376,31 +376,62 @@ define(function(require) {
       if (routersMode == 'routers') {
         g.append('circle')
           .attr('class', 'single')
-          .on('mouseover', function(d) {
-            highlight_router(this, d,  true);
-          })
-          .on('mouseout', function(d) {
-            highlight_router(this, d,  false);
-          })
+          .on('mouseover', function(d) { highlight_router(this, d,  true);})
+          .on('mouseout', function(d) { highlight_router(this, d,  false); })
           .each(function(d) { d.node = this;});
       } else {
         var routerArc = d3.svg.arc();
         g.append('path')
           .classed('nodes', true)
-          .attr('d', routerArc);
-          //.each(function(d) { console.log(d.jobs);});
+          .attr('d', routerArc)
+          .on('mouseover', function(d) { highlight_router(this, d,  true);})
+          .on('mouseout', function(d) { highlight_router(this, d,  false); })
         g.selectAll('circle')
-          .data(function(d) {
-            if (!d.nodes_jobs) {
-              console.log('no nodes jobs for ', d);
-            }
-            return d.nodes_jobs.map(function(j) { return {router: d, color:j}; })})
+          .data(function(d) { return d.nodes_jobs.map(function(j) { return {router: d, color:j}; })})
           .enter()
-          .append('circle')
-            .attr('cx', function(d, i) { return (d.router.innerRadius + 2+ i*4) * Math.cos(d.router.angle-Math.PI/2); })
-            .attr('cy', function(d, i) { return (d.router.innerRadius+ 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
-            .attr('fill', function(d) {return d.color || 'none'; })
-            .attr('r', 1);
+            .append('circle')
+              .attr('cx', function(d, i) { return (d.router.innerRadius + 2+ i*4) * Math.cos(d.router.angle-Math.PI/2); })
+              .attr('cy', function(d, i) { return (d.router.innerRadius+ 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
+              .attr('fill', function(d) {return d.color || 'none'; })
+              .style('r', 2);
+      }
+    }
+
+    function router_highlight(routers, on) {
+      var radius = on? 6 : 2;
+      var stroke = on ? 'black' : 'none';
+      var selection = svg.select('.routers').selectAll('.router').data(routers, function (d) {return d.id; });
+
+      if (routersMode == 'routers') {
+        selection
+          .selectAll('circle')
+          .style('r', radius);
+      } else {
+        selection
+          .select('path')
+          .style('stroke', stroke);
+      }
+    }
+
+
+    function highlight_router(router, r, on) {
+      var list = [r];
+
+      svg.select('.connections').selectAll('.connection')
+        .each(function (d) {
+          if (d.source.router == r) list.push(d.target.router);
+          if (d.target.router == r) list.push(d.source.router);
+        });
+
+      router_highlight(list, on);
+
+      if (on) {
+        svg.select('.connections').selectAll('.connection')
+          .classed('highlight', function(d) { return d.source.router == r || d.target.router == r;} );
+      }
+      else {
+        svg.select('.connections').selectAll('.connection')
+          .classed('highlight', false);
       }
     }
 
@@ -415,42 +446,17 @@ define(function(require) {
     }
 
     function Connection(selection) {
-       this.append("path")
-          .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
-          .attr("class", "connection")
-          //.attr('stroke', function(d) { return d.color; })
-          .attr("d", connectionPath)
-          .on('mouseover', function(d) {
-            d3.select(d.source.router.node).attr('r', 4);
-            d3.select(d.target.router.node).attr('r', 4);
-         } )
-          .on('mouseout', function(d) {
-           d3.select(d.source.router.node).attr('r', 2);
-           d3.select(d.target.router.node).attr('r', 2);
-         });
-    }
-
-    function highlight_router(router, r, on) {
-      var list = [];
-      var radius = on? 4 : 2;
-      svg.select('.connections').selectAll('.connection')
-        .each(function(d) {
-          if (d.source.router == r) list.push(d.target.router);
-          if (d.target.router == r) list.push(d.source.router);
+      this.append("path")
+        .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
+        .attr("class", "connection")
+        //.attr('stroke', function(d) { return d.color; })
+        .attr("d", connectionPath)
+        .on('mouseover', function(d) {
+          router_highlight([d.source.router, d.target.router], true);
+        })
+        .on('mouseout', function(d) {
+          router_highlight([d.source.router, d.target.router], false);
         });
-      d3.select('.routers').selectAll('.router').data(list, function(d) { return d.id;})
-        .attr('r', radius);
-
-      if (on) {
-        d3.select(router).attr('r', 4);
-        svg.select('.connections').selectAll('.connection')
-          .classed('highlight', function(d) { return d.source.router == r || d.target.router == r;} );
-      }
-      else {
-        d3.select(router).attr('r', 2);
-        svg.select('.connections').selectAll('.connection')
-          .classed('highlight', false);
-      }
     }
 
     function set_mode(mode) {

@@ -22,7 +22,7 @@ define(function(require) {
     VALUES_COLORMAP: VALUES_COLORMAP,
     JOBS_COLORMAP: JOBS_COLORMAP,
 
-    ROUTER_RADIUS: 1,
+    ROUTER_RADIUS: 10,
     ROUTER_HIGHLIGHT_RADIUS: 4,
 
     value_scale: value_scale,
