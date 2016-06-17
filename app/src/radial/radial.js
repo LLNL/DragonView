@@ -390,8 +390,8 @@ define(function(require) {
           .data(function(d) { return d.nodes_jobs.map(function(j) { return {router: d, color:j}; })})
           .enter()
             .append('circle')
-              .attr('cx', function(d, i) { return (d.router.innerRadius + 2+ i*4) * Math.cos(d.router.angle-Math.PI/2); })
-              .attr('cy', function(d, i) { return (d.router.innerRadius+ 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
+              .attr('cx', function(d, i) { return (d.router.innerRadius + 2 + i*4) * Math.cos(d.router.angle-Math.PI/2); })
+              .attr('cy', function(d, i) { return (d.router.innerRadius + 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
               .attr('fill', function(d) {return d.color || 'none'; })
               .style('r', 2);
       }
@@ -411,6 +411,8 @@ define(function(require) {
           .select('path')
           .style('stroke', stroke);
       }
+
+      if (selectedGroup) { closeup.highlight(routers, on); }
     }
 
 

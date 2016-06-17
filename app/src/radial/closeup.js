@@ -171,6 +171,10 @@ define(function(require) {
       return this;
     };
 
+    closeup.highlight = function(routers, on) {
+
+    };
+
     closeup.mode = function(_) {
       mode = _;
       return this;

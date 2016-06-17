@@ -16,7 +16,7 @@ define(function(require) {
         svg, histogram, _series, handle,
         counterId = undefined,
         percentile = undefined,
-        percentileX = undefined;
+        percentileX = undefined,
         highlightPercentile = [false, false, false],
         dispatch = d3.dispatch('brushed');
 
