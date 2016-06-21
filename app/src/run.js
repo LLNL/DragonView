@@ -6,7 +6,7 @@ define(function(require) {
   var d3 = require('d3');
   var radio = require('radio');
 
-  var DataService = require('data');
+  var DataService = require('data2');
   var ControlsView = require('views');
   var CountersView = require('counters_view');
   var JobsView = require('jobs_view');

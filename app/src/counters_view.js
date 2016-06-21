@@ -10,7 +10,7 @@ define(function(require) {
     d3 = require('d3'),
     Histogram = require('svg/histogram_g'),
     Slider = require('svg/slider'),
-    dataService = require('data'),
+    dataService = require('data2'),
     config = require('config');
 
   var DEFAULT_COLLECTION = 'data/runs-4jobs-1.csv';

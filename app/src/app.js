@@ -7,7 +7,7 @@ define(function(require) {
 
 
   var radio = require('radio');
-  var compare = require('./compare');
+  var compare = require('./compare2');
   var Run = require('./run');
 
   var tabs = new Map();
