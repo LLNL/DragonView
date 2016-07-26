@@ -1,10 +1,9 @@
 # DragonView 
 
 
-
 ### Installation
 #### Server
-* Ensure [node.js](https://nodejs.org) is installed on your machine. CommonGround was built using Node(6.2.0) and npm(3.8.9). Previous versions may or may not work.
+* Ensure [node.js](https://nodejs.org) is installed on your machine. DragonView was built using Node(6.2.0) and npm(3.8.9). Previous versions may or may not work.
 * Run `npm install` in the server directory
 
 
@@ -17,13 +16,13 @@ npm install
 jspm install
 ```
 
-## Running CommonGround
+## Running DragonView
 1. Start the server
 ```
 cd server
-node server.js   // or add CG_DIR to your environment.
+DragonView_DB=<path-to-db.sqlite> node server.js   // or add DragonView_DB to your environment.
 ```
-2. Open a browser and point it to localhost:4000
+2. Open a browser and point it to localhost:4100
 
 ## User Interactions
 tdb
