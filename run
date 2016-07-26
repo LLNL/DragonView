@@ -1,5 +1,0 @@
-#!/bin/bash
-cd app
-#python -m SimpleHTTPServer 8888
-python ../server.py $1
-
