@@ -4,10 +4,11 @@
 
 import * as d3 from 'd3';
 import config from './config';
+import * as pubsub from './utils/pubsub';
 import model from './model/data';
 import Overview from './components/overview';
 
-let overview = new Overview({ el: '#overview'});
+let overview = new Overview({ el: '#overview-svg'});
 
 
 model.load()
@@ -15,6 +16,7 @@ model.load()
 
 function setup() {
   setup_runs(model.runs);
+  pubsub.publish('db.loaded');
   overview.select_run(model.runs && model.runs.length > 0 ? 0 : -1 );
 }
 
