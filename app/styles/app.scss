@@ -1,0 +1,21 @@
+
+body {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 5px;
+  font: 9pt Arial;
+}
+
+#title {
+  font: bold 14pt Georgia; /* Arial; */
+  margin: 10px 0 10px 0;
+}
+
+#overview {
+  width: 500px;
+  height: 200px;
+  background-color: #eee;
+}

@@ -1,25 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>DragonView</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="lib/fontawesome/css/font-awesome.min.css" rel="stylesheet">
-  <link href="assets/run.css" rel="stylesheet">
-
-  <link id="compare-import" rel="import" href="compare.html">
+    <meta charset="UTF-8">
+    <title>DragonView</title>
+    <!--<link rel="stylesheet" href="styles/libs.css">-->
+    <link rel="stylesheet" href="styles/app.css">
 </head>
 
-<body class="page">
+<body>
+    <label id="title">DragonView</label>
+    <br>
+    <label for="runs">Runs: </label><select id="runs"></select>
 
-<div class="title">DragonView</div>
+    <div id="overview"></div>
 
-<compare-runs></compare-runs>
-
-<script src="lib/sprintf/dist/sprintf.min.js"></script>
-<script src="lib/colorbrewer/colorbrewer.js"></script>
-<script data-main="src/init" src="lib/requirejs/require.js"></script>
+    <script src="src/utils/ResizeSensor.js"></script>
+    <script src="jspm_packages/system.js"></script>
+    <script src="jspm.config.js"></script>
+    <script>
+        <!-- Distribution -->
+        <!-- System.import('dist/cg.js') -->
+        <!-- Development -->
+        System.import('src/app.js')
+                .catch(console.error.bind(console)); // make sure any errors are print to console
+    </script>
 
 </body>
 </html>
-

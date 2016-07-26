@@ -1,52 +1,47 @@
 /**
- * Created by yarden on 1/30/15.
+ * Created by yarden on 7/24/16.
  */
 
-define(function(require) {
-  'use strict';
+import * as d3 from 'd3';
+import config from './config';
+import model from './model/data';
+import Overview from './components/overview';
+
+let overview = new Overview({ el: '#overview'});
 
 
-  var radio = require('radio');
-  var compare = require('./compare');
-  var Run = require('./run');
+model.load()
+  .then(setup);
 
-  var tabs = new Map();
+function setup() {
+  setup_runs(model.runs);
+  overview.select_run(model.runs && model.runs.length > 0 ? 0 : -1 );
+}
 
-  compare.on('selected', onSelect);
-  window.addEventListener('resize', function() {
-    var s = getSize('#outer');
-    compare.resize([s[0]-200, s[1]]);
+function setup_runs(runs) {
+
+  d3.select('#runs').selectAll('.option')
+    .data(runs)
+    .enter().append('option')
+      .attr('value', function (d, i) { return i; })
+      .text(function (d) { return d.name; });
+
+  d3.select('#run')
+    .property('value', 0)
+    .on('change', function() { select_run(this.value);});
+}
+
+function select_run(idx) {
+  overview.select_run(i);
+}
+
+function post(url, params) {
+  return fetch(url, {
+    method:'post',
+    body: JSON.stringify(parms),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
   });
-
-
-  window.dispatchEvent(new Event('resize'));
-
-  function onSelect(selection) {
-    var tab = tabs.get(selection.key);
-    if (!tab) {
-      tab = {window: null, run: Run() };
-      tabs.set(selection.key, tab);
-    }
-    if (!tab.window || tab.window.closed) {
-      tab.window = window.open('run.html', selection.key);
-      d3.select(tab.window).on('load', function() { tab.run.init(selection, tab.window); });
-    } else {
-      tab.window.focus();
-    }
-  }
-
-
-
-  function getSize(el) {
-    var d3el = d3.select(el);
-    return [parseInt(d3el.style('width')), parseInt(d3el.style('height'))];
-  }
-});
-
-//function loadTemplate(tid, eid) {
-//  var t = importDoc.querySelector(tid);
-//  var clone = document.importNode(t.content, true);
-//  var d = document.getElementsByTagName(eid);
-//  d[0].appendChild(clone);
-//}
-//loadTemplate('#compare-template', name);
+}

@@ -1,44 +1,37 @@
-DragonView v1.0
-===============
+# DragonView 
 
-Dragonview is an interactive visual analytics tool to visualize the nodes and
-links of a supercomputer that uses the dragonfly topology for its
-interconnection network. It can be used to map different data such as number of
-packets or bytes or stalls on the network links and job IDs or other on-node
-metrics on the router or node.
 
-### Build
-* Download and install [nodejs](https://nodejs.org "Title")
-* Install bower
 
-Note: *"-g"* means global installation and on OSX must be run as sudo. You can install bower locally without the *"-g"*
+### Installation
+#### Server
+* Ensure [node.js](https://nodejs.org) is installed on your machine. CommonGround was built using Node(6.2.0) and npm(3.8.9). Previous versions may or may not work.
+* Run `npm install` in the server directory
+
+
+#### Web-app
+*Note:* add *./node_modules/.bin* to your PATH, e.g. `PATH=./node_modules/.bin:$PATH`, in order to use the local jspm tool (ver +17.2). 
+
+```shell
+cd app
+npm install
+jspm install
 ```
-npm install -g bower
+
+## Running CommonGround
+1. Start the server
 ```
-* Install the libraries
+cd server
+node server.js   // or add CG_DIR to your environment.
 ```
-bower install
-```
-### Run
-```
-./run
-```
-Open a browser and point it to localhost:8888
+2. Open a browser and point it to localhost:4000
 
-### Data
-Each run should have two files:
+## User Interactions
+tdb
 
-##### counters.csv
-Header: sg,sr,sg,dg,dr,dc,color,counter1,counter2,..
+### Database schema
 
-Each row describes a link: *src group, src row, src col, dest group, dest row,
-dest col, link color, \[counter, ...\]*
+tbd
 
-##### jobs.csv
-Header: g,r,c,n,core,jobid
 
-##### runs.csv
-Header: name,counters,jobs
 
-One row per run including a name and paths to counters and jobs files
 
