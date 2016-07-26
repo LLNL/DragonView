@@ -1,5 +1,6 @@
 .idea
-lib
 .DS_Store
-node_modules
-app/jspm_packages/
+node_modules/
+jspm_packages/
+app/.tmp/
+dist/
