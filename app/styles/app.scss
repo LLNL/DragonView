@@ -15,41 +15,34 @@ body {
 }
 
 #overview {
-
+  width: 500px;
+  height: 300px;
 }
 
 #overview-svg {
+  width: 300px;
+  height: 200px;
 
   .axis {
     font: 8px Arial;
+    shape-rendering: crispEdges;
+
+    .tick line { display: none; }
+
     path {
       stroke-width: 0.5px;
-      stroke: gray;
+      stroke: lightgray;
+      fill:none;
     }
   }
 
-  .chart {
-    .max { fill:none; stroke: gray; stroke-width: 0.5px; }
-  }
+  .chart .max { fill:none; stroke: gray; stroke-width: 0.5px; }
 
-  .chart-b_in {
-    //font: 8px Arial;
+  .chart-b_in .avg { fill: lightblue; stroke:none; }
 
-    .avg { fill: lightblue; stroke:none; stroke-width: 0.5px; }
-  }
+  .chart-b_out .avg { fill: steelblue; stroke:none;}
 
-  .chart-b_out {
-    //.max { fill:none; stroke: gray; stroke-width: 0.5px; }
-    .avg { fill: steelblue; stroke:none; stroke-width: 0.5px;}
-  }
+  .chart-g .avg { fill: lightgreen; stroke:none;}
 
-  .chart-g {
-    //.max { fill:none; stroke: gray; stroke-width: 0.5px; }
-    .avg { fill: lightgreen; stroke:none; stroke-width: 0.5px;}
-  }
-
-  .chart-k {
-    //.max { fill:none; stroke: gray; stroke-width: 0.5px; }
-    .avg { fill: gray; stroke:none; stroke-width: 0.5px;}
-  }
+  .chart-k .avg { fill: gray; stroke:none; }
 }

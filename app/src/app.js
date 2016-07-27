@@ -7,9 +7,10 @@ import config from './config';
 import * as pubsub from './utils/pubsub';
 import model from './model/data';
 import Overview from './components/overview';
+import Test from './components/test';
 
-let overview = new Overview({ el: '#overview-svg'});
-
+// let overview = new Overview({ el: '#overview-svg'});
+let test = Test()('#overview-svg');
 
 model.load()
   .then(setup);
@@ -17,7 +18,9 @@ model.load()
 function setup() {
   setup_runs(model.runs);
   pubsub.publish('db.loaded');
-  overview.select_run(model.runs && model.runs.length > 0 ? 0 : -1 );
+  // overview.select_run(model.runs && model.runs.length > 0 ? 0 : -1 );
+  let run = model.runs[0];
+  test.run(run, run.start, model.dragonfly.names[0]);
 }
 
 function setup_runs(runs) {
@@ -34,7 +37,7 @@ function setup_runs(runs) {
 }
 
 function select_run(idx) {
-  overview.select_run(i);
+  // overview.select_run(i);
 }
 
 function post(url, params) {
