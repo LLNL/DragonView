@@ -6,11 +6,14 @@ import * as d3 from 'd3';
 import config from './config';
 import * as pubsub from './utils/pubsub';
 import model from './model/data';
-import Overview from './components/overview';
-import Test from './components/test';
+import Overview from './panels/overview';
+import Groups from './components/groups';
 
-// let overview = new Overview({ el: '#overview-svg'});
-let test = Test()('#overview-svg');
+let groups = Groups();
+let overview = Overview();
+
+d3.select('#groups').call(groups);
+d3.select('#overview').call(overview);
 
 model.load()
   .then(setup);
@@ -18,9 +21,9 @@ model.load()
 function setup() {
   setup_runs(model.runs);
   pubsub.publish('db.loaded');
-  // overview.select_run(model.runs && model.runs.length > 0 ? 0 : -1 );
+
   let run = model.runs[0];
-  test.run(run, run.start, model.dragonfly.names[0]);
+  groups.run(run, run.start, model.dragonfly.names[0]);
 }
 
 function setup_runs(runs) {
@@ -38,15 +41,4 @@ function setup_runs(runs) {
 
 function select_run(idx) {
   // overview.select_run(i);
-}
-
-function post(url, params) {
-  return fetch(url, {
-    method:'post',
-    body: JSON.stringify(parms),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
-  });
 }
