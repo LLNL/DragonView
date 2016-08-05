@@ -23,7 +23,7 @@ bower install
 ```
 ./run
 ```
-Open a browser and point it to localhost:8888
+Open a browser and point it to localhost:8000
 
 ### Data
 Each run should have two files:
