@@ -1,4 +1,6 @@
-.idea
-lib
 .DS_Store
-node_modules/
+node_modules
+
+app/lib
+app/data/links
+app/data/edison/201*
