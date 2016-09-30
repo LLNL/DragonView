@@ -124,7 +124,7 @@ define(function(require) {
     d3.select('#columns')[0][0].scrollLeft = this.scrollLeft;
   });
 
-d3.csv('data/alldata.csv')
+d3.csv('/data/alldata.csv')
   .row(function(d) {
     //d.jobid = +d.jobid;
     d.color =   fields.color.values[d.color];
