@@ -216,7 +216,7 @@ define(function(require) {
       return {
         name:     sim,
         counters: '/data/links/linkdata/' + keys[0] + '/' + keys[1] + '/' + keys[2] + '/links-' + s + '.csv',
-        jobs:     '/data/links/placements/' + keys[1] + '/' + '/' + s + '.csv',
+        jobs:     '/data/links/placements/' + keys[1] + '/'  + s + '.csv',
         comm:     undefined
       };
     });

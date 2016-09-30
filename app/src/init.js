@@ -15,7 +15,7 @@ require.config({
     backbone: '../lib/backbone/backbone',
     radio: '../lib/backbone.radio/build/backbone.radio',
     d3: '../lib/d3/d3',
-    d3_queue: '../lib/queue-async/queue.min',
+    d3_queue: '../lib/queue-async/queue',
     resize: '../lib-code/jquery-element-onresize'
   }
 });
