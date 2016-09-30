@@ -2,5 +2,4 @@
 node_modules
 
 app/lib
-app/data/links
-app/data/edison/201*
+links
