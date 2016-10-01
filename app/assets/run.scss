@@ -250,28 +250,20 @@ div {
 
   .connection {
 //    stroke: steelblue;
-    stroke-opacity: .4;
+//    stroke-opacity: .4;
     fill: none;
 //    pointer-events: none;
 
-    &:hover, &.highlight {
-      stroke: steelblue;
-      stroke-width: 4;
+    &.fade {
+      stroke-opacity: 0.1;
+      stroke: lightgray;
     }
+    //&:hover, &.highlight {
+    //  stroke: steelblue;
+    //  stroke-width: 4;
+    //}
   }
 
-  circle {
-    stroke-width: 2px;
-    r: 2px;
-
-    &:hover {
-      stroke-width: 4px;
-    }
-
-    &:active {
-      r: 4px;
-    }
-  }
 
 }
 
@@ -287,6 +279,20 @@ div {
     stroke-width: 1px;
     stroke: none;
   }
+
+  circle {
+    stroke-width: 2px;
+    r: 2px;
+
+    &:hover {
+      stroke-width: 4px;
+    }
+
+    &:active {
+      r: 4px;
+    }
+  }
+
 }
 
 #bg-div {

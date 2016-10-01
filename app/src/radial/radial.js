@@ -147,11 +147,22 @@ define(function(require) {
       closeup.links(selectedGroup, greenLinks, blackLinks);
     }
 
+    function adapt(o) {
+      return {
+        id: o.id,
+        parent: o.parent,
+        router: o.router,
+        angle: o.angle,
+        r : o.r - 30
+      }
+    }
+
     function renderBlues() {
       var blue = bundle(blueLinks);
       var i=-1, n=blueLinks.length;
       while (++i < n) {
         blue[i].color = blueLinks[i].vis_color;
+        blue[i][6] = adapt(blue[i][6]);
       }
 
       d3connections = svg.select('.connections').selectAll('.connection')
@@ -320,6 +331,10 @@ define(function(require) {
       svg.select('.routers').selectAll('.router').remove();
       renderRouters(data.routers, config.ROUTER_RADIUS);
 
+      svg.select('.inputRing')
+        .attr('r', opt.inputRadius);
+
+
       closeup(selectedGroup);
       closeup.links(selectedGroup);
     }
@@ -428,12 +443,39 @@ define(function(require) {
       router_highlight(list, on);
 
       if (on) {
+        clearTimeout(connectionHighlightTimer);
         svg.select('.connections').selectAll('.connection')
-          .classed('highlight', function(d) { return d.source.router == r || d.target.router == r;} );
+          .each(function(d) { d.fade = !(d.source.router == r || d.target.router == r)})
+          .classed('fade', function(d) { return d.fade;})
+          .attr('stroke-width', function(d) { return d.fade && 1 || 4});
       }
       else {
+        unfadeConnections();
+      }
+    }
+
+    var connectionHighlightTimer;
+
+    function unfadeConnections() {
+      connectionHighlightTimer = setTimeout(function () {
+          svg.select('.connections').selectAll('.connection')
+            .classed('fade', false)
+            .attr('stroke-width', 1);
+        },
+        200);
+    }
+
+    function highlight_connections(selection, on) {
+      var opacity = on ? 0 : 1;
+      if (on) {
+        clearTimeout(connectionHighlightTimer);
         svg.select('.connections').selectAll('.connection')
-          .classed('highlight', false);
+          .classed('fade', true)
+        selection
+          .classed('fade', false)
+          .attr('stroke-width', 4);
+      } else {
+        unfadeConnections();
       }
     }
 
@@ -455,9 +497,11 @@ define(function(require) {
         .attr("d", connectionPath)
         .on('mouseover', function(d) {
           router_highlight([d.source.router, d.target.router], true);
+          highlight_connections(d3.select(this), true);
         })
         .on('mouseout', function(d) {
           router_highlight([d.source.router, d.target.router], false);
+          highlight_connections(d3.select(this), false);
         });
     }
 
@@ -498,6 +542,12 @@ define(function(require) {
       svg.append('g').attr('class', 'connections');
       svg.append('g').attr('class', 'green-blue');
       svg.append('g').attr('class', 'internal');
+      svg.append('circle')
+        .attr('class', 'inputRing')
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('stroke', 'lightgray')
+        .attr('fill', 'none');
 
       var mode = d3el.append('div').style('position', 'absolute');
       mode.append('label')

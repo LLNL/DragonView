@@ -23,6 +23,7 @@ define(function(require) {
         outerOffset: 35,
         groupHeight: 35,
         connectorsOffset: 4,
+        inputOffset: 30,
 
         connectorsHeight: 6,
         connectorSpacing: 0
@@ -136,6 +137,8 @@ define(function(require) {
       parms.outerRadius = r - parms.outerOffset;
       parms.innerRadius = parms.outerRadius - parms.groupHeight;
       parms.connectorsRadius = parms.innerRadius-parms.connectorsOffset;
+      parms.inputRadius = parms.connectorsRadius - parms.inputOffset;
+
       parms.colRadius = parms.connectorsRadius * 0.75;
       parms.groupsRadius = parms.connectorsRadius * 0.5;
 

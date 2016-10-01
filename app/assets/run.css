@@ -199,23 +199,22 @@ div {
     fill: #a0a0a0;
     stroke: none; }
   .radial .connection {
-    stroke-opacity: .4;
     fill: none; }
-    .radial .connection:hover, .radial .connection.highlight {
-      stroke: steelblue;
-      stroke-width: 4; }
-  .radial circle {
-    stroke-width: 2px;
-    r: 2px; }
-    .radial circle:hover {
-      stroke-width: 4px; }
-    .radial circle:active {
-      r: 4px; }
+    .radial .connection.fade {
+      stroke-opacity: 0.1;
+      stroke: lightgray; }
 
 .router .nodes {
   fill: #eee;
   stroke-width: 1px;
   stroke: none; }
+.router circle {
+  stroke-width: 2px;
+  r: 2px; }
+  .router circle:hover {
+    stroke-width: 4px; }
+  .router circle:active {
+    r: 4px; }
 
 #bg-div {
   display: inline-block; }
