@@ -79,7 +79,14 @@ define(function(require) {
       return !a != !b;
     }
 
+    function reversed_id(link) {
+      return model.link_id(link.dg, link.dr, link.dc, link.sg, link.sr, link.sc);
+    }
+
     function filterBlues(routers) {
+      var singles = d3.map();
+      var other;
+      var reversed;
       var value, inout = range[2];
       blueLinks = [];
       if (range[0] < range[1]) {
@@ -92,10 +99,24 @@ define(function(require) {
 
                 routers.set(link.src.id, link.src);
                 routers.set(link.dest.id, link.dest);
+
+                other = reversed_id(link);
+                if (singles.has(other)) singles.delete(other);
+                else singles.set(link.id, link);
               }
             }
         });
       }
+
+      singles.forEach(function(id, link) {
+        var other = {
+          source: link.target,
+          target: link.source,
+          dummy: true
+        };
+        blueLinks.push(other)
+      })
+
     }
 
     function filterGreens(routers) {
@@ -151,7 +172,7 @@ define(function(require) {
       var blue = bundle(blueLinks);
       var i=-1, n=blueLinks.length;
       while (++i < n) {
-        blue[i].color = blueLinks[i].vis_color;
+        blue[i].color = blueLinks[i].dummy && 'lightgray' || blueLinks[i].vis_color;
       }
 
       d3connections = svg.select('.connections').selectAll('.connection')
@@ -166,6 +187,13 @@ define(function(require) {
         .attr("d", connectionPath);
 
       d3connections.exit().remove();
+
+      // redraw only first half
+      svg.select('.connections').selectAll('.connection')
+        .each(function(d) {
+          d.len = this.getTotalLength()*0.5;
+        })
+        .style('stroke-dasharray', function(d) { return d.len});
     }
 
     function renderGreens() {
@@ -434,7 +462,6 @@ define(function(require) {
           .each(function(d) { d.fade = !(d.source.router == r || d.target.router == r)})
           .classed('fade', function(d) { return d.fade;})
           .classed('highlight', function(d) { return !d.fade;});
-          // .attr('stroke-width', function(d) { return d.fade && 1 || 4});
       }
       else {
         unfadeConnections();
@@ -448,9 +475,8 @@ define(function(require) {
           svg.select('.connections').selectAll('.connection')
             .classed('fade', false)
             .classed('highlight', false);
-            // .attr('stroke-width', 1);
         },
-        200);
+        50);
     }
 
     function highlight_connections(selection, on) {
@@ -459,11 +485,10 @@ define(function(require) {
         clearTimeout(connectionHighlightTimer);
         svg.select('.connections').selectAll('.connection')
           .classed('fade', true)
-          .classed('highlight', false)
+          .classed('highlight', false);
         selection
           .classed('fade', false)
-          .classed('highlight', true)
-          // .attr('stroke-width', 4);
+          .classed('highlight', true);
       } else {
         unfadeConnections();
       }

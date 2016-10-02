@@ -208,6 +208,9 @@ div {
     .radial .connection.highlight {
       stroke-width: 4; }
 
+.first {
+  stroke-dasharray: 50%; }
+
 .router .nodes {
   fill: #eee;
   stroke-width: 1px;

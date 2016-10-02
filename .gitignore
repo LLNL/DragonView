@@ -2,5 +2,6 @@
 node_modules
 
 app/lib
-links.idea
+links
+.idea
 .sass-cache

@@ -261,12 +261,15 @@ div {
     }
     &.highlight {
       stroke-width: 4;
+      //stroke-dasharray: 50%;
     }
   }
 
-
 }
 
+.first {
+  stroke-dasharray: 50%;
+}
 .router {
   //.single {
   //  fill: #aaa;
