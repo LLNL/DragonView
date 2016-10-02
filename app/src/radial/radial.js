@@ -462,11 +462,10 @@ define(function(require) {
             .classed('fade', false)
             .attr('stroke-width', 1);
         },
-        200);
+        100);
     }
 
     function highlight_connections(selection, on) {
-      var opacity = on ? 0 : 1;
       if (on) {
         clearTimeout(connectionHighlightTimer);
         svg.select('.connections').selectAll('.connection')

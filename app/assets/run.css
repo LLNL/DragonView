@@ -199,6 +199,7 @@ div {
     fill: #a0a0a0;
     stroke: none; }
   .radial .connection {
+    stroke-opacity: .8;
     fill: none; }
     .radial .connection.fade {
       stroke-opacity: 0.1;
