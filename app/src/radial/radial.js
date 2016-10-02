@@ -175,6 +175,7 @@ define(function(require) {
       var i=-1, n=blueLinks.length;
       while (++i < n) {
         blue[i].color = blueLinks[i].dummy && 'lightgray' || blueLinks[i].vis_color;
+        blue[i].dummy = blueLinks[i].dummy;
       }
 
       d3connections = svg.select('.connections').selectAll('.connection')
@@ -513,10 +514,12 @@ define(function(require) {
         //.attr('stroke', function(d) { return d.color; })
         .attr("d", connectionPath)
         .on('mouseover', function(d) {
+          if (d.dummy) return;
           router_highlight([d.source.router, d.target.router], true);
           highlight_connections(d3.select(this), true);
         })
         .on('mouseout', function(d) {
+          if (d.dummy) return;
           router_highlight([d.source.router, d.target.router], false);
           highlight_connections(d3.select(this), false);
         });
