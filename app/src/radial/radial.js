@@ -147,22 +147,11 @@ define(function(require) {
       closeup.links(selectedGroup, greenLinks, blackLinks);
     }
 
-    function adapt(o) {
-      return {
-        id: o.id,
-        parent: o.parent,
-        router: o.router,
-        angle: o.angle,
-        r : o.r - 30
-      }
-    }
-
     function renderBlues() {
       var blue = bundle(blueLinks);
       var i=-1, n=blueLinks.length;
       while (++i < n) {
         blue[i].color = blueLinks[i].vis_color;
-        blue[i][6] = adapt(blue[i][6]);
       }
 
       d3connections = svg.select('.connections').selectAll('.connection')
@@ -331,9 +320,6 @@ define(function(require) {
       svg.select('.routers').selectAll('.router').remove();
       renderRouters(data.routers, config.ROUTER_RADIUS);
 
-      svg.select('.inputRing')
-        .attr('r', opt.inputRadius);
-
 
       closeup(selectedGroup);
       closeup.links(selectedGroup);
@@ -447,7 +433,8 @@ define(function(require) {
         svg.select('.connections').selectAll('.connection')
           .each(function(d) { d.fade = !(d.source.router == r || d.target.router == r)})
           .classed('fade', function(d) { return d.fade;})
-          .attr('stroke-width', function(d) { return d.fade && 1 || 4});
+          .classed('highlight', function(d) { return !d.fade;});
+          // .attr('stroke-width', function(d) { return d.fade && 1 || 4});
       }
       else {
         unfadeConnections();
@@ -460,7 +447,8 @@ define(function(require) {
       connectionHighlightTimer = setTimeout(function () {
           svg.select('.connections').selectAll('.connection')
             .classed('fade', false)
-            .attr('stroke-width', 1);
+            .classed('highlight', false);
+            // .attr('stroke-width', 1);
         },
         200);
     }
@@ -471,9 +459,11 @@ define(function(require) {
         clearTimeout(connectionHighlightTimer);
         svg.select('.connections').selectAll('.connection')
           .classed('fade', true)
+          .classed('highlight', false)
         selection
           .classed('fade', false)
-          .attr('stroke-width', 4);
+          .classed('highlight', true)
+          // .attr('stroke-width', 4);
       } else {
         unfadeConnections();
       }

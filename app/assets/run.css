@@ -199,10 +199,14 @@ div {
     fill: #a0a0a0;
     stroke: none; }
   .radial .connection {
+    stroke-opacity: .4;
+    stroke-width: 0.5;
     fill: none; }
     .radial .connection.fade {
       stroke-opacity: 0.1;
       stroke: lightgray; }
+    .radial .connection.highlight {
+      stroke-width: 4; }
 
 .router .nodes {
   fill: #eee;

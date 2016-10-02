@@ -250,7 +250,8 @@ div {
 
   .connection {
 //    stroke: steelblue;
-//    stroke-opacity: .4;
+    stroke-opacity: .4;
+    stroke-width: 0.5;
     fill: none;
 //    pointer-events: none;
 
@@ -258,10 +259,9 @@ div {
       stroke-opacity: 0.1;
       stroke: lightgray;
     }
-    //&:hover, &.highlight {
-    //  stroke: steelblue;
-    //  stroke-width: 4;
-    //}
+    &.highlight {
+      stroke-width: 4;
+    }
   }
 
 
