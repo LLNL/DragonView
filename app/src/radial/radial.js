@@ -80,12 +80,14 @@ define(function(require) {
     }
 
     function reversed_id(link) {
-      return model.link_id(link.dg, link.dr, link.dc, link.sg, link.sr, link.sc);
+      var d = link.destId;
+      var s = link.srcId;
+      return model.link_id(d.g, d.r, d.c, s.g, s.r, s.c);
     }
 
     function filterBlues(routers) {
       var singles = d3.map();
-      var other;
+      var other_id;
       var reversed;
       var value, inout = range[2];
       blueLinks = [];
@@ -100,8 +102,8 @@ define(function(require) {
                 routers.set(link.src.id, link.src);
                 routers.set(link.dest.id, link.dest);
 
-                other = reversed_id(link);
-                if (singles.has(other)) singles.delete(other);
+                other_id = reversed_id(link);
+                if (singles.has(other_id)) singles.remove(other_id);
                 else singles.set(link.id, link);
               }
             }
@@ -114,7 +116,7 @@ define(function(require) {
           target: link.source,
           dummy: true
         };
-        blueLinks.push(other)
+        blueLinks.push(other);
       })
 
     }
