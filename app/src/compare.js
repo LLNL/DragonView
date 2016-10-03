@@ -25,6 +25,8 @@ define(function(require) {
     avg: d3.mean
   };
 
+  var spec2 = {rows: [], cols: []};
+
   var specs = [
     {
       name: 'config,dataset / color,sim',
@@ -124,6 +126,19 @@ define(function(require) {
     d3.select('#columns')[0][0].scrollLeft = this.scrollLeft;
   });
 
+  d3.select('#config_rows')
+    .on('drop', function(d) {
+      d3.event.preventDefault();
+      var field = fields[d3.event.dataTransfer.getData('text')]
+      spec2.rows.push(field);
+      var li = d3.select('#config_rows').selectAll('li')
+        .data(spec2.rows);
+      li.enter().append('li');
+      li.text(function(d) { return d.name;});
+      li.exit().remove();
+    })
+    .on('dragover', function(d) { d3.event.preventDefault(); });
+
 d3.csv('/data/alldata.csv')
   .row(function(d) {
     //d.jobid = +d.jobid;
@@ -180,7 +195,9 @@ d3.csv('/data/alldata.csv')
 
     li.append('label')
       .attr('class', 'li-title')
-      .text(function(d) {return d;});
+      .text(function(d) {return d;})
+      .property('draggable', true)
+      .on('dragstart', function(d) { d3.event.dataTransfer.setData('text', d); });
 
     var entry = li.append('ul')
       .attr('class', 'values')
