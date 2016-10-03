@@ -95,10 +95,13 @@ div {
     width: 50px;
     position: absolute;
     text-align: right; }
+  .controls #cmap:hover {
+    cursor: ns-resize; }
   .controls .job-color {
     display: inline-block;
     width: 20px;
-    height: 10px; }
+    height: 10px;
+    cursor: pointer; }
   .controls .jobs {
     border-collapse: collapse;
     border-width: 2px;
@@ -188,11 +191,18 @@ div {
     stroke: #ccc; }
     .radial .group text {
       stroke: none;
-      fill: #000; }
+      fill: black; }
     .radial .group:hover {
-      stroke: #808080;
-      stroke-width: 1px; }
-    .radial .group.selected {
+      cursor: pointer; }
+      .radial .group:hover text {
+        fill: red;
+        font-size: large; }
+      .radial .group:hover path {
+        stroke: #808080;
+        stroke-width: 1px; }
+    .radial .group.selected text {
+      font-size: large; }
+    .radial .group.selected path {
       stroke: #000;
       stroke-width: 2px; }
   .radial .connector {
@@ -222,6 +232,10 @@ div {
     stroke-width: 4px; }
   .router circle:active {
     r: 4px; }
+  .router circle.fade {
+    opacity: 0.1; }
+.router.fade {
+  opacity: 0.1; }
 
 #bg-div {
   display: inline-block; }

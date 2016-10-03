@@ -71,7 +71,7 @@ define(function(require) {
                   y: y + n * (NODE_SIZE+2),
                   width: SIZE - DS,
                   height: NODE_SIZE,
-                  color: row[c].nodes_jobs[n]
+                  color: row[c].nodes_color[n]
                 });
               }
             }

@@ -66,6 +66,12 @@ define(function(require) {
       this.append('div')
         .attr('class', 'job-color')
         .style('background-color', function(d) { return d.color; })
+        .on('mouseover', function(d) {
+          Radio.channel(id).trigger('job.highlight', d, true);
+        })
+        .on('mouseout', function(d) {
+          Radio.channel(id).trigger('job.highlight', d, false);
+        })
         .on('mousedown', function(d) {
           context = d;
           root.select('.color-menu')

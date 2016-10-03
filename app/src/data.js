@@ -42,7 +42,8 @@ define(function(require) {
             g: g,  r:r,  c:c,
             jobs:[],
             nodes_jobs: [undefined, undefined, undefined, undefined],
-            color: config.UNKNOWN_JOB_COLOR
+            nodes_color: [undefined, undefined, undefined, undefined],
+            color: config.UNKNOWN_JOB_COLOR,
           };
           row.push(router);
           this.routers.set(router.id, router);
@@ -111,9 +112,8 @@ define(function(require) {
           router.jobs.push(job);
           //router.color = router.jobs.length == 1 ? job.color : config.MULTI_JOBS_COLOR;
         }
-        if (router.nodes_jobs[item.n] == null) router.nodes_jobs[item.n] = job;
-        else if (router.nodes_jobs[item.n] !== job) router.nodes_jobs[item.n] = -1;
-        //router.nodes_jobs[item.n] =  router.nodes_jobs[item.n] == null || router.nodes_jobs[item.n] != job.id ? config.MULTI_JOBS_COLOR : job.color;
+        if (!router.nodes_jobs[item.n]) router.nodes_jobs[item.n] = new Set([job]);
+        else router.nodes_jobs[item.n].add(job);
       }
     });
 
@@ -133,7 +133,7 @@ define(function(require) {
       }
       for (i=0; i<4; i++) {
         if (router.nodes_jobs[i])
-          router.nodes_jobs[i] = router.nodes_jobs[i] == -1 ? config.MULTI_JOBS_COLOR : router.nodes_jobs[i].color;
+          router.nodes_color[i] = router.nodes_jobs[i].size > 1 ? config.MULTI_JOBS_COLOR : router.nodes_jobs[i].values().next().value.color;
       }
     });
   }

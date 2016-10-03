@@ -87,11 +87,17 @@ div {
   }
 
 
+  #cmap {
+    &:hover {
+      cursor: ns-resize;
+    }
+  }
+
   .job-color {
     display: inline-block;
     width: 20px;
     height: 10px;
-
+    cursor: pointer;
   }
 
   .jobs {
@@ -225,18 +231,33 @@ div {
 
     text {
       stroke: none;
-      fill: #000;
+      fill: black;
     }
 
     &:hover {
-      stroke: #808080;
-      stroke-width: 1px;
+      cursor:pointer;
+
+      text {
+        fill: red;
+        font-size: large;
+      }
+
+      path {
+        stroke: #808080;
+        stroke-width: 1px;
+      }
     }
 
     &.selected {
-      //fill: #d8d8d8;
-      stroke: #000;
-      stroke-width: 2px;
+      text {
+        font-size: large;
+      }
+
+      path {
+        //fill: #d8d8d8;
+        stroke: #000;
+        stroke-width: 2px;
+      }
     }
 
   }
@@ -270,13 +291,8 @@ div {
 .first {
   stroke-dasharray: 50%;
 }
-.router {
-  //.single {
-  //  fill: #aaa;
-  //  stroke-width: 1px;
-  //  stroke: #fff;
-  //}
 
+.router {
   .nodes {
     fill: #eee;
     stroke-width: 1px;
@@ -294,6 +310,14 @@ div {
     &:active {
       r: 4px;
     }
+
+    &.fade {
+      opacity: 0.1;
+    }
+  }
+
+  &.fade {
+    opacity: 0.1;
   }
 
 }

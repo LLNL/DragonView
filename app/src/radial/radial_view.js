@@ -34,6 +34,10 @@ define(function(require) {
       if (active) radial.renderLinks();
     });
 
+    Radio.channel(id).on('job.highlight', function(job, on) {
+      if (active) radial.highlight_job(job, on);
+    });
+
     function getSize(el) {
       var d3el = d3.select(el);
       console.log(

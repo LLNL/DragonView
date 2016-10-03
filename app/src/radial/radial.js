@@ -271,7 +271,7 @@ define(function(require) {
           .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
           .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
           .attr('fill', function(d) {return d.color; })
-          .attr('r', r);
+          .attr('r', r)
       } else {
       }
 
@@ -361,12 +361,13 @@ define(function(require) {
      */
     function Group(selection) {
       var g = this.append('g')
-        .attr('class', 'group');
+        .attr('class', 'group')
+        .on('click', selectGroup);
 
       g.append('path')
         .attr('fill', function (d) { return d.color; })
-        .attr('d', group_arc)
-        .on('click', selectGroup);
+        .attr('d', group_arc);
+
 
       g.append('text')
         .text(function(d, i) { return i; });
@@ -417,14 +418,16 @@ define(function(require) {
           .classed('nodes', true)
           .attr('d', routerArc)
           .on('mouseover', function(d) { highlight_router(this, d,  true);})
-          .on('mouseout', function(d) { highlight_router(this, d,  false); })
+          .on('mouseout', function(d) { highlight_router(this, d,  false); });
+
         g.selectAll('circle')
-          .data(function(d) { return d.nodes_jobs.map(function(j) { return {router: d, color:j}; })})
+          .data(function(d) { return d.nodes_jobs.map(function(j, i) { return {router: d, idx: i}; })})
           .enter()
             .append('circle')
               .attr('cx', function(d, i) { return (d.router.innerRadius + 2 + i*4) * Math.cos(d.router.angle-Math.PI/2); })
               .attr('cy', function(d, i) { return (d.router.innerRadius + 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
-              .attr('fill', function(d) {return d.color || 'none'; })
+              .attr('fill', function(d)  {
+                return d.router.nodes_color[d.idx] || 'none'; })
               .style('r', 2);
       }
     }
@@ -471,6 +474,28 @@ define(function(require) {
       }
     }
 
+    function highlight_job(job, on) {
+      var i, job_id = job.id;
+      if (routersMode == 'routers') {
+        svg.select('.routers').selectAll('.router')
+          .classed('fade', function(d) {
+            if (on) {
+              for (i=0; i<d.jobs.length; i++) {
+                if (d.jobs[i].id == job_id) return false;
+              }
+              return true;
+            } else {
+              return false;
+            }
+          });
+      } else {
+        svg.select('.routers').selectAll('.router').selectAll('circle')
+          .classed('fade', function(d) {
+            return on && (d.router.nodes_jobs[d.idx] == undefined  || !d.router.nodes_jobs[d.idx].has(job));
+          });
+      }
+    }
+
     var connectionHighlightTimer;
 
     function unfadeConnections() {
@@ -511,7 +536,6 @@ define(function(require) {
       this.append("path")
         .each(function(d) { d.source = d[0]; d.target = d[d.length - 1];})
         .attr("class", "connection")
-        //.attr('stroke', function(d) { return d.color; })
         .attr("d", connectionPath)
         .on('mouseover', function(d) {
           if (d.dummy) return;
@@ -546,7 +570,6 @@ define(function(require) {
 
     radial.el = function(el) {
       var d3el = d3.select(el);
-      //var top = d3el.append('div');
 
       svgContainer = d3el.append("svg")
         .attr('width', WIDTH)
@@ -554,7 +577,6 @@ define(function(require) {
         .classed("radial", true);
 
       svg = svgContainer.append("g");
-        //.attr('transform', 'translate('+WIDTH/2+','+HEIGHT/2+')');
 
       svg.append('g').attr('class', 'groups');
       svg.append('g').attr('class', 'routers');
@@ -624,9 +646,6 @@ define(function(require) {
       var closeup_size = closeup.size();
 
       var s = Math.max(0, Math.min(size[0]-bg_size[0], size[1]-closeup_size[1]));
-      //console.log('radial:', size, bg_size, closeup_size, s);
-      //console.log('w:',s,'+',bg_size[0],'=',(s+bg_size[0]),'[',+size[0]+']');
-      //console.log('h:',s,'+',closeup_size[1],'=',(s+closeup_size[1]),'[',+size[1]+']');
 
       bg_div.style('left', s);
       closeup_div.style('top', offset+Math.max(s, bg_size[1]));
@@ -678,6 +697,11 @@ define(function(require) {
 
     radial.renderLinks = function() {
       renderLinks();
+      return this;
+    };
+
+    radial.highlight_job = function(job, on) {
+      highlight_job(job, on);
       return this;
     };
 
