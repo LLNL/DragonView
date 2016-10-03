@@ -413,6 +413,10 @@ div {
 
   .closeup-group {
     fill: lightgray;
+
+    rect.fade {
+      fill-opacity: 0.2;
+    }
   }
 
   .canvas {

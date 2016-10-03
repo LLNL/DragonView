@@ -702,6 +702,7 @@ define(function(require) {
 
     radial.highlight_job = function(job, on) {
       highlight_job(job, on);
+      closeup.highlight_job(job, on);
       return this;
     };
 

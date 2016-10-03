@@ -277,6 +277,8 @@ div {
   padding-bottom: 10px; }
   .closeup .closeup-group {
     fill: lightgray; }
+    .closeup .closeup-group rect.fade {
+      fill-opacity: 0.2; }
   .closeup .canvas {
     position: fixed;
     padding-left: 30px;

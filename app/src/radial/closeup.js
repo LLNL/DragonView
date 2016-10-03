@@ -6,7 +6,6 @@ define(function(require) {
   var d3 = require('d3');
   var config = require('config');
   var model = require('model');
-  var model = require('model');
 
   return function(el) {
     var SIZE = 32, DS = 4;
@@ -35,11 +34,9 @@ define(function(require) {
 
     var closeup = function(group) {
       if (!group) {
-        //div.style('visibility', 'hidden');
         div.style('display', 'none');
         return;
       }
-      //div.style('visibility', 'visible');
       div.style('display', 'block');
 
       header.text(group.id);
@@ -52,9 +49,11 @@ define(function(require) {
       for (r=0, nr=group.routers.length; r< nr; r++) {
         row = group.routers[r];
         for (c=0, nc=row.length; c< nc; c++) {
-          rect.push({id: r*nc+c, x: DS/2+c*(SIZE+DS), y: r*(SIZE+DS), width: SIZE, height: SIZE, color: showNodes? '#eaeaea' : row[c].color});
+          rect.push({id: r*nc+c, router_jobs: row[c].jobs, x: DS/2+c*(SIZE+DS), y: r*(SIZE+DS), width: SIZE, height: SIZE, color: showNodes? '#eaeaea' : row[c].color});
         }
       }
+
+      console.log('num of rect:', rect.length);
 
       y = -(DS+SIZE);
       if (mode == 'nodes') {
@@ -71,7 +70,8 @@ define(function(require) {
                   y: y + n * (NODE_SIZE+2),
                   width: SIZE - DS,
                   height: NODE_SIZE,
-                  color: row[c].nodes_color[n]
+                  color: row[c].nodes_color[n],
+                  node_jobs: row[c].nodes_jobs[n]
                 });
               }
             }
@@ -80,7 +80,7 @@ define(function(require) {
         }
       }
 
-      var d3routers = g.selectAll('.router')
+      var d3routers = g.selectAll('rect')
         .data(rect, function(d) { return d.id;});
 
       d3routers.enter()
@@ -183,6 +183,18 @@ define(function(require) {
     closeup.size = function() {
       if (div) return [div[0][0].clientWidth, div[0][0].clientHeight];
       return [WIDTH + 30 + CANVAS_WIDTH, HEIGHT + CANVAS_HEIGHT];
+    };
+
+    closeup.highlight_job = function(job, on) {
+      g.selectAll('rect')
+        .classed('fade', function(d) {
+          if (!on) return false;
+          if (d.router_jobs) return d.router_jobs.indexOf(job) == -1;
+          if (d.node_jobs) return !d.node_jobs.has(job);
+          return true;
+        });
+
+      return this;
     };
 
     return closeup;
