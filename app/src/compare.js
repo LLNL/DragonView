@@ -5,6 +5,7 @@
 define(function(require) {
 
   var d3 = require('d3');
+  config = require('config');
 
   var width = 200, height = 200;
 
@@ -90,6 +91,14 @@ define(function(require) {
 
   var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
   var color = d3.scale.quantize().range(VALUES_COLORMAP);
+
+  var cmap_yellow_pos = 50;
+  d3.select('#cmap')
+    .style('background-image', "linear-gradient(to left, " + createColormap(cmap_yellow_pos) + ")");
+
+  function createColormap(pos) {
+    return config.VALUES_COLORMAP.concat().reverse().map(function (v, i) { return i == 4 ? v + " " + pos + "%" : v }).toString();
+  }
 
 
   function simSort(a,b) {
@@ -225,6 +234,7 @@ d3.csv('/data/alldata.csv')
   function adjustColormap() {
     var max = Math.max(d3.max(mat.values, function (d) { return d.values[valueSelector]; }), 0.1);
     color.domain([0, max/2, max]);
+    d3.select('#cmap_max').text(max);
   }
 
   function filter() {
@@ -536,9 +546,10 @@ d3.csv('/data/alldata.csv')
   var format = d3.format('5.1f');
 
   function report(node) {
-    d3.select('#selection-values').text(
+    d3.select('#selection-minmax-values').text(
       'min:'+ format(node.values.min) +
-      ' max:' + format(node.values.max) +
+      ' max:' + format(node.values.max));
+    d3.select('#selection-avg-values').text(
       ' avg:' + format(node.values.avg) +
       ' nzavg' + format(node.values.nzavg));
 

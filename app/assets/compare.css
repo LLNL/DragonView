@@ -19,6 +19,14 @@
   left: 160px;
   right: 0; }
 
+#cmap {
+  height: 20px;
+  width: 80%; }
+
+#cmap_max {
+  position: absolute;
+  right: 10%; }
+
 #outer {
   position: fixed;
   top: 100px;
@@ -97,8 +105,9 @@
     position: absolute; }
 
 #selection {
-  position: relative;
-  width: 180px; }
+  position: absolute;
+  right: 0;
+  max-width: 200px; }
   #selection ul {
     list-style-type: none;
     padding: 0px;

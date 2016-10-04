@@ -28,6 +28,16 @@
   //border: solid lightblue 1px;
 }
 
+#cmap {
+  height: 20px;
+  width:80%;
+}
+
+#cmap_max {
+  position: absolute;
+  right: 10%;
+}
+
 #outer {
   position: fixed;
   top: 100px;
@@ -138,8 +148,10 @@
 }
 
 #selection {
-  position: relative;
-  width: 180px;
+  position: absolute;
+  //width: 180px;
+  right: 0;
+  max-width: 200px;
 
   ul {
     list-style-type: none;

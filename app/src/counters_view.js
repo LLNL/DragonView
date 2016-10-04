@@ -430,6 +430,7 @@ define(function(require) {
     }
 
     function onHighlight(range) {
+      console.log('highlight range:', range[0], range[1]);
       Radio.channel(id).trigger('counter.range', range);
       var b = count(run.blues, range), g = count(run.greens, range), k = count(run.blacks, range);
       root.select('#num-blues').text(b);
