@@ -32,7 +32,10 @@ define(function(require) {
         frozen         = false,
         format         = d3.format('.5f');
 
-    var cmap_yellow_pos = 50;
+    var cmap_size = 135;
+    var cmap_yellow_pos = 50;  // percent
+    var cmap_from = 0;
+    var cmap_to = 0;
 
     var histogram = Histogram().counter(defaultCounter);
     var slider = Slider();
@@ -84,7 +87,7 @@ define(function(require) {
         var self = this;
         root.select('#cmap')
           .on('mousemove', function () {
-            updateCmap(1 - d3.mouse(this)[1] / 135); })
+            updateCmap(1 - d3.mouse(this)[1] / cmap_size); })
           .on('mouseup', function () {
             root.select('#cmap')
               .on('mousemove', null)
@@ -100,8 +103,9 @@ define(function(require) {
       .style('left', '30px')
       .style('bottom', 0)
       .on('change', function () {
+        cmap_from = +this.value;
         updateCmap(1 - cmap_yellow_pos / 100);
-        updateRange([+this.value, +root.select('#data-to').property('value')]);
+        // updateRange([+this.value, +root.select('#data-to').property('value')]);
         root.select('#data-reset').property('disabled', false);
 
       }
@@ -111,9 +115,7 @@ define(function(require) {
       .style('left', '30px')
       .style('top', (135 / 2 - 10) + 'px')
       .on('change', function () {
-        var min = +root.select('#data-from').property('value');
-        var max = +root.select('#data-to').property('value');
-        var f = (+this.value - min) / (max - min);
+        var f = (+this.value - cmap_from) / (cmap_to - cmap_from);
         updateCmap(f);
       }
     );
@@ -122,8 +124,9 @@ define(function(require) {
       .style('left', '30px')
       .style('top', 0)
       .on('change', function () {
+        cmap_to = +this.value;
         updateCmap(1 - cmap_yellow_pos / 100);
-        updateRange([+root.select('#data-from').property('value'), +this.value]);
+        // updateRange([+root.select('#data-from').property('value'), +this.value]);
         root.select('#data-reset').property('disabled', false);
       }
     );
@@ -131,8 +134,10 @@ define(function(require) {
     root.select('#data-reset').on('click', function () {
       root.select('#data-from').property('value', format(dataRange[0]));
       root.select('#data-to').property('value', format(dataRange[1]));
+      cmap_from = dataRange[0];
+      cmap_to = dataRange[1];
       updateCmap(0.5);
-      updateRange(dataRange);
+      // updateRange(dataRange);
     }
     );
 
@@ -193,20 +198,24 @@ define(function(require) {
       return config.VALUES_COLORMAP.concat().reverse().map(function (v, i) { return i == 4 ? v + " " + pos + "%" : v }).toString();
     }
 
+    function relative(v, r) { return (v - r[0])/(r[1] - r[0]); }
+
     function updateCmap(f) {
       cmap_yellow_pos = (1 - f) * 100;
 
       root.select('#cmap')
         .style('background-image', "linear-gradient(" + createColormap(cmap_yellow_pos) + ")");
 
-      var min = +root.select('#data-from').property('value');
-      var max = +root.select('#data-to').property('value');
-      root.select('#data-mid').property('value', format(min + f * (max - min)));
-      config.value_scale.domain([0, 1 - f, 1]);
+      root.select('#data-mid').property('value', format(cmap_from + f * (cmap_to - cmap_from)));
+      var range = config.data_range();
+      config.value_scale.domain([
+        cmap_from,
+        cmap_from + (1 - f)* (cmap_to - cmap_from),
+        cmap_to
+      ]);
       run.links.forEach(function (link) {
         link.vis_color = config.color(link.value);
-      }
-      );
+      });
       Radio.channel(id).trigger('cmap.changed');
     }
 
@@ -304,6 +313,8 @@ define(function(require) {
         if (!frozen) {
           dataRange = [min, max];
           setRange(dataRange);
+          cmap_from = min;
+          cmap_to = max;
           root.select('#data-from').property('value', format(dataRange[0]));
           root.select('#data-to').property('value', format(dataRange[1]));
           updateCmap(cmap_yellow_pos / 100);
@@ -386,8 +397,7 @@ define(function(require) {
       run.links.forEach(function (link) {
         link.value = link.counters[currentCounter];
         link.vis_color = config.color(link.value);
-      }
-      );
+      });
       histogram.range(slider.extent());
     }
 
@@ -399,6 +409,8 @@ define(function(require) {
       if (!isSimulation && !isFrozen) {
         dataRange = counterRange(index);
         setRange(dataRange);
+        cmap_from = dataRange[0];
+        cmap_to = dataRange[1];
         root.select('#data-from').property('value', format(dataRange[0]));
         root.select('#data-to').property('value', format(dataRange[1]));
         root.select('#data-reset').property('disabled', true);
@@ -430,7 +442,7 @@ define(function(require) {
     }
 
     function onHighlight(range) {
-      console.log('highlight range:', range[0], range[1]);
+      // console.log('highlight range:', range[0], range[1]);
       Radio.channel(id).trigger('counter.range', range);
       var b = count(run.blues, range), g = count(run.greens, range), k = count(run.blacks, range);
       root.select('#num-blues').text(b);

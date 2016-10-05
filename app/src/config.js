@@ -13,8 +13,9 @@ define(function(require) {
   var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
   var JOBS_COLORMAP = colorbrewer.Set2[8];
   var value_color = d3.scale.ordinal().domain([0, 8]).range(VALUES_COLORMAP);
-  var scale = d3.scale.quantize().range(VALUES_COLORMAP);
-  var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]);
+  var scale = d3.scale.quantize().domain([0,1]).range(VALUES_COLORMAP);
+  var value_scale = d3.scale.linear().domain([0, 0.5, 1]).range([0, 0.5, 1]).clamp(true);
+  var data_range = [0, 1];
 
   return {
     MULTI_JOBS_COLOR: '#00ffff',
@@ -33,8 +34,10 @@ define(function(require) {
     },
 
     data_range: function(range) {
-      if (!arguments.length) return scale.domain();
-      return scale.domain(range);
+      if (!arguments.length) return data_range;
+      data_range = range;
+      // if (!arguments.length) return scale.domain();
+      // return scale.domain(range);
     },
 
     color: function (v) {
@@ -43,6 +46,8 @@ define(function(require) {
 
     color2: d3.scale.linear()
       .range(['#ff0000', '#00ff00'])
-      .interpolate(d3.interpolateHcl)
+      .interpolate(d3.interpolateHcl),
+
+    scale: scale
   }
 });
