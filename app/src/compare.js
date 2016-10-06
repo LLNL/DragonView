@@ -14,7 +14,7 @@ define(function(require) {
     dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
     sim:     {name: 'sim',     type: 'category', values: [], sort: simSort,      selected: new Set()},
     jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    color:   {name: 'color',   type: 'fixed',    values: ['All', 'g', 'k', 'b'],   selected: new Set(['All', 'g', 'k', 'b'])}
+    color:   {name: 'color',   type: 'fixed',    values: ['T', 'b', 'g', 'k'],   selected: new Set(['T', 'b', 'g', 'k'])}
   };
 
   // TODO: use keys based on data. Issue: how to determine which fields are measure and which are categories/dimensions
@@ -27,6 +27,21 @@ define(function(require) {
   };
 
   var specs = [
+    {
+      name: 'config / dataset, sim',
+      rows: [fields.config],
+      cols: [fields.dataset, fields.sim]
+    },
+    {
+      name: 'color, config / dataset, sim',
+      rows: [fields.color, fields.config],
+      cols: [fields.dataset, fields.sim]
+    },
+    {
+      name: 'color, config / dataset, sim, jobid',
+      rows: [fields.color, fields.config],
+      cols: [fields.dataset, fields.sim, fields.jobid]
+    },
     {
       name: 'config,dataset / color,sim',
       rows: [fields.config, fields.dataset],
@@ -67,11 +82,6 @@ define(function(require) {
       rows: [fields.config],
       cols: [fields.color, fields.dataset, fields.sim]
     } ,
-    {
-      name: 'color,config / dataset,sim',
-      rows: [fields.color, fields.config],
-      cols: [fields.dataset, fields.sim]
-    },
     {
       name: 'color/ dataset,sim',
       rows: [fields.color],
@@ -136,7 +146,7 @@ define(function(require) {
 d3.csv('/data/alldata.csv')
   .row(function(d) {
     //d.jobid = +d.jobid;
-    d.color =   fields.color.values[d.color];
+    //d.color =   fields.color.values[d.color];
     d.min = +d.min;
     d.avg = +d.avg;
     d.max = +d.max;
