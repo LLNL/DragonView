@@ -5,20 +5,19 @@
 define(function(require) {
 
   var d3 = require('d3');
-  config = require('config');
 
   var width = 200, height = 200;
 
   var fields = {
-    config:  {name: 'config',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    sim:     {name: 'sim',     type: 'category', values: [], sort: simSort,      selected: new Set()},
-    jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    color:   {name: 'color',   type: 'fixed',    values: ['T', 'b', 'g', 'k'],   selected: new Set(['T', 'b', 'g', 'k'])}
+    run: {name: 'run', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
+    timestep:  {name: 'timestep',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
+    color:   {name: 'color',   type: 'fixed',    values: ['g', 'k', 'b'],   selected: new Set(['g', 'k', 'b'])},
+    counter:  {name: 'counter',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
+    measure:  {name: 'measure',  type: 'category', values: [], sort: d3.ascending, selected: new Set()}
   };
 
   // TODO: use keys based on data. Issue: how to determine which fields are measure and which are categories/dimensions
-  var measureFields = ['min', 'avg', 'max', 'nzavg'];
+  var measureFields = ['value'];
 
   var functions = {
     min: d3.min,
@@ -28,71 +27,72 @@ define(function(require) {
 
   var specs = [
     {
-      name: 'config / dataset, sim',
-      rows: [fields.config],
-      cols: [fields.dataset, fields.sim]
+      name: 'timestep/color,counter,measure',
+      rows: [fields.timestep],
+      cols: [fields.color, fields.counter, fields.measure]
     },
     {
-      name: 'color, config / dataset, sim',
-      rows: [fields.color, fields.config],
-      cols: [fields.dataset, fields.sim]
-    },
-    {
-      name: 'color, config / dataset, sim, jobid',
-      rows: [fields.color, fields.config],
-      cols: [fields.dataset, fields.sim, fields.jobid]
-    },
-    {
-      name: 'config,dataset / color,sim',
-      rows: [fields.config, fields.dataset],
-      cols: [fields.color, fields.sim]
-    },
-    {
-      name: 'config / sim',
-      rows: [fields.config],
-      cols: [fields.sim]
-    },
-    {
-      name: 'config,sim / dataset,jobid',
-      rows: [fields.config, fields.sim],
-      cols: [fields.dataset, fields.jobid]
-    },
-    {
-      name: 'config,dataset,sim / color,jobid',
-      rows: [fields.config, fields.dataset, fields.sim],
-      cols: [fields.color, fields.jobid]
-    },
-    {
-      name: 'config,dataset / sim,color,jobid',
-      rows: [fields.config, fields.dataset],
-      cols: [fields.sim, fields.color, fields.jobid]
-    },
-    {
-      name: 'dataset,sim / config',
-      rows: [fields.dataset, fields.sim],
-      cols: [fields.config]
-    },
-    {
-      name: 'color,dataset, sim / config',
-      rows: [fields.color, fields.dataset, fields.sim],
-      cols: [fields.config]
-    },
-    {
-      name: 'config / color,dataset,sim',
-      rows: [fields.config],
-      cols: [fields.color, fields.dataset, fields.sim]
-    } ,
-    {
-      name: 'color/ dataset,sim',
-      rows: [fields.color],
-      cols: [fields.dataset, fields.sim]
-    }  ];
+      name: 'color,counter,measure/timestep',
+      rows: [fields.color, fields.counter, fields.measure],
+      cols: [fields.timestep]
+    }
+    // {
+    //   name: 'config,dataset / color,sim',
+    //   rows: [fields.config, fields.dataset],
+    //   cols: [fields.color, fields.sim]
+    // },
+    // {
+    //   name: 'config / sim',
+    //   rows: [fields.config],
+    //   cols: [fields.sim]
+    // },
+    // {
+    //   name: 'config,sim / dataset,jobid',
+    //   rows: [fields.config, fields.sim],
+    //   cols: [fields.dataset, fields.jobid]
+    // },
+    // {
+    //   name: 'config,dataset,sim / color,jobid',
+    //   rows: [fields.config, fields.dataset, fields.sim],
+    //   cols: [fields.color, fields.jobid]
+    // },
+    // {
+    //   name: 'config,dataset / sim,color,jobid',
+    //   rows: [fields.config, fields.dataset],
+    //   cols: [fields.sim, fields.color, fields.jobid]
+    // },
+    // {
+    //   name: 'dataset,sim / config',
+    //   rows: [fields.dataset, fields.sim],
+    //   cols: [fields.config]
+    // },
+    // {
+    //   name: 'color,dataset, sim / config',
+    //   rows: [fields.color, fields.dataset, fields.sim],
+    //   cols: [fields.config]
+    // },
+    // {
+    //   name: 'config / color,dataset,sim',
+    //   rows: [fields.config],
+    //   cols: [fields.color, fields.dataset, fields.sim]
+    // } ,
+    // {
+    //   name: 'color,config / dataset,sim',
+    //   rows: [fields.color, fields.config],
+    //   cols: [fields.dataset, fields.sim]
+    // },
+    // {
+    //   name: 'color/ dataset,sim',
+    //   rows: [fields.color],
+    //   cols: [fields.dataset, fields.sim]
+    // }
+   ];
 
 
   var data = null;
   var active = [];
   var mat;
-  var valueSelector = 'max';
+  var valueSelector = 'value';
   var functionSelector = 'max';
   var spec;
   var dispatch = d3.dispatch('selected');
@@ -101,14 +101,6 @@ define(function(require) {
 
   var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
   var color = d3.scale.quantize().range(VALUES_COLORMAP);
-
-  var cmap_yellow_pos = 50;
-  d3.select('#cmap')
-    .style('background-image', "linear-gradient(to left, " + createColormap(cmap_yellow_pos) + ")");
-
-  function createColormap(pos) {
-    return config.VALUES_COLORMAP.concat().reverse().map(function (v, i) { return i == 4 ? v + " " + pos + "%" : v }).toString();
-  }
 
 
   function simSort(a,b) {
@@ -143,15 +135,9 @@ define(function(require) {
     d3.select('#columns')[0][0].scrollLeft = this.scrollLeft;
   });
 
-d3.csv('/data/alldata.csv')
+d3.csv('data/alldata.csv')
   .row(function(d) {
-    //d.jobid = +d.jobid;
-    //d.color =   fields.color.values[d.color];
-    d.min = +d.min;
-    d.avg = +d.avg;
-    d.max = +d.max;
-    d.nonzero = +d.nonzero;
-    d.navg = +d.navg;
+    d.value = +d.value;
     return d;
   })
   .get(function(error, rows) {
@@ -179,9 +165,9 @@ d3.csv('/data/alldata.csv')
         .text(function(d) { return d;});
 
       // init selection and render
-      valueSelector = 'max';
+      valueSelector = 'value';
       d3.select('#select-values')
-        .property('value', 'max');
+        .property('value', 'value');
 
       setupFields();
       spec = specs[0];
@@ -244,7 +230,6 @@ d3.csv('/data/alldata.csv')
   function adjustColormap() {
     var max = Math.max(d3.max(mat.values, function (d) { return d.values[valueSelector]; }), 0.1);
     color.domain([0, max/2, max]);
-    d3.select('#cmap_max').text(max);
   }
 
   function filter() {
@@ -286,11 +271,13 @@ d3.csv('/data/alldata.csv')
     var f = functions[functionSelector];
     return nest.rollup(function(leaves) { return {
         leaves: leaves,
-        min: f(leaves, function(d) { return d.min; }),
-        avg: f(leaves, function(d) { return d.avg; }),
-        max: f(leaves, function(d) { return d.max; }),
-        //nonzero: d3.max(leaves, function(d) { return d.nonzero; }),
-        nzavg: d3.sum(leaves, function(d) { return d.nzavg * d.nonzero; })/ d3.sum(leaves, function(d) { return d.nonzero; })
+        'value': f(leaves, function(d) { return d.value;})
+
+        // min: f(leaves, function(d) { return d.min; }),
+        // avg: f(leaves, function(d) { return d.avg; }),
+        // max: f(leaves, function(d) { return d.max; }),
+        // //nonzero: d3.max(leaves, function(d) { return d.nonzero; }),
+        // nzavg: d3.sum(leaves, function(d) { return d.nzavg * d.nonzero; })/ d3.sum(leaves, function(d) { return d.nonzero; })
       }})
       .entries(active);
   }
@@ -553,15 +540,17 @@ d3.csv('/data/alldata.csv')
   }
 
   var currentSims;
-  var format = d3.format('5.1f');
+  var format = d3.format('.3g');
 
   function report(node) {
-    d3.select('#selection-minmax-values').text(
-      'min:'+ format(node.values.min) +
-      ' max:' + format(node.values.max));
-    d3.select('#selection-avg-values').text(
-      ' avg:' + format(node.values.avg) +
-      ' nzavg' + format(node.values.nzavg));
+    d3.select('#selection-values').text(
+      ' value:' + format(node.values['value'])
+    );
+
+      // 'min:'+ format(node.values.min) +
+      // ' max:' + format(node.values.max) +
+      // ' avg:' + format(node.values.avg) +
+      // ' nzavg' + format(node.values.nzavg));
 
     var sims = new Set();
     visit(node);
@@ -579,7 +568,10 @@ d3.csv('/data/alldata.csv')
       if (Array.isArray(node.values)) {
         node.values.forEach(function(d) { visit(d); });
       } else  {
-        node.values.leaves.forEach(function(row) { sims.add(row.config+','+row.dataset+','+row.sim); });
+        node.values.leaves.forEach(function(row) {
+          // sims.add(row.config+','+row.dataset+','+row.sim);
+          sims.add(row.run+','+row.timestep);
+        });
       }
     }
   }

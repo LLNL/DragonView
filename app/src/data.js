@@ -44,6 +44,7 @@ define(function(require) {
             nodes_jobs: [undefined, undefined, undefined, undefined],
             nodes_color: [undefined, undefined, undefined, undefined],
             color: config.UNKNOWN_JOB_COLOR,
+            idx: -1
           };
           row.push(router);
           this.routers.set(router.id, router);
@@ -114,6 +115,9 @@ define(function(require) {
         }
         if (!router.nodes_jobs[item.n]) router.nodes_jobs[item.n] = new Set([job]);
         else router.nodes_jobs[item.n].add(job);
+        // if (router.nodes_jobs[item.n] == null) router.nodes_jobs[item.n] = job;
+        // else if (router.nodes_jobs[item.n] !== job) router.nodes_jobs[item.n] = -1;
+        //router.nodes_jobs[item.n] =  router.nodes_jobs[item.n] == null || router.nodes_jobs[item.n] != job.id ? config.MULTI_JOBS_COLOR : job.color;
       }
     });
 
@@ -124,7 +128,9 @@ define(function(require) {
       jobs[i].idx = i;
     }
     run.routers.forEach(function(key, router) {
-      if (router.jobs.length == 1) {
+      if (router.jobs.length == 0) {
+
+      } else if (router.jobs.length == 1) {
         router.color = router.jobs[0].color;
         router.idx = router.jobs[0].idx;
       } else {
@@ -133,7 +139,8 @@ define(function(require) {
       }
       for (i=0; i<4; i++) {
         if (router.nodes_jobs[i])
-          router.nodes_color[i] = router.nodes_jobs[i].size > 1 ? config.MULTI_JOBS_COLOR : router.nodes_jobs[i].values().next().value.color;
+          router.nodes_color[i] = router.nodes_jobs[i].size > 1 ? config.MULTI_JOBS_COLOR : router.nodes_jobs[i].values().next().value.color
+          // router.nodes_jobs[i] = router.nodes_jobs[i] == -1 ? config.MULTI_JOBS_COLOR : router.nodes_jobs[i].color;
       }
     });
   }
@@ -212,11 +219,13 @@ define(function(require) {
     var re = /(\w+)\-/;
     var list = sims.map(function(sim) {
       var keys = sim.split(',');
-      var s = re.exec(keys[1])[1];
+      // var s = re.exec(keys[1])[1];
       return {
         name:     sim,
-        counters: '/data/links/linkdata/' + keys[0] + '/' + keys[1] + '/' + keys[2] + '/links-' + s + '.csv',
-        jobs:     '/data/links/placements/' + keys[1] + '/'  + s + '.csv',
+        // counters: '/data/links/linkdata/' + keys[0] + '/' + keys[1] + '/' + keys[2] + '/links-' + s + '.csv',
+        // jobs:     '/data/links/placements/' + keys[1] + '/' + '/' + s + '.csv',
+        counters: '/data/links/' + keys[0] + '/dnd_net_counters.' + keys[1] + '.csv',
+        jobs: '/data/links/' + keys[0] + '/dnd_jobs.' + keys[1] + '.csv',
         comm:     undefined
       };
     });

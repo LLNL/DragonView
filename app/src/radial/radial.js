@@ -14,8 +14,8 @@ define(function(require) {
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
         INNER_RADIUS = 400, GROUP_HEIGHT = 100;
-    var MULTI_JOBS_COLOR = '#00ffff';
-    var UNKNOWN_JOB_COLOR = '#d0d0d0';
+    var MULTI_JOBS_COLOR = config.MULTI_JOBS_COLOR; //'#00ffff';
+    var UNKNOWN_JOB_COLOR = config.UNKNOWN_JOB_COLOR; //'#d0d0d0';
 
     var minimum, maximum, valid = false;
     var size = [WIDTH, HEIGHT],
@@ -432,7 +432,7 @@ define(function(require) {
               .attr('cx', function(d, i) { return (d.router.innerRadius + 2 + i*4) * Math.cos(d.router.angle-Math.PI/2); })
               .attr('cy', function(d, i) { return (d.router.innerRadius + 2 + i*4) * Math.sin(d.router.angle-Math.PI/2); })
               .attr('fill', function(d)  {
-                return d.router.nodes_color[d.idx] || 'none'; })
+                return d.idx == -1 ? 'none' :  d.router.nodes_color[d.idx] || 'none'; })
               .style('r', 2);
       }
     }

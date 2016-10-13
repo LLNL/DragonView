@@ -40,14 +40,14 @@ define(function(require) {
     var xAxis = d3.svg.axis()
       .scale(x)
       .orient("bottom")
-      .ticks(4)
-      .tickFormat(d3.format('4g'));
+      .ticks(2)
+      .tickFormat(d3.format('3.1g'));
 
     var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
       .ticks(4)
-      .tickFormat(d3.format('4g'));
+      .tickFormat(d3.format('3.1g'));
 
     var brush = d3.svg.brush()
       .x(x)
