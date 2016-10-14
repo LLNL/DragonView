@@ -272,11 +272,11 @@ define(function(require) {
           .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
           .attr('fill', function(d) {return d.color; })
           .attr('r', r);
-
-        d3routers
-          .classed('fade', false);
       } else {
       }
+
+      d3routers
+        .classed('fade', false);
 
       d3routers.exit()
         .attr('r', config.ROUTER_RADIUS)

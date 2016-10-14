@@ -15,7 +15,7 @@ define(function(require) {
     var axis = d3.svg.axis()
       .scale(x)
       .orient('bottom')
-      .ticks(4);
+      .ticks(3);
     //            .tickFormat(function (d) { return d ; })
     //            .tickSize(8, 8)
     //            .tickPadding(12)
@@ -25,14 +25,12 @@ define(function(require) {
           //.extent([0, 1])
           .on("brush", brushmove)
           .clear();
-      ;
 
     function brushmove() {
       manual = true;
       var e = brush.extent();
       dispatch.move(e);
     }
-
 
     function slider(selection) {
       selection.each(function () {
@@ -101,10 +99,10 @@ define(function(require) {
     slider.domain = function(value) {
       if (!arguments.length) return x.domain();
       x.domain(value);
-      if (value[0] > 1000)
+      // if (value[0] > 1000)
         axis.tickFormat(d3.format('.1e'));
-      else
-        axis.tickFormat(d3.format('g'));
+      // else
+      //   axis.tickFormat(d3.format('g'));
 
       //g.select('.x')
       d3axis.call(axis);

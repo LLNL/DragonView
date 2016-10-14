@@ -201,6 +201,7 @@ define(function(require) {
     function relative(v, r) { return (v - r[0])/(r[1] - r[0]); }
 
     function updateCmap(f) {
+      console.log('update colormap ', f);
       cmap_yellow_pos = (1 - f) * 100;
 
       root.select('#cmap')
@@ -210,7 +211,7 @@ define(function(require) {
       var range = config.data_range();
       config.value_scale.domain([
         cmap_from,
-        cmap_from + (1 - f)* (cmap_to - cmap_from),
+        cmap_from + (1 - f) * (cmap_to - cmap_from),
         cmap_to
       ]);
       run.links.forEach(function (link) {
@@ -414,6 +415,14 @@ define(function(require) {
         root.select('#data-from').property('value', format(dataRange[0]));
         root.select('#data-to').property('value', format(dataRange[1]));
         root.select('#data-reset').property('disabled', true);
+
+        // updateCmap();
+        var range = config.data_range();
+        config.value_scale.domain([
+          cmap_from,
+          cmap_from + (100 - cmap_yellow_pos)/100* (cmap_to - cmap_from),
+          cmap_to
+        ]);
       }
 
       run.links.forEach(function (link) {
