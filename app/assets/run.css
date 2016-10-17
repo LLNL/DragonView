@@ -213,7 +213,7 @@ div {
     stroke-width: 0.5;
     fill: none; }
     .radial .connection.fade {
-      stroke-opacity: 0.1;
+      stroke-opacity: 0.4;
       stroke: lightgray; }
     .radial .connection.highlight {
       stroke-width: 4; }
@@ -233,9 +233,9 @@ div {
   .router circle:active {
     r: 4px; }
   .router circle.fade {
-    opacity: 0.1; }
+    opacity: 0.4; }
 .router.fade {
-  opacity: 0.1; }
+  opacity: 0.4; }
 
 #bg-div {
   display: inline-block; }

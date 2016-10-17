@@ -277,7 +277,7 @@ div {
 //    pointer-events: none;
 
     &.fade {
-      stroke-opacity: 0.1;
+      stroke-opacity: 0.4;
       stroke: lightgray;
     }
     &.highlight {
@@ -312,12 +312,12 @@ div {
     }
 
     &.fade {
-      opacity: 0.1;
+      opacity: 0.4;
     }
   }
 
   &.fade {
-    opacity: 0.1;
+    opacity: 0.4;
   }
 
 }
