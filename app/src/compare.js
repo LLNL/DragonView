@@ -238,7 +238,7 @@ d3.csv('data/alldata.csv')
   function adjustColormap() {
     var max = Math.max(d3.max(mat.values, function (d) { return d.values[valueSelector]; }), 0.1);
     color.domain([0, max/2, max]);
-    d3.select('#cmap_max').text(max);
+    d3.select('#cmap_max').text(format(max));
   }
 
   function filter() {
@@ -549,7 +549,7 @@ d3.csv('data/alldata.csv')
   }
 
   var currentSims;
-  var format = d3.format('5.1f');
+  var format = d3.format('5.3g');
 
   function report(node) {
     d3.select('#selection-values').text(

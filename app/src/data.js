@@ -224,8 +224,8 @@ define(function(require) {
         name:     sim,
         // counters: '/data/links/linkdata/' + keys[0] + '/' + keys[1] + '/' + keys[2] + '/links-' + s + '.csv',
         // jobs:     '/data/links/placements/' + keys[1] + '/' + '/' + s + '.csv',
-        counters: '/data/links/' + keys[0] + '/dnd_net_counters.' + keys[1] + '.csv',
-        jobs: '/data/links/' + keys[0] + '/dnd_jobs.' + keys[1] + '.csv',
+        counters: '/data/dnd_net_counters.' + keys[1] + '.csv',
+        jobs: '/data/dnd_jobs.' + keys[1] + '.csv',
         comm:     undefined
       };
     });
