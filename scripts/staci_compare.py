@@ -91,10 +91,10 @@ def format(s):
 def process(path):
     if path[-1:] != '/':
         path += '/'
-    run = os.path.split(path[:-1])[1]
-    re_counter = re.compile('.*counters.*\.(\d+)\.csv');
+    # run = os.path.split(path[:-1])[1]
+    re_counter = re.compile('.*counters.*\.(\d+)\.csv')
 
-    with open('alldata.csv', 'w') as outcsv:
+    with open(path + 'alldata.csv', 'w') as outcsv:
         w = csv.writer(outcsv)
         header = ['timestep', 'color', 'group', 'dest', 'counter', 'measure', 'value']
         w.writerow(header)
@@ -106,7 +106,7 @@ def process(path):
                 timestep = match.group(1)
                 print f, timestep
                 records = defaultdict(Record)
-                with open(f, 'rb') as csvfile:
+                with open(path+f, 'rb') as csvfile:
                     f = csv.DictReader(csvfile)
                     for link in f:
                         color = link['color']
@@ -128,4 +128,5 @@ def process(path):
 if len(argv) != 2:
     print 'Usage:', argv[0], '<dir>'
     exit(255)
+print argv
 process(argv[1])
