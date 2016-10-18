@@ -33,9 +33,14 @@ define(function(require) {
       cols: [fields.color, fields.counter, fields.measure]
     },
     {
-      name: 'color,counter,measure/timestep',
+      name: 'timestep, run/color,counter,measure',
+      rows: [fields.timestep, fields.run],
+      cols: [fields.color, fields.counter, fields.measure]
+    },
+    {
+      name: 'color,counter,measure/run,timestep',
       rows: [fields.color, fields.counter, fields.measure],
-      cols: [fields.timestep]
+      cols: [fields.run, fields.timestep]
     }
     // {
     //   name: 'config,dataset / color,sim',
