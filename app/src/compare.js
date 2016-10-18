@@ -28,8 +28,8 @@ define(function(require) {
 
   var specs = [
     {
-      name: 'timestep/color,counter,measure',
-      rows: [fields.timestep],
+      name: 'run,timestep/color,counter,measure',
+      rows: [fields.run, fields.timestep],
       cols: [fields.color, fields.counter, fields.measure]
     },
     {
