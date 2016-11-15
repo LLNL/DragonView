@@ -5,7 +5,7 @@
 define(function(require) {
 
   var d3 = require('d3');
-  config = require('config');
+  var config = require('config');
 
   var width = 200, height = 200;
 

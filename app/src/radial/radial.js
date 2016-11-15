@@ -272,11 +272,11 @@ define(function(require) {
           .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
           .attr('fill', function(d) {return d.color; })
           .attr('r', r);
-
-        d3routers
-          .classed('fade', false);
       } else {
       }
+
+      d3routers
+        .classed('fade', false);
 
       d3routers.exit()
         .attr('r', config.ROUTER_RADIUS)
@@ -485,12 +485,14 @@ define(function(require) {
         svg.select('.routers').selectAll('.router')
           .classed('fade', function(d) {
             if (on) {
+              d.last_fade = d3.select(this).classed('fade');
               for (i=0; i<d.jobs.length; i++) {
                 if (d.jobs[i].id == job_id) return false;
               }
               return true;
             } else {
-              return false;
+              // return false;
+              return d.last_fade;
             }
           });
       } else {
