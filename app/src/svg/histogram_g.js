@@ -52,9 +52,14 @@ define(function(require) {
     var brush = d3.svg.brush()
       .x(x)
       .on('brush', brushed);
+      // .on('brushend', brushed);
+
+    var dispatch_args = { f: 0, t: 0, i: false};
+    var timeoutId = null;
 
     function brushed() {
       var e = brush.extent();
+      // console.log('brush', e, d3.event);
       var ex = [Math.round(x(e[0])), Math.round(x(e[1]))];
 
       if (!insideMode) {
@@ -71,7 +76,16 @@ define(function(require) {
       }
       var change = false;
       for (i=0; i<3; i++) change |= prev[i] != highlightPercentile[i];
-      if (change) draw();
+      // if (change) draw();
+      // dispatch_args = { f: e[0], t: e[1], i: insideMode};
+      // if (!timeoutId) {
+      //   timeoutId = window.setTimeout(function () {
+      //     console.log('delayed dispatch');
+      //     dispatch.brushed(dispatch_args.f, dispatch_args.t, dispatch_args.i);
+      //     timeoutId = null;
+      //   }, 0);
+      //   console.log('timeout:', timeoutId);
+      // }
       dispatch.brushed([e[0], e[1], insideMode]);
     }
 

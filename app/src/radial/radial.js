@@ -10,6 +10,8 @@ define(function(require) {
   var BlackGreen = require('radial/black_green');
   var config = require('config');
   var Closeup = require('radial/closeup');
+  var rendering = false;
+  var filter_req = false;
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
@@ -64,8 +66,11 @@ define(function(require) {
       return undefined;
     }
 
+    function delayed() {
+      rendering = true;
+      filter_req = false;
+      // console.log('>> delayed');
 
-    function filter() {
       var routers = d3.map();
       filterBlues(routers);
       filterGreens(routers);
@@ -73,6 +78,40 @@ define(function(require) {
 
       renderRouters(routers);
       renderLinks();
+
+      if (filter_req) {
+        delayed();
+      }
+      rendering = false;
+      // console.log(' delayed done');
+
+    }
+
+    var f_id = 0;
+    function filter() {
+      // console.log('>> filter:', f_id++, rendering);
+      if (filter_req) {
+        return;
+      }
+
+      filter_req = true;
+      if (!rendering) {
+        // delayed();
+        // console.log('   call delay');
+        window.setTimeout(delayed, 0);
+      }
+
+      // if (delay) return;
+      // delay = true;
+      // window.setTimeout(delayed, 0);
+      // var routers = d3.map();
+      // filterBlues(routers);
+      // filterGreens(routers);
+      // filterBlacks(routers);
+      //
+      // renderRouters(routers);
+      // renderLinks();
+      // console.log('   << filter');
     }
 
     function xor(a,b) {
@@ -170,26 +209,44 @@ define(function(require) {
       closeup.links(selectedGroup, greenLinks, blackLinks);
     }
 
+    var _n = 0;
+    var _t = 0;
+    var _t1 = 0;
+    var _t2 = 0;
+    var _t3 = 0;
+    var _t4 = 0;
+    var _t5 = 0;
+    var _t6 = 0;
+
     function renderBlues() {
+      var t =  performance.now();
       var blue = bundle(blueLinks);
-      var i=-1, n=blueLinks.length;
+      var i=-1, n=blueLinks.length, b, bl;
       while (++i < n) {
-        blue[i].color = blueLinks[i].dummy && 'lightgray' || blueLinks[i].vis_color;
-        blue[i].dummy = blueLinks[i].dummy;
+        b = blue[i];
+        bl = blueLinks[i];
+        b.dummy = bl.dummy;
+        b.color = bl.dummy && 'lightgray' || bl.vis_color;
       }
 
+      var t1  = performance.now();
       d3connections = svg.select('.connections').selectAll('.connection')
         .data(blue);
 
+      var t2 = performance.now();
       d3connections.enter()
         .call(Connection);
 
+      var t3 = performance.now();
       d3connections
         .each(function (d) { d.source = d[0]; d.target = d[d.length - 1]; })
         .attr('stroke', function(d) { return d.color; })
         .attr("d", connectionPath);
 
+      var t4 = performance.now();
+
       d3connections.exit().remove();
+      var t5 = performance.now();
 
       // redraw only first half
       svg.select('.connections').selectAll('.connection')
@@ -197,6 +254,16 @@ define(function(require) {
           d.len = this.getTotalLength()*0.5;
         })
         .style('stroke-dasharray', function(d) { return d.len});
+      var t6 = performance.now();
+
+      _t +=  t4 - t;
+      _t1 += t1 -t;
+      _t2 += t2 - t1;
+      _t3 += t3 - t2;
+      _t4 += t4 - t3;
+      _t5 += t5 - t4;
+      _t6 += t6 - t5;
+      _n++;
     }
 
     function renderGreens() {
@@ -334,6 +401,7 @@ define(function(require) {
 
       d3bands.exit().remove();
     }
+
 
     function render() {
       group_arc = d3.svg.arc()

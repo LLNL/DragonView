@@ -23,6 +23,10 @@
   height: 20px;
   width: 80%; }
 
+#cmap_mid {
+  position: absolute;
+  left: 30%; }
+
 #cmap_max {
   position: absolute;
   right: 10%; }

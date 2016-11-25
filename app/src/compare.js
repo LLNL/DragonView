@@ -6,11 +6,13 @@ define(function(require) {
 
   var d3 = require('d3');
   var config = require('config');
+  var cmap = require('cmap')();
+  var swath = require('components/cmap_swath')();
 
   var width = 200, height = 200;
 
   var fields = {
-    config:  {name: 'config',  type: 'category', values: [], sort: d3.ascending, selected: new Set()},
+    config:  {name: 'config',  type: 'category', values: [], sort: configSort, selected: new Set()},
     dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
     sim:     {name: 'sim',     type: 'category', values: [], sort: simSort,      selected: new Set()},
     jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set()},
@@ -96,20 +98,55 @@ define(function(require) {
   var functionSelector = 'max';
   var spec;
   var dispatch = d3.dispatch('selected');
+  var frozen = false;
 
   var filterValues = {};
 
-  var VALUES_COLORMAP =["#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027"];
-  var color = d3.scale.quantize().range(VALUES_COLORMAP);
 
-  var cmap_yellow_pos = 50;
+  d3.select('#freeze')
+    .on('change', function() {
+      frozen = this.checked;
+      d3.select("#data-reset")
+        .property('disabled', frozen);
+    });
+
+  d3.select("#data-reset")
+    .on('click', function() {
+      adjustColormap();
+      render(mat);
+      d3.select('#cmap_field').text(d3.select(this).property('value'));
+    });
+
+  var swath_size = 135;
+  swath
+    .horizontal(true)
+    .colors(cmap.colors())
+    .size(swath_size)
+    .on('changed', function(f) {
+      update_cmap(f);
+    });
+
   d3.select('#cmap')
-    .style('background-image', "linear-gradient(to left, " + createColormap(cmap_yellow_pos) + ")");
+    .call(swath);
 
-  function createColormap(pos) {
-    return config.VALUES_COLORMAP.concat().reverse().map(function (v, i) { return i == 4 ? v + " " + pos + "%" : v }).toString();
+  function update_cmap(f) {
+    var range = cmap.value_range();
+    var min = range[0];
+    var max = range[2];
+    var mid = min + f * (max -min);
+    d3.select('#cmap_mid').text(format(mid));
+    cmap.value_range([min, mid, max]);
+    render(mat);
   }
 
+  var re = /(\d+)?(.*)/;
+
+  function configSort(a, b) {
+    var l = a.match(re);
+    var r = b.match(re);
+    var sign = +l[1] - +r[1];
+    return sign == 0 ? l[2] < r[2] : sign;
+  }
 
   function simSort(a,b) {
     a = +a.slice(3);
@@ -137,6 +174,7 @@ define(function(require) {
 
   d3.select('#select-function')
     .property('value', 'max');
+
 
   d3.select("#frame").on('scroll', function(d) {
     d3.select('#rows')[0][0].scrollTop = this.scrollTop;
@@ -181,8 +219,9 @@ d3.csv('/data/alldata.csv')
       // init selection and render
       valueSelector = 'max';
       d3.select('#select-values')
-        .property('value', 'max');
+        .property('value', valueSelector);
 
+      d3.select('#cmap_field').text(valueSelector);
       setupFields();
       spec = specs[0];
       filter();
@@ -242,8 +281,14 @@ d3.csv('/data/alldata.csv')
   }
 
   function adjustColormap() {
+    if (frozen) return;
+
+    var min = 0;
     var max = Math.max(d3.max(mat.values, function (d) { return d.values[valueSelector]; }), 0.1);
-    color.domain([0, max/2, max]);
+    var mid = (min + max)/2; //swath.mid()*(max-min);
+    cmap.value_range([min, mid, max]);
+    swath.update(0.5);
+    d3.select('#cmap_mid').text(mid);
     d3.select('#cmap_max').text(max);
   }
 
@@ -263,6 +308,8 @@ d3.csv('/data/alldata.csv')
   function selectValue() {
     valueSelector = d3.select(this).property('value');
     recompute();
+    if (!frozen)
+      d3.select('#cmap_field').text(valueSelector);
   }
 
   function selectFunction() {
@@ -545,7 +592,7 @@ d3.csv('/data/alldata.csv')
       .style('top', function(d) { return d.y+"px";})
       .style('width', function(d) { return d.w+"px";})
       .style('height', function(d) { return d.h+"px";})
-      .style('background-color', function(d) { return color(d.values[valueSelector]); })
+      .style('background-color', function(d) { return cmap(d.values[valueSelector]); })
       .classed('selected', false)
     ;
 
@@ -597,6 +644,8 @@ d3.csv('/data/alldata.csv')
     resize: function(size) {
       width = size[0];
       height = size[1];
+      swath.size(parseInt(d3.select('#cmap').style('width')));
+
       render(mat);
       return this;
     }

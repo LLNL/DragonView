@@ -11,7 +11,9 @@ define(function(require) {
     Histogram = require('svg/histogram_g'),
     Slider = require('svg/slider'),
     dataService = require('data'),
-    config = require('config');
+    config = require('config'),
+    cmap = require('cmap')(),
+    swath = require('components/cmap_swath')();
 
   var DEFAULT_COLLECTION = 'data/runs-4jobs-1.csv';
 
@@ -32,10 +34,18 @@ define(function(require) {
         frozen         = false,
         format         = d3.format('.5f');
 
-    var cmap_size = 135;
-    var cmap_yellow_pos = 50;  // percent
-    var cmap_from = 0;
-    var cmap_to = 0;
+    var swath_size = 135;
+    swath
+      .horizontal(false)
+      .colors(cmap.colors())
+      .size(swath_size)
+      .on('changed', function(f) {
+        var min = +root.select('#data-from').property('value');
+        var max = +root.select('#data-to').property('value');
+        var mid = min + f * (max -min);
+        root.select('#data-mid').property('value', mid);
+        update_cmap(min, mid, max);
+      });
 
     var histogram = Histogram().counter(defaultCounter);
     var slider = Slider();
@@ -81,52 +91,34 @@ define(function(require) {
       .style("height", "135px")
       .style("position", "absolute")
       .style("left", "0px")
-      .style('background-image', "linear-gradient(" + createColormap(cmap_yellow_pos) + ")")
-      .on('mousedown', function () {
-        d3.event.preventDefault();
-        var self = this;
-        root.select('#cmap')
-          .on('mousemove', function () {
-            updateCmap(1 - d3.mouse(this)[1] / cmap_size); })
-          .on('mouseup', function () {
-            root.select('#cmap')
-              .on('mousemove', null)
-              .on('mouseup', null);
-          }
-        );
-        updateCmap(cmap_yellow_pos / 100);
-      }
-    );
-
+      .call(swath);
 
     root.select('#data-from')
       .style('left', '30px')
       .style('bottom', 0)
       .on('change', function () {
-        cmap_from = +this.value;
-        updateCmap(1 - cmap_yellow_pos / 100);
-        // updateRange([+this.value, +root.select('#data-to').property('value')]);
+        update_cmap(+this.value, null, null);
         root.select('#data-reset').property('disabled', false);
 
       }
     );
 
+
+
     root.select('#data-mid')
       .style('left', '30px')
       .style('top', (135 / 2 - 10) + 'px')
       .on('change', function () {
-        var f = (+this.value - cmap_from) / (cmap_to - cmap_from);
-        updateCmap(f);
+        update_cmap(null, +this.value, null);
       }
     );
 
     root.select('#data-to')
       .style('left', '30px')
+      .style('left', '30px')
       .style('top', 0)
       .on('change', function () {
-        cmap_to = +this.value;
-        updateCmap(1 - cmap_yellow_pos / 100);
-        // updateRange([+root.select('#data-from').property('value'), +this.value]);
+        update_cmap(null, null, +this.value);
         root.select('#data-reset').property('disabled', false);
       }
     );
@@ -134,12 +126,9 @@ define(function(require) {
     root.select('#data-reset').on('click', function () {
       root.select('#data-from').property('value', format(dataRange[0]));
       root.select('#data-to').property('value', format(dataRange[1]));
-      cmap_from = dataRange[0];
-      cmap_to = dataRange[1];
-      updateCmap(0.5);
-      // updateRange(dataRange);
-    }
-    );
+      root.select('#data-mid').property('value', format((dataRange[0] + dataRange[1]) / 2));
+      update_cmap(dataRange[0], (dataRange[0] + dataRange[1]) / 2, dataRange[1]);
+    });
 
     root.select('#range-frozen').on('change', function () {
         frozen = this.checked;
@@ -200,24 +189,22 @@ define(function(require) {
 
     function relative(v, r) { return (v - r[0])/(r[1] - r[0]); }
 
-    function updateCmap(f) {
-      cmap_yellow_pos = (1 - f) * 100;
+    function update_cmap(min, mid, max) {
+      // var range = cmap.value_range();
+      if (min == null) min = +root.select('#data-from').property('value');
+      if (mid == null) mid = +root.select('#data-mid').property('value');
+      if (max == null) max = +root.select('#data-to').property('value');
 
-      root.select('#cmap')
-        .style('background-image', "linear-gradient(" + createColormap(cmap_yellow_pos) + ")");
-
-      root.select('#data-mid').property('value', format(cmap_from + f * (cmap_to - cmap_from)));
-      var range = config.data_range();
-      config.value_scale.domain([
-        cmap_from,
-        cmap_from + (1 - f)* (cmap_to - cmap_from),
-        cmap_to
-      ]);
+      cmap.value_range([min, mid, max]);
+      swath.update((mid - min)/(max-min));
       run.links.forEach(function (link) {
-        link.vis_color = config.color(link.value);
+        // *** cmap change
+        // link.vis_color = config.color(link.value);
+        link.vis_color = cmap(link.value);
       });
       Radio.channel(id).trigger('cmap.changed');
     }
+
 
     function updateRunList(list) {
       knownRuns = list;
@@ -229,11 +216,7 @@ define(function(require) {
       options.enter()
         .append('option')
         .attr('value', function (d, i) { return i; })
-        .text(function (d) { return d.name || "──────────"; })
-        //.each(function (d) {
-        //  if (!d.name)
-        //    root.select(this).attr('disabled', true);})
-        ;
+        .text(function (d) { return d.name || "──────────"; });
 
       if (list.length > 0) dataService.load(id, list[0].name);
     }
@@ -313,11 +296,11 @@ define(function(require) {
         if (!frozen) {
           dataRange = [min, max];
           setRange(dataRange);
-          cmap_from = min;
-          cmap_to = max;
-          root.select('#data-from').property('value', format(dataRange[0]));
-          root.select('#data-to').property('value', format(dataRange[1]));
-          updateCmap(cmap_yellow_pos / 100);
+          var mid = min + swath.mid()*(max-min);
+          root.select('#data-from').property('value', format(min));
+          root.select('#data-to').property('value', format(max));
+          root.select('#data-mid').property('value', format(mid));
+          update_cmap(min, mid, max);
           root.select('#data-reset').property('disabled', true);
 
         }
@@ -396,7 +379,9 @@ define(function(require) {
       setRange(range);
       run.links.forEach(function (link) {
         link.value = link.counters[currentCounter];
-        link.vis_color = config.color(link.value);
+        // *** cmap change
+        // link.vis_color = config.color(link.value);
+        link.vis_color = cmap(link.value);
       });
       histogram.range(slider.extent());
     }
@@ -418,7 +403,9 @@ define(function(require) {
 
       run.links.forEach(function (link) {
         link.value = link.counters[index];
-        link.vis_color = config.color(link.value);
+          // *** cmap change
+          // link.vis_color = config.color(link.value);
+          link.vis_color = cmap(link.value);
       }
       );
 
