@@ -32,7 +32,16 @@ define(function(require) {
         dataRange      = [0, 0],
         isSimulation   = true,
         frozen         = false,
-        format         = d3.format('.5f');
+        format         = d3.format('.5f'),
+        router_mapping= {
+          green: function(r) { return cmap(r.green); },
+          black: function(r) { return cmap(r.black); },
+          max:   function(r) { return cmap(Math.max(r.green, r.black)); },
+          jobs:  function(r) { return r.job_color;}
+        },
+        router_mapping_idx = 'jobs',
+        router_color = router_mapping[router_mapping_idx];
+
 
     var inout = true;
 
@@ -66,8 +75,10 @@ define(function(require) {
 
     root.select('#map-routers')
       .on('change', function() {
-        console.log('map:', this.value, this);
-        Radio.channel(id).trigger('router.map', this.value);
+        router_mapping_idx = this.value;
+        router_color = router_mapping[this.value];
+        set_routers_color();
+        Radio.channel(id).trigger('routers.change');
       });
 
     root
@@ -206,10 +217,9 @@ define(function(require) {
       cmap.value_range([min, mid, max]);
       swath.update((mid - min)/(max-min));
       run.links.forEach(function (link) {
-        // *** cmap change
-        // link.vis_color = config.color(link.value);
         link.vis_color = cmap(link.value);
       });
+      set_routers_color();
       Radio.channel(id).trigger('cmap.changed', cmap);
     }
 
@@ -407,16 +417,29 @@ define(function(require) {
         root.select('#data-reset').property('disabled', true);
       }
 
-      run.links.forEach(function (link) {
-        link.value = link.counters[index];
-          // *** cmap change
-          // link.vis_color = config.color(link.value);
-          link.vis_color = cmap(link.value);
+      run.routers.forEach(function(key, router) {
+        router.green = 0;
+        router.black = 0;
       });
 
+      run.links.forEach(function (link) {
+        link.value = link.counters[index];
+        link.vis_color = cmap(link.value);
+
+        if (link.color == 'g') link.src.green = Math.max(link.src.green, link.value);
+        else if (link.color == 'k') link.src.black = Math.max(link.src.black, link.value);
+      });
+
+
+      set_routers_color();
       histogram.counter(index);
       Radio.channel(id).trigger('counter.change', index);
       histogram.range(slider.extent());
+    }
+
+
+    function set_routers_color() {
+      run.routers.forEach( function(key, router) {  router.color = router_color(router); });
     }
 
     function onZoom(size) {

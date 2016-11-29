@@ -43,6 +43,8 @@ define(function(require) {
             nodes_jobs: [undefined, undefined, undefined, undefined],
             nodes_color: [undefined, undefined, undefined, undefined],
             color: config.UNKNOWN_JOB_COLOR,
+            green: 0,
+            black: 0
           };
           row.push(router);
           this.routers.set(router.id, router);
@@ -99,8 +101,7 @@ define(function(require) {
 
         job = run.jobs.get(item.jobid);
         if (!job) {
-          job = {id: item.jobid, idx: idx, n:0 /*, color:config.jobColor(idx)*/};
-          //run.jobsColor.push(job.color);
+          job = {id: item.jobid, idx: idx, n:0};
           run.jobs.set(item.jobid, job);
           idx++;
         }
@@ -124,10 +125,10 @@ define(function(require) {
     }
     run.routers.forEach(function(key, router) {
       if (router.jobs.length == 1) {
-        router.color = router.jobs[0].color;
+        router.job_color = router.jobs[0].color;
         router.idx = router.jobs[0].idx;
       } else {
-        router.color = config.MULTI_JOBS_COLOR;
+        router.job_color = config.MULTI_JOBS_COLOR;
         router.idx = config.JOBS_COLORMAP.length;
       }
       for (i=0; i<4; i++) {

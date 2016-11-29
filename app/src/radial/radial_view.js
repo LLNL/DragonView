@@ -31,19 +31,15 @@ define(function(require) {
     });
 
     Radio.channel(id).on('cmap.changed', function() {
-      if (active) radial.renderLinks();
+      if (active) radial.cmap_changed();
     });
 
     Radio.channel(id).on('job.highlight', function(job, on) {
       if (active) radial.highlight_job(job, on);
     });
 
-    Radio.channel(id).on('router.map', function(option) {
-      if (active) radial.map_routers(option);
-    });
-
-    Radio.channel(id).on('cmap.changed', function(cmap) {
-      radial.cmap(cmap);
+    Radio.channel(id).on('routers.change', function() {
+      if (active) radial.update_routers();
     });
 
     function getSize(el) {
@@ -60,7 +56,10 @@ define(function(require) {
     }
 
     var view = function(elem) {
-      radial = Radial().el(elem).counter(0).resize([600, 600]);
+      radial = Radial().el(elem).counter(0).resize([600, 600])
+        .on('active', function(routers) {
+          Radio.channel(id).trigger('routers.active', routers);
+        });
 
       var win = elem.ownerDocument.defaultView || elem.ownerDocument.parentWindow;
       win.addEventListener('resize', function(event) {

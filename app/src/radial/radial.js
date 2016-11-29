@@ -32,16 +32,15 @@ define(function(require) {
         svgContainer, svg,
         bg_overview_closed = false,
         routersMode = 'routers',
-        closeup;
-    var bg_div, closeup_div;
+        closeup,
+        dispatch = d3.dispatch('active'),
+        bg_div, closeup_div;
 
     var d3groupView, d3groupView2, d3bgView;
 
     var range, counterId;
     var data, groups, connectors, connections;
     var d3groups, d3connectors, d3connections;
-
-    var cmap;
 
     var group_arc = d3.svg.arc()
       .innerRadius(opt.innerRadius)
@@ -70,32 +69,14 @@ define(function(require) {
 
 
     function filter() {
-      data.routers.forEach(function(key, router) {
-        router.stat = {gv:0, gn:0, kv: 0, kn:0};
-      });
-
       var routers = d3.map();
       filterBlues(routers);
       filterGreens(routers);
       filterBlacks(routers);
 
-      var v = 0;
-      if (router_mapping == 'green') {
-        routers.forEach(function(key, router) {
-          router.color = cmap(router.stat.gv);
-        });
-      } else if (router_mapping == 'black') {
-        routers.forEach(function(key, router) {
-          router.color = cmap(router.stat.kv);
-        });
-      } else if (router_mapping == 'max') {
-        routers.forEach(function(key, router) {
-          router.color = cmap(Math.max(router.gv, router.kv));
-        });
-      }
-
       renderRouters(routers);
       renderLinks();
+      dispatch.active(routers);
     }
 
     function xor(a,b) {
@@ -154,7 +135,6 @@ define(function(require) {
                 greenLinks.push(link);
                 routers.set(link.src.id, link.src);
                 routers.set(link.dest.id, link.dest);
-                link.src.stat.gv = Math.max(link.src.stat.gv, link.value);
               }
             }
         });
@@ -171,7 +151,6 @@ define(function(require) {
                 blackLinks.push(link);
                 routers.set(link.src.id, link.src);
                 routers.set(link.dest.id, link.dest);
-                link.src.stat.kv = Math.max(link.src.stat.kv, link.value);
               }
             }
         });
@@ -181,15 +160,6 @@ define(function(require) {
     function renderLinks() {
       var i, n;
       if (!blueLinks) return;
-      //if (selectedGroup == undefined) {
-      //  svg.select('.connectors').selectAll('circle').remove();
-      //  svg.select('.internal').selectAll('path').remove();
-      //
-      //  renderBlues();
-      //} else {
-      //  renderGreens();
-      //}
-      //bg_view(greenLinks, blackLinks);
       renderBlues();
       bg_overview(greenLinks, blackLinks);
       closeup.links(selectedGroup, greenLinks, blackLinks);
@@ -310,6 +280,12 @@ define(function(require) {
       paths.exit().remove();
     }
 
+    function updateRouters() {
+      if (routersMode == 'routers')
+        svg.select('.routers').selectAll('.router').select('.single')
+         .attr('fill', function(d) { return d.color;});
+    }
+
     function renderRouters(routers, r) {
       var list = routers.values();
 
@@ -325,16 +301,20 @@ define(function(require) {
           .attr('cx', function(d) { return d.radius * Math.cos(d.angle-Math.PI/2); })
           .attr('cy', function(d) { return d.radius * Math.sin(d.angle-Math.PI/2); })
           .attr('fill', function(d) {return d.color; })
-          .attr('r', r);
+          .style('r', r)
+          .each(function(r) { r.active = true;})
       } else {
       }
 
-      d3routers
-        .classed('fade', false);
+      // d3routers
+      //   .classed('fade', false);
+
+      // d3routers.exit()
+        // .classed('fade', true);
 
       d3routers.exit()
-        .attr('r', config.ROUTER_RADIUS)
-        .classed('fade', true);
+        .each(function(r) { r.active = false; })
+        .selectAll('circle').style('r', config.ROUTER_RADIUS_INACTIVE);
 
 
       /* render bands */
@@ -494,14 +474,13 @@ define(function(require) {
 
 
     function router_highlight(routers, on) {
-      var radius = on? 6 : 2;
       var stroke = on ? 'black' : 'none';
       var selection = svg.select('.routers').selectAll('.router').data(routers, function (d) {return d.id; });
 
       if (routersMode == 'routers') {
         selection
           .selectAll('circle')
-          .style('r', radius);
+          .style('r', function(d) { return on ? config.ROUTER_RADIUS_HIGHLIGHT : d.active ? config.ROUTER_RADIUS : config.ROUTER_RADIUS_INACTIVE; });
       } else {
         selection
           .select('path')
@@ -743,6 +722,7 @@ define(function(require) {
       if (!arguments.length) return counterId;
       counterId = _;
       valid = false;
+      updateRouters();
       return this;
     };
 
@@ -758,8 +738,9 @@ define(function(require) {
       return this;
     };
 
-    radial.renderLinks = function() {
+    radial.cmap_changed = function() {
       renderLinks();
+      updateRouters();
       return this;
     };
 
@@ -769,17 +750,16 @@ define(function(require) {
       return this;
     };
 
-    radial.map_routers = function(option) {
-      if (option != router_mapping)
-        router_mapping = option;
+    radial.update_routers = function() {
+      updateRouters();
       return this;
     };
 
-    radial.cmap = function(_) {
-      cmap = _;
+    radial.on = function(type, cb) {
+      dispatch.on(type, cb);
       return this;
     };
 
     return radial;
-  };
+  }
 });

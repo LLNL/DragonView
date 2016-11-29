@@ -88,7 +88,8 @@ div {
     background-color: #f0f0f0; }
   .controls .li-title {
     margin-left: -10px;
-    font-weight: bold; }
+    font-weight: bold;
+    font-size: 10pt; }
   .controls .li-body {
     margin-left: 10px; }
   .controls .range-value {
@@ -103,17 +104,7 @@ div {
     height: 10px;
     cursor: pointer; }
   .controls .jobs {
-    border-collapse: collapse;
-    border-width: 2px;
-    width: 100px; }
-    .controls .jobs th {
-      border-bottom: solid thin; }
-    .controls .jobs td, .controls .jobs th {
-      padding: 0.25rem; }
-    .controls .jobs td.text-col, .controls .jobs th.text-col {
-      text-align: left; }
-    .controls .jobs td.number-col, .controls .jobs th.number-col {
-      text-align: right; }
+    font-size: 8pt; }
 
 .sub-label {
   width: 40px; }
@@ -192,14 +183,10 @@ div {
     .radial .group text {
       stroke: none;
       fill: black; }
-    .radial .group:hover {
-      cursor: pointer; }
-      .radial .group:hover text {
-        fill: red;
-        font-size: large; }
-      .radial .group:hover path {
-        stroke: #808080;
-        stroke-width: 1px; }
+    .radial .group text:hover {
+      cursor: pointer;
+      fill: red;
+      font-size: large; }
     .radial .group.selected text {
       font-size: large; }
     .radial .group.selected path {

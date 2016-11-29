@@ -107,6 +107,7 @@ define(function(require) {
 
   var filterValues = {};
 
+  var format = d3.format('6.1f');
 
   d3.select('#freeze')
     .on('change', function() {
@@ -119,7 +120,7 @@ define(function(require) {
     .on('click', function() {
       adjustColormap();
       render(mat);
-      d3.select('#cmap_field').text(d3.select(this).property('value'));
+      d3.select('#cmap_field').text(d3.select('#select-values').property('value'));
     });
 
   var swath_size = 135;
@@ -293,8 +294,8 @@ d3.csv('/data/alldata.csv')
     var mid = (min + max)/2; //swath.mid()*(max-min);
     cmap.value_range([min, mid, max]);
     swath.update(0.5);
-    d3.select('#cmap_mid').text(mid);
-    d3.select('#cmap_max').text(max);
+    d3.select('#cmap_mid').text(format(mid));
+    d3.select('#cmap_max').text(format(max));
   }
 
   function filter() {
@@ -564,7 +565,8 @@ d3.csv('/data/alldata.csv')
     rows.enter()
       .append('div')
       .attr('class', 'row')
-      .on('mouseenter', report)
+      .on('mouseeover', report)
+      .on('mouseout', mouseout)
       .on('click', select);
 
     rows
@@ -590,7 +592,9 @@ d3.csv('/data/alldata.csv')
       .append('div')
       .attr('class', 'value')
       .on('click', select)
-      .on('mouseenter', report);
+      .on('mouseover', report)
+      .on('mouseout', mouseout);
+
 
     d3nodes
       .style('left', function(d) { return d.x+"px";})
@@ -604,16 +608,39 @@ d3.csv('/data/alldata.csv')
     d3nodes.exit().remove();
   }
 
+  var mouseout_timer = null;
+
+  function mouseout() {
+    mouseout_timer = window.setTimeout(function() {
+      report();
+      mouseout_timer = null;
+    }, 50);
+  }
   var currentSims;
-  var format = d3.format('5.1f');
+  // var format = d3.format('5.1f');
+
+  function encode(name, value) {
+    var text = name + ': '+format(value);
+    return name == valueSelector ? '<b>'+text+'</b>' : text;
+  }
 
   function report(node) {
-    d3.select('#selection-minmax-values').text(
-      'min:'+ format(node.values.min) +
-      ' max:' + format(node.values.max));
-    d3.select('#selection-avg-values').text(
-      ' avg:' + format(node.values.avg) +
-      ' nzavg' + format(node.values.nzavg));
+
+    if (!node) {
+      d3.select('#selection-minmax-values').text('');
+      d3.select('#selection-avg-values').text('');
+      d3.select('#selection-list').selectAll('li').remove();
+      return;
+    }
+
+    if (mouseout_timer) window.clearTimeout(mouseout_timer);
+
+    d3.select('#selection-minmax-values').html(
+      encode('min', node.values.min) + ' ' +
+      encode('max', node.values.max));
+    d3.select('#selection-avg-values').html(
+      encode('avg', node.values.avg) + ' ' +
+      encode('nzavg', node.values.nzavg));
 
     var sims = new Set();
     visit(node);

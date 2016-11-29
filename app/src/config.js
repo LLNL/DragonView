@@ -23,8 +23,9 @@ define(function(require) {
     VALUES_COLORMAP: VALUES_COLORMAP,
     JOBS_COLORMAP: JOBS_COLORMAP,
 
-    ROUTER_RADIUS: 10,
-    ROUTER_HIGHLIGHT_RADIUS: 4,
+    ROUTER_RADIUS: 2.5,
+    ROUTER_RADIUS_INACTIVE: 1.5,
+    ROUTER_RADIUS_HIGHLIGHT: 4,
 
     value_scale: value_scale,
 

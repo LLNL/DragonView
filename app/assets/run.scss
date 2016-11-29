@@ -74,6 +74,7 @@ div {
 //    font-style: italic;
     margin-left: -10px;
     font-weight: bold;
+    font-size: 10pt;
   }
 
   .li-body {
@@ -100,27 +101,8 @@ div {
     cursor: pointer;
   }
 
-  .jobs {
-    //  background-color: #f0f0f0;
-    border-collapse: collapse;
-    border-width: 2px;
-    width: 100px;
-
-    th {
-      border-bottom: solid thin;
-    }
-
-    td, th {
-      padding: 0.25rem;
-    }
-
-    td.text-col, th.text-col {
-      text-align: left;
-    }
-
-    td.number-col, th.number-col {
-      text-align: right;
-    }
+  .jobs{
+    font-size: 8pt;
   }
 }
 
@@ -234,19 +216,25 @@ div {
       fill: black;
     }
 
-    &:hover {
+    text:hover {
       cursor:pointer;
-
-      text {
-        fill: red;
-        font-size: large;
-      }
-
-      path {
-        stroke: #808080;
-        stroke-width: 1px;
-      }
+      fill: red;
+      font-size: large;
     }
+
+    //&.:hover {
+    //  cursor:pointer;
+    //
+    //  text {
+    //    fill: red;
+    //    font-size: large;
+    //  }
+    //
+    //  path {
+    //    stroke: #808080;
+    //    stroke-width: 1px;
+    //  }
+    //}
 
     &.selected {
       text {

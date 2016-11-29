@@ -12,6 +12,7 @@ define(function(require) {
     var id = id_;
 
     Radio.channel(id).on('data.run', newRun);
+    Radio.channel(id).on('routers.active', active_routers);
 
     var colors = config.JOBS_COLORMAP; // colorbrewer.Set2[8];
     var context;
@@ -57,9 +58,26 @@ define(function(require) {
           .style('position', 'absolute')
           .style('top', function(d,i) { return (i<l ? i:i-l)*15+'px'; })
           .style('left', function(d,i) { return i<l ? 0: '115px'; })
+          .style('font-size', '8pt')
           .call(render);
 
       root.select('#jobs').style('height', (5+l*15)+'px');
+    }
+
+    function active_routers(routers) {
+      var n;
+      currentRun.jobs.forEach(function(k, job) { job.active = 0;});
+
+      routers.forEach(function(k, router) {
+        n = router.jobs.length;
+        while (--n != -1) {
+          router.jobs[n].active++;
+        }
+      });
+
+      root.select('#jobs').selectAll('div').select('.active').text(function(d) {
+        return d.active;
+      });
     }
 
     function render() {
@@ -83,9 +101,9 @@ define(function(require) {
           d3.event.stopPropagation();
         });
 
-      this.append('span').text(function(d) { return d.id;}).style('padding-left', '10px');
-
-      this.append('span').text(function(d) { return d.n;}).style('padding-left', '15px');
+      this.append('span').text(function(d) { return d.id;}).style('padding-left', '5px');
+      this.append('span').text(function(d) { return d.n;}).style('padding-left', '10px');
+      this.append('span').attr('class', 'active').text(function(d) { return d.n;}).style('padding-left', '10px');
     }
   };
 });
