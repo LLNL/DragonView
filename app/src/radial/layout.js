@@ -8,7 +8,7 @@ define(function(require) {
   return function() {
 
     var parms = {
-        routersGroupHeight: 35,
+        routersGroupHeight: 50,
         nodesGroupHeight: 150,
         //width: 600,
         //height: 600,

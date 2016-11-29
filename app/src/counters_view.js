@@ -34,15 +34,29 @@ define(function(require) {
         frozen         = false,
         format         = d3.format('.5f'),
         router_mapping= {
-          green: function(r) { return cmap(r.green); },
-          black: function(r) { return cmap(r.black); },
-          blue: function(r) { return cmap(r.blue); },
-          max:   function(r) { return cmap(Math.max(r.green, r.black, r.blue)); },
-          jobs:  function(r) { return r.job_color;}
+          green: function(r) { return router_green_cmap(r.green); },
+          black: function(r) { return router_black_cmap(r.black); },
+          blue: function(r) { return router_blue_cmap(r.blue); },
+          jobs:  function(r) { return r.job_color;},
+          max:   function(r) {
+            if (r.green > r.black) {
+              if (r.green > r.blue) return router_green_cmap(r.green);
+              else return router_blue_cmap(r.blue);
+            }
+            else if (r.black > r.blue) return router_black_cmap(r.black);
+            else return router_blue_cmap(r.blue);
+          }
         },
         router_mapping_idx = 'jobs',
         router_color = router_mapping[router_mapping_idx];
 
+
+    var blue_cmap = d3.scale.linear().domain([0, 1]).range(['white', 'blue']);
+    var green_cmap = d3.scale.linear().domain([0, 1]).range(['white', 'green']);
+    var black_cmap = d3.scale.linear().domain([0, 1]).range(['white', 'black']);
+    var router_green_cmap = green_cmap;
+    var router_black_cmap = black_cmap;
+    var router_blue_cmap = blue_cmap;
 
     var inout = true;
 
@@ -74,10 +88,23 @@ define(function(require) {
       }
     );
 
-    root.select('#map-routers')
+    root.select('#routers-opt')
       .on('change', function() {
         router_mapping_idx = this.value;
         router_color = router_mapping[this.value];
+        set_routers_color();
+        Radio.channel(id).trigger('routers.change');
+      });
+
+    root.select('#routers-cmap')
+      .on('change', function() {
+        if (this.value == 'global'){
+          router_blue_cmap = router_green_cmap = router_black_cmap = cmap;
+        } else {
+          router_blue_cmap = blue_cmap;
+          router_green_cmap = green_cmap;
+          router_black_cmap = black_cmap;
+        }
         set_routers_color();
         Radio.channel(id).trigger('routers.change');
       });
@@ -103,6 +130,7 @@ define(function(require) {
         }
       }
     );
+
 
     root.select('#cmap')
       .style("width", "20px")
@@ -220,6 +248,9 @@ define(function(require) {
       run.links.forEach(function (link) {
         link.vis_color = cmap(link.value);
       });
+      blue_cmap.domain([min, max]);
+      green_cmap.domain([min, max]);
+      black_cmap.domain([min, max]);
       set_routers_color();
       Radio.channel(id).trigger('cmap.changed', cmap);
     }
