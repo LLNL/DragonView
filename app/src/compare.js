@@ -35,6 +35,11 @@ define(function(require) {
       cols: [fields.dataset, fields.sim]
     },
     {
+      name: 'config, color / dataset, sim',
+      rows: [fields.config, fields.color],
+      cols: [fields.dataset, fields.sim]
+    },
+    {
       name: 'color, config / dataset, sim',
       rows: [fields.color, fields.config],
       cols: [fields.dataset, fields.sim]

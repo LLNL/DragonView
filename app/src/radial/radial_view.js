@@ -38,6 +38,14 @@ define(function(require) {
       if (active) radial.highlight_job(job, on);
     });
 
+    Radio.channel(id).on('router.map', function(option) {
+      if (active) radial.map_routers(option);
+    });
+
+    Radio.channel(id).on('cmap.changed', function(cmap) {
+      radial.cmap(cmap);
+    });
+
     function getSize(el) {
       var d3el = d3.select(el);
       console.log(

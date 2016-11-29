@@ -12,6 +12,7 @@ define(function(require) {
   var Closeup = require('radial/closeup');
   var rendering = false;
   var filter_req = false;
+  var router_mapping = 'jobs';
 
   return function() {
     var WIDTH = 1000, HEIGHT = 1000,
@@ -40,6 +41,7 @@ define(function(require) {
     var data, groups, connectors, connections;
     var d3groups, d3connectors, d3connections;
 
+    var cmap;
 
     var group_arc = d3.svg.arc()
       .innerRadius(opt.innerRadius)
@@ -66,52 +68,34 @@ define(function(require) {
       return undefined;
     }
 
-    function delayed() {
-      rendering = true;
-      filter_req = false;
-      // console.log('>> delayed');
+
+    function filter() {
+      data.routers.forEach(function(key, router) {
+        router.stat = {gv:0, gn:0, kv: 0, kn:0};
+      });
 
       var routers = d3.map();
       filterBlues(routers);
       filterGreens(routers);
       filterBlacks(routers);
 
+      var v = 0;
+      if (router_mapping == 'green') {
+        routers.forEach(function(key, router) {
+          router.color = cmap(router.stat.gv);
+        });
+      } else if (router_mapping == 'black') {
+        routers.forEach(function(key, router) {
+          router.color = cmap(router.stat.kv);
+        });
+      } else if (router_mapping == 'max') {
+        routers.forEach(function(key, router) {
+          router.color = cmap(Math.max(router.gv, router.kv));
+        });
+      }
+
       renderRouters(routers);
       renderLinks();
-
-      if (filter_req) {
-        delayed();
-      }
-      rendering = false;
-      // console.log(' delayed done');
-
-    }
-
-    var f_id = 0;
-    function filter() {
-      // console.log('>> filter:', f_id++, rendering);
-      if (filter_req) {
-        return;
-      }
-
-      filter_req = true;
-      if (!rendering) {
-        // delayed();
-        // console.log('   call delay');
-        window.setTimeout(delayed, 0);
-      }
-
-      // if (delay) return;
-      // delay = true;
-      // window.setTimeout(delayed, 0);
-      // var routers = d3.map();
-      // filterBlues(routers);
-      // filterGreens(routers);
-      // filterBlacks(routers);
-      //
-      // renderRouters(routers);
-      // renderLinks();
-      // console.log('   << filter');
     }
 
     function xor(a,b) {
@@ -170,6 +154,7 @@ define(function(require) {
                 greenLinks.push(link);
                 routers.set(link.src.id, link.src);
                 routers.set(link.dest.id, link.dest);
+                link.src.stat.gv = Math.max(link.src.stat.gv, link.value);
               }
             }
         });
@@ -186,6 +171,7 @@ define(function(require) {
                 blackLinks.push(link);
                 routers.set(link.src.id, link.src);
                 routers.set(link.dest.id, link.dest);
+                link.src.stat.kv = Math.max(link.src.stat.kv, link.value);
               }
             }
         });
@@ -326,6 +312,7 @@ define(function(require) {
 
     function renderRouters(routers, r) {
       var list = routers.values();
+
       var d3routers = svg.select('.routers').selectAll('.router')
         .data(list, function(d) { return d.id;});
 
@@ -504,6 +491,7 @@ define(function(require) {
               .style('r', 2);
       }
     }
+
 
     function router_highlight(routers, on) {
       var radius = on? 6 : 2;
@@ -778,6 +766,17 @@ define(function(require) {
     radial.highlight_job = function(job, on) {
       highlight_job(job, on);
       closeup.highlight_job(job, on);
+      return this;
+    };
+
+    radial.map_routers = function(option) {
+      if (option != router_mapping)
+        router_mapping = option;
+      return this;
+    };
+
+    radial.cmap = function(_) {
+      cmap = _;
       return this;
     };
 

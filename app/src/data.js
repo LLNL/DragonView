@@ -17,7 +17,6 @@ define(function(require) {
   function Run(name) {
     this.groups = [];
     this.routers = d3.map();
-    this.routers = d3.map();
     //this.nodes = new Map();
     this.counters = [];
     this.blues = [];

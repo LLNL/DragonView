@@ -34,6 +34,8 @@ define(function(require) {
         frozen         = false,
         format         = d3.format('.5f');
 
+    var inout = true;
+
     var swath_size = 135;
     swath
       .horizontal(false)
@@ -62,7 +64,11 @@ define(function(require) {
       }
     );
 
-    var inout = true;
+    root.select('#map-routers')
+      .on('change', function() {
+        console.log('map:', this.value, this);
+        Radio.channel(id).trigger('router.map', this.value);
+      });
 
     root
       .on('keydown', function () {
@@ -143,6 +149,8 @@ define(function(require) {
     }
   );
 
+    Radio.channel(id).trigger('cmap', cmap);
+
     Radio.channel(id).on('data.runsList', updateRunList);
     Radio.channel(id).on('data.run', newData);
     Radio.channel(id).on('app.ready', function () {
@@ -202,7 +210,7 @@ define(function(require) {
         // link.vis_color = config.color(link.value);
         link.vis_color = cmap(link.value);
       });
-      Radio.channel(id).trigger('cmap.changed');
+      Radio.channel(id).trigger('cmap.changed', cmap);
     }
 
 
@@ -394,8 +402,6 @@ define(function(require) {
       if (!isSimulation && !isFrozen) {
         dataRange = counterRange(index);
         setRange(dataRange);
-        cmap_from = dataRange[0];
-        cmap_to = dataRange[1];
         root.select('#data-from').property('value', format(dataRange[0]));
         root.select('#data-to').property('value', format(dataRange[1]));
         root.select('#data-reset').property('disabled', true);
@@ -406,8 +412,7 @@ define(function(require) {
           // *** cmap change
           // link.vis_color = config.color(link.value);
           link.vis_color = cmap(link.value);
-      }
-      );
+      });
 
       histogram.counter(index);
       Radio.channel(id).trigger('counter.change', index);
