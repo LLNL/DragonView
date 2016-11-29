@@ -36,7 +36,8 @@ define(function(require) {
         router_mapping= {
           green: function(r) { return cmap(r.green); },
           black: function(r) { return cmap(r.black); },
-          max:   function(r) { return cmap(Math.max(r.green, r.black)); },
+          blue: function(r) { return cmap(r.blue); },
+          max:   function(r) { return cmap(Math.max(r.green, r.black, r.blue)); },
           jobs:  function(r) { return r.job_color;}
         },
         router_mapping_idx = 'jobs',
@@ -420,6 +421,7 @@ define(function(require) {
       run.routers.forEach(function(key, router) {
         router.green = 0;
         router.black = 0;
+        router.blue = 0;
       });
 
       run.links.forEach(function (link) {
@@ -428,6 +430,7 @@ define(function(require) {
 
         if (link.color == 'g') link.src.green = Math.max(link.src.green, link.value);
         else if (link.color == 'k') link.src.black = Math.max(link.src.black, link.value);
+        else /*if (link.color == 'k') */ link.src.blue = Math.max(link.src.blue, link.value);
       });
 
 
