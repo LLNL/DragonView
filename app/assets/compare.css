@@ -127,5 +127,11 @@
     padding-top: 2px; }
     #selection ul li:hover {
       background-color: lightgrey; }
+  #selection .li-body {
+    margin-left: 10px; }
+
+.field-title {
+  font-weight: bold;
+  font-size: 10pt; }
 
 /*# sourceMappingURL=compare.css.map */

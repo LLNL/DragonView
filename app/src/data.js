@@ -27,34 +27,39 @@ define(function(require) {
     this.jobsColor = [];
     this.core_to_node = d3.map();
 
-    var g, r, c, node, rid = 0, cid = 0;
 
-    for(g = 0; g < model.N_GROUPS; g++) {
-      var group = {id: g, routers: [], mode: 'full'};
-      this.groups.push(group);
-      for(r = 0; r < model.N_ROWS; r++) {
-        var row = [];
-        group.routers.push(row);
-        for(c = 0; c < model.N_COLS; c++) {
-          var router = {
-            id: model.router_id(g, r, c),
-            g: g,  r:r,  c:c,
-            jobs:[],
-            nodes_jobs: [undefined, undefined, undefined, undefined],
-            nodes_color: [undefined, undefined, undefined, undefined],
-            color: config.UNKNOWN_JOB_COLOR,
-            green: 0,
-            black: 0
-          };
-          row.push(router);
-          this.routers.set(router.id, router);
-        }
-      }
-    }
+
+    // for(g = 0; g < model.N_GROUPS; g++) {
+    //
+    // }
   }
 
+  Run.prototype.createGroup = function(g) {
+    var r, c, node, rid = 0, cid = 0;
+    var group = {id: g, routers: [], mode: 'full'};
+
+    this.groups[g] = group;
+    for(r = 0; r < model.N_ROWS; r++) {
+      var row = [];
+      group.routers.push(row);
+      for(c = 0; c < model.N_COLS; c++) {
+        var router = {
+          id: model.router_id(g, r, c),
+          g: g,  r:r,  c:c,
+          jobs:[],
+          nodes_jobs: [undefined, undefined, undefined, undefined],
+          nodes_color: [undefined, undefined, undefined, undefined],
+          color: config.UNKNOWN_JOB_COLOR,
+          green: 0,
+          black: 0
+        };
+        row.push(router);
+        this.routers.set(router.id, router);
+      }
+    }
+  };
+
   Run.prototype.updateJobColor = function(job, color) {
-    //var prev = this.jobsColor[idx];
     this.jobsColor[job.idx] = color;
     this.routers.values().forEach(function (router) {
       if (router.jobs.length == 1 && router.jobs[0] == job)
@@ -74,7 +79,6 @@ define(function(require) {
         else {
           var run = new Run(name);
           run.commFile = info.comm;
-          //runs.set(name, run);
           loadPlacement(placement, run);
           loadCounters(counters, run);
           Backbone.Radio.channel(channel).trigger('data.run', run);
@@ -107,7 +111,12 @@ define(function(require) {
         }
         job.n++;
 
-        router = run.routers.get(model.router_id(item));
+        var router_id = model.router_id(item);
+        router = run.routers.get(router_id);
+        if (!router) {
+          run.createGroup(item.g);
+          router = run.routers.get(router_id);
+        }
         if (router.jobs.indexOf(job) == -1) {
           router.jobs.push(job);
           //router.color = router.jobs.length == 1 ? job.color : config.MULTI_JOBS_COLOR;

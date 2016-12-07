@@ -12,11 +12,11 @@ define(function(require) {
   var width = 200, height = 200;
 
   var fields = {
-    config:  {name: 'config',  type: 'category', values: [], sort: configSort, selected: new Set()},
-    dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    sim:     {name: 'sim',     type: 'category', values: [], sort: simSort,      selected: new Set()},
-    jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set()},
-    color:   {name: 'color',   type: 'fixed',    values: ['T', 'b', 'g', 'k'],   selected: new Set(['T', 'b', 'g', 'k'])}
+    config:  {name: 'config',  type: 'category', values: [], sort: configSort,   selected: new Set(), init: function(v) { return true;} },
+    dataset: {name: 'dataset', type: 'category', values: [], sort: d3.ascending, selected: new Set(), init: function(v) { return true;}},
+    sim:     {name: 'sim',     type: 'category', values: [], sort: simSort,      selected: new Set(), init: function(v) { return true;}},
+    jobid:   {name: 'jobid',   type: 'category', values: [], sort: d3.ascending, selected: new Set(), init: function(v) { return v == 0;}},
+    color:   {name: 'color',   type: 'fixed',    values: ['T', 'b', 'g', 'k'],   selected: new Set(['b', 'g', 'k']), init: function(v) { return v != 'T';}}
   };
 
   // TODO: use keys based on data. Issue: how to determine which fields are measure and which are categories/dimensions
@@ -242,8 +242,26 @@ d3.csv('/data/alldata.csv')
       .enter()
       .append('li');
 
+    li.append('input')
+      .attr('type', 'checkbox')
+      .attr('id', function(d) { return d+'-checkbox'})
+      .property('name', function(d) {return d;})
+      .property('checked', function(d) { return fields[d].selected.size > 0;})
+      .property('indeterminate', function(d) { return fields[d].selected.size < fields[d].values.length;})
+      .on('change', function(d) {
+        var checked = d3.select(this).property('checked');
+        d3.select(this.parentElement).select('ul').selectAll('input')
+          .property('checked', checked);
+        if (checked) {
+          fields[d].selected = new Set(fields[d].values);
+        } else {
+          fields[d].selected = new Set();
+        }
+        filter();
+      });
+
     li.append('label')
-      .attr('class', 'li-title')
+      .attr('class', 'field-title')
       .text(function(d) {return d;});
 
     var entry = li.append('ul')
@@ -260,17 +278,23 @@ d3.csv('/data/alldata.csv')
       .attr('type', 'checkbox')
       .property('name', function(d) {return d[0];})
       .property('value', function(d) { return d[1]; })
-      .property('checked', true)
+      .property('checked', function(d) { return fields[d[0]].selected.has(d[1]);})
       .on('change', function(d) {
-        var set = fields[d3.select(this).property('name')].selected;
+        var set = fields[d[0]].selected;
         if (d3.select(this).property('checked')) set.add(d[1]);
         else set.delete(d[1]);
+        var partial = fields[d[0]].values.length != set.size;
+        d3.select('#'+d[0]+'-checkbox')
+          .property('checked', set.size > 0)
+          .property('indeterminate', partial);
         filter();
       });
 
     entry
       .append('text')
       .text(function(d) { return d[1]});
+
+
   }
 
   function collectValues(rows) {
@@ -280,8 +304,9 @@ d3.csv('/data/alldata.csv')
         rows.forEach(function(row) {
           set.add(row[field]);
         });
+        var f = fields[field].init;
         fields[field].values = Array.from(set).sort(fields[field].sort);
-        fields[field].selected = new Set(fields[field].values);
+        fields[field].selected = new Set(fields[field].values.filter(f));
       }
     });
   }
