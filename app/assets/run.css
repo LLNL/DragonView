@@ -106,12 +106,19 @@ div {
   .controls .jobs {
     font-size: 8pt; }
 
+.job-color {
+  border: solid lightgrey 1px; }
+  .job-color:hover {
+    border: solid gray 1px; }
+  .job-color.selected {
+    border: solid black 1px; }
+
 .sub-label {
   width: 40px; }
 
 .info {
-  margin-left: 0px;
-  margin-top: 0px; }
+  margin-left: 0;
+  margin-top: 0; }
 
 .counter {
   width: 250px;

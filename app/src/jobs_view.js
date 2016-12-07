@@ -55,6 +55,7 @@ define(function(require) {
         .data(jobs, function(d) { return d.id;})
         .enter()
           .append('div')
+          .attr('class', 'job-entry')
           .style('position', 'absolute')
           .style('top', function(d,i) { return (i<l ? i:i-l)*15+'px'; })
           .style('left', function(d,i) { return i<l ? 0: '115px'; })
@@ -81,6 +82,9 @@ define(function(require) {
     }
 
     function render() {
+      var clickTimer;
+      var selected = null;
+
       this.append('div')
         .attr('class', 'job-color')
         .style('background-color', function(d) { return d.color; })
@@ -88,22 +92,44 @@ define(function(require) {
           Radio.channel(id).trigger('job.highlight', d, true);
         })
         .on('mouseout', function(d) {
-          Radio.channel(id).trigger('job.highlight', d, false);
+          if (selected)
+            Radio.channel(id).trigger('job.highlight', selected, true);
+          else
+            Radio.channel(id).trigger('job.highlight', d, false);
         })
         .on('mousedown', function(d) {
-          context = d;
-          root.select('.color-menu')
-            .style('position', 'absolute')
-            .style('left', (d3.event.pageX-5) + "px")
-            .style('top', (d3.event.pageY-5) + "px")
-            .style('display', 'block');
+          var x= d3.event.pageX-5;
+          var y = d3.event.pageY-5;
           d3.event.preventDefault();
           d3.event.stopPropagation();
+          clickTimer = setTimeout(function() {
+            context = d;
+            root.select('.color-menu')
+              .style('position', 'absolute')
+              .style('left', x + "px")
+              .style('top', y + "px")
+              .style('display', 'block');
+            clickTimer = null;
+          }
+          ,200);
+        })
+        .on('mouseup', function(d) {
+          if (clickTimer) {
+            clearTimeout(clickTimer);
+            clickTimer = null;
+            selected = selected == d ? null : d;
+            root.select('#jobs').selectAll('.job-color')
+              .classed('selected', function(j) { return j == selected});
+
+            Radio.channel(id).trigger('job.highlight', d, d == selected);
+          }
         });
+
 
       this.append('span').text(function(d) { return d.id;}).style('padding-left', '5px');
       this.append('span').text(function(d) { return d.n;}).style('padding-left', '10px');
       this.append('span').attr('class', 'active').text(function(d) { return d.n;}).style('padding-left', '10px');
     }
+
   };
 });
