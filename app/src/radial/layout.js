@@ -10,8 +10,6 @@ define(function(require) {
     var parms = {
         routersGroupHeight: 50,
         nodesGroupHeight: 150,
-        //width: 600,
-        //height: 600,
         outerRadius: 500,
         innerRadius: 400,
         connectorsRadius: 300,
