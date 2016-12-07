@@ -8,7 +8,7 @@ define(function(require) {
   return function(id_) {
     var id = id_;
     var radial, el, group;
-    var active = false, _data, _range, _counter;
+    var active = true, _data, _range, _counter;
 
     Radio.channel(id).on('data.run', function (data) {
       _data = data;

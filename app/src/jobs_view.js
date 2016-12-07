@@ -83,19 +83,28 @@ define(function(require) {
 
     function render() {
       var clickTimer;
+      var hoverTimer;
       var selected = null;
 
       this.append('div')
         .attr('class', 'job-color')
         .style('background-color', function(d) { return d.color; })
         .on('mouseover', function(d) {
+          if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
+          }
           Radio.channel(id).trigger('job.highlight', d, true);
         })
         .on('mouseout', function(d) {
-          if (selected)
-            Radio.channel(id).trigger('job.highlight', selected, true);
-          else
-            Radio.channel(id).trigger('job.highlight', d, false);
+          hoverTimer = setTimeout(function() {
+            console.log('out:',d ,selected);
+            if (selected)
+              Radio.channel(id).trigger('job.highlight', selected, true);
+            else
+              Radio.channel(id).trigger('job.highlight', d, false);
+            hoverTimer = null;
+          }, 20);
         })
         .on('mousedown', function(d) {
           var x= d3.event.pageX-5;
@@ -111,7 +120,7 @@ define(function(require) {
               .style('display', 'block');
             clickTimer = null;
           }
-          ,200);
+          ,50);
         })
         .on('mouseup', function(d) {
           if (clickTimer) {

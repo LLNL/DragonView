@@ -520,14 +520,14 @@ define(function(require) {
         svg.select('.routers').selectAll('.router')
           .classed('fade', function(d) {
             if (on) {
-              d.last_fade = d3.select(this).classed('fade');
+              // d.last_fade = d3.select(this).classed('fade');
               for (i=0; i<d.jobs.length; i++) {
                 if (d.jobs[i].id == job_id) return false;
               }
               return true;
             } else {
-              // return false;
-              return d.last_fade;
+              return false;
+              // return d.last_fade;
             }
           });
       } else {
