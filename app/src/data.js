@@ -101,8 +101,13 @@ define(function(require) {
           console.log('undefined jobid for core:',item);
 
         // TEMP: ignore data outside of config params
-        if (item.g >= model.N_GROUPS || item.r >= model.N_ROWS || item.c >= model.N_COLS || item.n >= model.N_NODES) return;
+        // if (item.g >= model.N_GROUPS || item.r >= model.N_ROWS || item.c >= model.N_COLS || item.n >= model.N_NODES) return;
 
+
+        if (!run.groups[item.g]) {
+          console.log('group:', item.g);
+          run.createGroup(item.g);
+        }
         job = run.jobs.get(item.jobid);
         if (!job) {
           job = {id: item.jobid, idx: idx, n:0};
@@ -113,10 +118,10 @@ define(function(require) {
 
         var router_id = model.router_id(item);
         router = run.routers.get(router_id);
-        if (!router) {
-          run.createGroup(item.g);
-          router = run.routers.get(router_id);
-        }
+        // if (!router) {
+        //   run.createGroup(item.g);
+        //   router = run.routers.get(router_id);
+        // }
         if (router.jobs.indexOf(job) == -1) {
           router.jobs.push(job);
           //router.color = router.jobs.length == 1 ? job.color : config.MULTI_JOBS_COLOR;
@@ -125,6 +130,8 @@ define(function(require) {
         else router.nodes_jobs[item.n].add(job);
       }
     });
+
+    model.set_ngroups(run.groups.length);
 
     var jobs = run.jobs.values();
     jobs.sort(function (a,b) { return b.n - a.n;});
@@ -165,7 +172,7 @@ define(function(require) {
       dc = +values.shift();
 
       // TEMP: ignore data outside of config parameters
-      if (sg >= model.N_GROUPS || sr >= model.N_ROWS || sc >= model.N_COLS || dg >= model.N_GROUPS || dr >= model.N_ROWS || dc >= model.N_COLS) continue;
+      // if (sg >= model.N_GROUPS || sr >= model.N_ROWS || sc >= model.N_COLS || dg >= model.N_GROUPS || dr >= model.N_ROWS || dc >= model.N_COLS) continue;
 
       color = values.shift();
       nc = values.length;

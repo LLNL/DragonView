@@ -5,18 +5,19 @@ define(function(require) {
 
   var d3 = require('d3');
   var config = require('config');
-  var model = require('model');
+  // var model = require('model');
 
   return function () {
+    var model;
     var margin = {left: 20, top: 40, right: 10, bottom: 10};
     var w = 2, h = 2, dx = 4, dy = 4;
     var GROUP_X_OFFSET = margin.left, GROUP_Y_OFFSET = margin.top;
-    var GREEN_X_OFFSET = margin.left+20, GREEN_Y_OFFSET = margin.top, GREEN_BOX_SIZE = model.N_COLS*w + dx;
-    var BLACK_X_OFFSET = GREEN_X_OFFSET +model.N_ROWS * GREEN_BOX_SIZE + dx, BLACK_Y_OFFSET = GREEN_Y_OFFSET, BLACK_BOX_SIZE = model.N_ROWS*w + dx;
-    var GROUP_HEIGHT = model.N_COLS*h + dy;
-    var width = bx({r:model.N_ROWS-1, c:model.N_COLS}) + margin.right;
-    var height = gy({g:model.N_GROUPS-1, c:model.N_COLS}) + margin.bottom;
-    var groups = new Array(model.N_GROUPS), greenBoxes= new Array(model.N_GROUPS), blackBoxes=new Array(model.N_GROUPS), greenHeader=new Array(model.N_ROWS), blackHeader=new Array(model.N_COLS);
+    var GREEN_X_OFFSET = margin.left+20, GREEN_Y_OFFSET = margin.top;
+    var GREEN_BOX_SIZE;
+    var BLACK_X_OFFSET, BLACK_Y_OFFSET, BLACK_BOX_SIZE;
+    var GROUP_HEIGHT;
+    var width, height;
+    var groups, greenBoxes, blackBoxes, greenHeader, blackHeader;
     var el, canvas;
 
     function gx(idx) {
@@ -33,6 +34,32 @@ define(function(require) {
 
     function by(idx) {
       return BLACK_Y_OFFSET + idx.g*GROUP_HEIGHT + idx.r*h;
+    }
+
+    function setModel(m) {
+        model = m;
+        GREEN_BOX_SIZE = model.N_COLS*w + dx;
+        BLACK_X_OFFSET = GREEN_X_OFFSET +model.N_ROWS * GREEN_BOX_SIZE + dx;
+        BLACK_Y_OFFSET = GREEN_Y_OFFSET;
+        BLACK_BOX_SIZE = model.N_ROWS*w + dx;
+        GROUP_HEIGHT = model.N_COLS*h + dy;
+        width = bx({r:model.N_ROWS-1, c:model.N_COLS}) + margin.right;
+        height = gy({g:model.N_GROUPS-1, c:model.N_COLS}) + margin.bottom;
+        groups = new Array(model.N_GROUPS);
+        greenBoxes= new Array(model.N_GROUPS);
+        blackBoxes=new Array(model.N_GROUPS);
+        greenHeader=new Array(model.N_ROWS);
+        blackHeader=new Array(model.N_COLS);
+
+        d3.select(canvas)
+        .attr('width', width)
+        .attr('height', height);
+
+        var i, j;
+        for (i=0; i<model.N_GROUPS; i++) {
+          greenBoxes[i] = new Array(model.N_ROWS);
+          blackBoxes[i] = new Array(model.N_COLS);
+        }
     }
 
     var layout = function (greenLinks, blackLinks) {
@@ -176,15 +203,15 @@ define(function(require) {
 
       canvas = selection.append('canvas')
         .attr('class', 'canvas')
-        .attr('width', width)
-        .attr('height', height)
+        // .attr('width', width)
+        // .attr('height', height)
         [0][0];
 
-      var i, j;
-      for (i=0; i<model.N_GROUPS; i++) {
-        greenBoxes[i] = new Array(model.N_ROWS);
-        blackBoxes[i] = new Array(model.N_COLS);
-      }
+      // var i, j;
+      // for (i=0; i<model.N_GROUPS; i++) {
+      //   greenBoxes[i] = new Array(model.N_ROWS);
+      //   blackBoxes[i] = new Array(model.N_COLS);
+      // }
       return this;
     };
 
@@ -192,6 +219,12 @@ define(function(require) {
       //console.log('canvas:',canvas.clientWidth, canvas.clientHeight);
       return [canvas.clientWidth, canvas.clientHeight];
       //return [width,  height];
+    };
+
+    layout.model = function(_) {
+      if (!arguments.length) return model;
+      setModel(_);
+      return this;
     };
 
     return layout;

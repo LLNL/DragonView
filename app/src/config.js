@@ -48,5 +48,5 @@ define(function(require) {
     color2: d3.scale.linear()
       .range(['#ff0000', '#00ff00'])
       .interpolate(d3.interpolateHcl)
-  }
+    }
 });
